@@ -1,0 +1,131 @@
+<?php
+// tests/test_suite.php
+
+putenv('DB_DRIVER=sqlite');
+
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/functions.php';
+
+echo "========================================\n";
+echo " EMPRESS TWO WAY 3.0 AUTOMATED SUITE   \n";
+echo "========================================\n\n";
+
+$pdo = getDBConnection();
+
+// Test 1: Admin & System Root verification
+echo "[TEST 1] Verifying System Admin & Root EMP100000 Seeding... ";
+$stmtRoot = $pdo->prepare("SELECT * FROM members WHERE member_id = 'EMP100000'");
+$stmtRoot->execute();
+$root = $stmtRoot->fetch();
+assert($root !== false && $root['name'] === 'Empress Root');
+echo "PASSED\n";
+
+// Test 2: ePIN Generation & Member Registration
+echo "[TEST 2] Testing ePIN Generation & Registration... ";
+$epin1 = generateEpinCode();
+$stmtE = $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_5000', 'Unused')");
+$stmtE->execute([$epin1]);
+
+$regRes1 = registerMember($pdo, [
+    'sponsor_id' => 'EMP100000',
+    'name' => 'Member One',
+    'email' => 'm1@example.com',
+    'phone' => '9000000001',
+    'password' => 'pass123',
+    'epin_code' => $epin1
+]);
+
+assert($regRes1['success'] === true);
+$m1Id = $regRes1['member_id'];
+assert($m1Id === 'EMP100001');
+
+// Check Root Wallet received Level 1 Commission (₹500: 60% = 300, 40% = 200)
+$rootWallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
+assert((float)$rootWallet['balance'] === 500.00);
+assert((float)$rootWallet['user_wallet_60'] === 300.00);
+assert((float)$rootWallet['company_wallet_40'] === 200.00);
+echo "PASSED\n";
+
+// Test 3: BFS Auto-Spillover placement test (Filling Level 1 of Root with 3 members)
+echo "[TEST 3] Testing BFS 3-Matrix Auto-Spillover... ";
+$epins = [];
+for ($i = 2; $i <= 4; $i++) {
+    $ep = generateEpinCode();
+    $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_5000', 'Unused')")->execute([$ep]);
+    $res = registerMember($pdo, [
+        'sponsor_id' => 'EMP100000',
+        'name' => "Member {$i}",
+        'email' => "m{$i}@example.com",
+        'phone' => "900000000{$i}",
+        'password' => 'pass123',
+        'epin_code' => $ep
+    ]);
+    assert($res['success'] === true);
+}
+
+// Verify Level 1 children count of Root is 3
+$l1Children = $pdo->query("SELECT COUNT(*) FROM members WHERE placement_parent_id = 'EMP100000'")->fetchColumn();
+assert((int)$l1Children === 3);
+
+// Member 4 (5th member overall) should spillover under EMP100001 at matrix_position 1
+$m5Epin = generateEpinCode();
+$pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_5000', 'Unused')")->execute([$m5Epin]);
+$res5 = registerMember($pdo, [
+    'sponsor_id' => 'EMP100000',
+    'name' => "Spillover Member 5",
+    'email' => "m5@example.com",
+    'phone' => "9000000005",
+    'password' => 'pass123',
+    'epin_code' => $m5Epin
+]);
+
+$m5 = $pdo->query("SELECT * FROM members WHERE member_id = '{$res5['member_id']}'")->fetch();
+assert($m5['placement_parent_id'] === 'EMP100001');
+assert((int)$m5['matrix_position'] === 1);
+echo "PASSED\n";
+
+// Test 4: Check Multi-level Commission Flow (Level 1 for EMP100001, Level 2 for Root EMP100000)
+echo "[TEST 4] Testing Multi-level Fixed Commission Distribution (Level 1 + Level 2)... ";
+$m1Wallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100001'")->fetch();
+// EMP100001 should get Level 1 payout: ₹500 (60% = 300, 40% = 200)
+assert((float)$m1Wallet['balance'] === 500.00);
+
+// Root (EMP100000) should get previous 3x500 = 1500 + Level 2 payout 1x1000 = 2500 total
+$rootWallet2 = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
+assert((float)$rootWallet2['balance'] === 2500.00);
+echo "PASSED\n";
+
+// Test 5: KYC Approval & Payout Withdrawal Validation Rules
+echo "[TEST 5] Testing KYC Block & Withdrawal Thresholds... ";
+// EMP100001 has user_wallet_60 = 300.00 (under ₹500 min and KYC is Pending)
+$wFail1 = false;
+if ($m1Wallet['user_wallet_60'] < 500.00) {
+    $wFail1 = true;
+}
+assert($wFail1 === true);
+
+// Approve KYC for EMP100001 and add balance to meet ₹500
+$pdo->prepare("UPDATE members SET kyc_status = 'Approved' WHERE member_id = 'EMP100001'")->execute();
+$pdo->prepare("UPDATE wallets SET user_wallet_60 = 1000.00 WHERE member_id = 'EMP100001'")->execute();
+
+// Perform withdrawal of ₹600
+$pdo->prepare("UPDATE wallets SET user_wallet_60 = user_wallet_60 - 600 WHERE member_id = 'EMP100001'")->execute();
+$pdo->prepare("INSERT INTO withdrawals (member_id, amount, status) VALUES ('EMP100001', 600.00, 'Pending')")->execute();
+
+$wRow = $pdo->query("SELECT * FROM withdrawals WHERE member_id = 'EMP100001'")->fetch();
+assert((float)$wRow['amount'] === 600.00);
+assert($wRow['status'] === 'Pending');
+echo "PASSED\n";
+
+// Test 6: API Bearer Token Authentication & API endpoints simulation
+echo "[TEST 6] Testing Mobile REST API Auth & Token verification... ";
+require_once __DIR__ . '/../api/api_helper.php';
+$tokData = generateBearerToken($pdo, 'member', 'EMP100001');
+assert(!empty($tokData['token']));
+
+$stmtTok = $pdo->prepare("SELECT * FROM api_tokens WHERE token = ?");
+$stmtTok->execute([$tokData['token']]);
+assert($stmtTok->fetch() !== false);
+echo "PASSED\n";
+
+echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";

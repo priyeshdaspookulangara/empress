@@ -1,0 +1,157 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo isset($pageTitle) ? $pageTitle . ' - Empress Two Way 3.0' : 'Empress Two Way 3.0 - Direct Selling Ecosystem'; ?></title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0f1015',
+                        glass: 'rgba(22, 25, 35, 0.75)',
+                        glassBorder: 'rgba(197, 160, 89, 0.25)',
+                        gold: {
+                            DEFAULT: '#c5a059',
+                            400: '#d1b16d',
+                            600: '#a38140',
+                        },
+                        champagne: '#f3e5ab',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f1015;
+            color: #f3e5ab;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(197, 160, 89, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(197, 160, 89, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+        .glass-card {
+            background: rgba(22, 25, 35, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-card:hover {
+            border-color: rgba(197, 160, 89, 0.4);
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 50%, #e5c175 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-button {
+            background: linear-gradient(135deg, #c5a059 0%, #a38140 100%);
+            color: #0f1015;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .gold-button:hover {
+            background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 100%);
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+            transform: translateY(-1px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f1015;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c5a059;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <!-- Navigation Header -->
+    <nav class="glass-card sticky top-0 z-50 px-4 lg:px-8 py-3 mb-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/index.php" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full border border-gold/40 flex items-center justify-center bg-obsidian text-gold shadow-lg shadow-gold/10">
+                    <i class="fa-solid font-bold text-xl">E3</i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold gold-gradient-text tracking-wider uppercase">Empress Two Way</span>
+                    <span class="text-xs text-gold/70 block tracking-widest font-mono">VERSION 3.0</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <a href="/index.php" class="hover:text-gold transition">Home</a>
+                <a href="/business_plan.php" class="hover:text-gold transition">Business Plan</a>
+                <?php if (isset($_SESSION['member_id'])): ?>
+                    <a href="/customer/dashboard.php" class="text-gold font-bold hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-gauge-high"></i> Dashboard
+                    </a>
+                    <a href="/logout.php" class="text-red-400 hover:text-red-300">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                <?php elseif (isset($_SESSION['admin_id'])): ?>
+                    <a href="/admin/index.php" class="text-gold font-bold hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-user-shield"></i> Admin Panel
+                    </a>
+                    <a href="/logout.php" class="text-red-400 hover:text-red-300">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                <?php else: ?>
+                    <a href="/login.php" class="hover:text-gold transition">Member Login</a>
+                    <a href="/admin_login.php" class="text-gold/70 hover:text-gold transition">Admin Portal</a>
+                    <a href="/register.php" class="gold-button px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Join Now
+                    </a>
+                <?php endif; ?>
+            </div>
+
+            <!-- Mobile menu trigger -->
+            <button id="mobileMenuBtn" class="md:hidden text-gold text-2xl focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-gold/20 flex flex-col gap-3 text-sm">
+            <a href="/index.php" class="hover:text-gold py-1">Home</a>
+            <a href="/business_plan.php" class="hover:text-gold py-1">Business Plan</a>
+            <?php if (isset($_SESSION['member_id'])): ?>
+                <a href="/customer/dashboard.php" class="text-gold font-bold py-1">Customer Dashboard</a>
+                <a href="/logout.php" class="text-red-400 py-1">Logout</a>
+            <?php elseif (isset($_SESSION['admin_id'])): ?>
+                <a href="/admin/index.php" class="text-gold font-bold py-1">Admin Panel</a>
+                <a href="/logout.php" class="text-red-400 py-1">Logout</a>
+            <?php else: ?>
+                <a href="/login.php" class="hover:text-gold py-1">Member Login</a>
+                <a href="/admin_login.php" class="text-gold/70 hover:text-gold py-1">Admin Portal</a>
+                <a href="/register.php" class="gold-button text-center py-2 rounded-lg font-bold">Join Now</a>
+            <?php endif; ?>
+        </div>
+    </nav>
+
+    <script>
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+    </script>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-4">
