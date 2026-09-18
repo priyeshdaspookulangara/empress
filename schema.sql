@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS epins (
     id INT AUTO_INCREMENT PRIMARY KEY,
     epin_code VARCHAR(50) NOT NULL UNIQUE,
-    package_type VARCHAR(20) NOT NULL,
+    package_type VARCHAR(20) NOT NULL DEFAULT 'Starter_1000',
     status VARCHAR(20) NOT NULL DEFAULT 'Unused',
     generated_by_admin_id INT DEFAULT NULL,
     used_by_member_id VARCHAR(50) DEFAULT NULL,

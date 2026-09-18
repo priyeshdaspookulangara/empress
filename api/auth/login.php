@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/api_helper.php';
+require_once __DIR__ . '/../api_helper.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonResponse(['success' => false, 'message' => 'Method not allowed. Use POST.'], 405);

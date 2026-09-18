@@ -136,17 +136,17 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Package Options -->
 <section class="py-12">
     <div class="text-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-extrabold gold-gradient-text">Choose Your Activation Package</h2>
-        <p class="text-xs md:text-sm text-champagne/70 mt-2">Get ePIN code from your sponsor or company admin to activate instantly</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold gold-gradient-text">Single Activation Package</h2>
+        <p class="text-xs md:text-sm text-champagne/70 mt-2">Get your Starter 1000 ePIN code from your sponsor or company admin to activate instantly</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        <!-- Starter Package -->
-        <div class="glass-card p-8 rounded-3xl border border-gold/30 text-center relative overflow-hidden flex flex-col justify-between">
+    <div class="max-w-md mx-auto">
+        <!-- Starter 1000 Package -->
+        <div class="glass-card p-8 rounded-3xl border-2 border-gold text-center relative overflow-hidden flex flex-col justify-between shadow-xl shadow-gold/10">
             <div>
-                <span class="text-xs font-semibold uppercase tracking-widest text-gold bg-gold/10 px-3 py-1 rounded-full border border-gold/20">Starter Activation</span>
-                <h3 class="text-2xl font-extrabold text-champagne mt-4">Starter 5000</h3>
-                <div class="text-4xl font-extrabold text-gold my-4">₹5,000</div>
+                <span class="text-xs font-semibold uppercase tracking-widest text-gold bg-gold/20 px-3 py-1 rounded-full border border-gold/40">Universal Package</span>
+                <h3 class="text-2xl font-extrabold text-champagne mt-4">Starter 1000</h3>
+                <div class="text-4xl font-extrabold text-gold my-4">₹1,000</div>
                 <ul class="text-xs text-champagne/80 space-y-3 mb-8 text-left max-w-xs mx-auto">
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Full 3-Matrix Auto-Spillover Tree Entry</li>
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 6-Level Fixed Commission Eligibility</li>
@@ -154,26 +154,7 @@ require_once __DIR__ . '/includes/header.php';
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Max Potential ₹49,24,500</li>
                 </ul>
             </div>
-            <a href="/register.php" class="gold-button py-3 rounded-xl block font-bold">Get Started</a>
-        </div>
-
-        <!-- Empress Package -->
-        <div class="glass-card p-8 rounded-3xl border-2 border-gold text-center relative overflow-hidden flex flex-col justify-between shadow-xl shadow-gold/10">
-            <div class="absolute -right-12 top-6 bg-gold text-obsidian text-[10px] font-extrabold py-1 px-12 rotate-45 uppercase">
-                Premium
-            </div>
-            <div>
-                <span class="text-xs font-semibold uppercase tracking-widest text-gold bg-gold/20 px-3 py-1 rounded-full border border-gold/40">VIP Package</span>
-                <h3 class="text-2xl font-extrabold text-champagne mt-4">Empress 15000</h3>
-                <div class="text-4xl font-extrabold text-gold my-4">₹15,000</div>
-                <ul class="text-xs text-champagne/80 space-y-3 mb-8 text-left max-w-xs mx-auto">
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Direct Priority Global BFS Matrix Entry</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Accelerated Spillover Placement</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Dedicated Executive VIP Support</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Max Potential ₹49,24,500</li>
-                </ul>
-            </div>
-            <a href="/register.php" class="gold-button py-3 rounded-xl block font-bold">Join Empress 15000</a>
+            <a href="/register.php" class="gold-button py-3.5 rounded-xl block font-bold">Activate Now for ₹1,000</a>
         </div>
     </div>
 </section>

@@ -14,14 +14,16 @@ $pdo = getDBConnection();
 $totalMembers = $pdo->query("SELECT COUNT(*) FROM members")->fetchColumn();
 $activeMembers = $pdo->query("SELECT COUNT(*) FROM members WHERE status = 'Active'")->fetchColumn();
 
-// Total Company Inflow calculated from activated ePINs (Starter 5000 / Empress 15000)
+// Total Company Inflow calculated from activated ePINs (Starter 1000 = ₹1,000)
 $totalInflow = 0;
 $usedEpins = $pdo->query("SELECT package_type FROM epins WHERE status = 'Used'")->fetchAll();
 foreach ($usedEpins as $ep) {
     if ($ep['package_type'] === 'Empress_15000') {
         $totalInflow += 15000;
-    } else {
+    } elseif ($ep['package_type'] === 'Starter_5000') {
         $totalInflow += 5000;
+    } else {
+        $totalInflow += 1000;
     }
 }
 

@@ -23,7 +23,7 @@ echo "PASSED\n";
 // Test 2: ePIN Generation & Member Registration
 echo "[TEST 2] Testing ePIN Generation & Registration... ";
 $epin1 = generateEpinCode();
-$stmtE = $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_5000', 'Unused')");
+$stmtE = $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_1000', 'Unused')");
 $stmtE->execute([$epin1]);
 
 $regRes1 = registerMember($pdo, [
@@ -51,7 +51,7 @@ echo "[TEST 3] Testing BFS 3-Matrix Auto-Spillover... ";
 $epins = [];
 for ($i = 2; $i <= 4; $i++) {
     $ep = generateEpinCode();
-    $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_5000', 'Unused')")->execute([$ep]);
+    $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_1000', 'Unused')")->execute([$ep]);
     $res = registerMember($pdo, [
         'sponsor_id' => 'EMP100000',
         'name' => "Member {$i}",
@@ -69,7 +69,7 @@ assert((int)$l1Children === 3);
 
 // Member 4 (5th member overall) should spillover under EMP100001 at matrix_position 1
 $m5Epin = generateEpinCode();
-$pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_5000', 'Unused')")->execute([$m5Epin]);
+$pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_1000', 'Unused')")->execute([$m5Epin]);
 $res5 = registerMember($pdo, [
     'sponsor_id' => 'EMP100000',
     'name' => "Spillover Member 5",

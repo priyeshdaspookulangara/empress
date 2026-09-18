@@ -97,7 +97,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div>
                     <label class="block text-xs font-semibold text-gold mb-1">ePIN Key Code *</label>
                     <input type="text" name="epin_code" required placeholder="Enter Unused Activation ePIN Code" class="w-full bg-obsidian/80 border border-gold/40 rounded-xl px-4 py-3 text-sm text-gold font-mono focus:outline-none focus:border-gold uppercase">
-                    <span class="text-[10px] text-champagne/50">Required for package activation (Starter 5000 / Empress 15000). Contact admin/sponsor if you don't have one.</span>
+                    <span class="text-[10px] text-champagne/50">Required for Starter 1000 package activation (₹1,000). Contact admin/sponsor if you don't have one.</span>
                 </div>
 
                 <div class="pt-4">

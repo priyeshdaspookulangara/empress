@@ -166,7 +166,7 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $rootPass = password_hash('root123', PASSWORD_BCRYPT);
         $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status)
             VALUES (?, NULL, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute(['EMP100000', 'Empress Root', 'root@empress2way.com', '9999999999', $rootPass, 'SYSTEM_ROOT_EPIN', 'Starter_5000', 'Active', 'Approved']);
+        $stmt->execute(['EMP100000', 'Empress Root', 'root@empress2way.com', '9999999999', $rootPass, 'SYSTEM_ROOT_EPIN', 'Starter_1000', 'Active', 'Approved']);
 
         $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00)");
         $stmt->execute(['EMP100000']);
