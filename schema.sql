@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS members (
     bank_name VARCHAR(100) DEFAULT NULL,
     bank_account_number VARCHAR(50) DEFAULT NULL,
     ifsc_code VARCHAR(20) DEFAULT NULL,
+    crypto_wallet_address VARCHAR(255) DEFAULT NULL,
+    wallet_network VARCHAR(50) DEFAULT 'USDT (TRC20)',
     kyc_status VARCHAR(20) NOT NULL DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_sponsor (sponsor_id),

@@ -24,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: KYC status must be Approved. Current status: {$kycStatus}"], 403);
     }
 
-    if ($amount < 500.00) {
-        sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: Minimum withdrawal amount is ₹500."], 400);
+    if ($amount < 10.00) {
+        sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: Minimum withdrawal amount is $10.00 USD."], 400);
     }
 
     if ($amount > $userWallet) {
-        sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: Insufficient balance in User Wallet (60%). Available: ₹" . number_format($userWallet, 2)], 400);
+        sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: Insufficient balance in User Wallet (60%). Available: $" . number_format($userWallet, 2) . " USD"], 400);
     }
 
     $pdo->beginTransaction();
@@ -47,10 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
             VALUES (?, 'Withdrawal_Request', ?, 'User_Wallet', 'Debit', ?)
         ");
-        $stmtTx->execute([$memberId, $amount, "Withdrawal request of ₹" . number_format($amount, 2) . " submitted via Mobile API."]);
+        $stmtTx->execute([$memberId, $amount, "Withdrawal request of $" . number_format($amount, 2) . " submitted via Mobile API."]);
 
         $pdo->commit();
-        sendJsonResponse(['success' => true, 'message' => "Withdrawal request of ₹" . number_format($amount, 2) . " submitted successfully."]);
+        sendJsonResponse(['success' => true, 'message' => "Withdrawal request of $" . number_format($amount, 2) . " submitted successfully."]);
 
     } catch (Exception $e) {
         $pdo->rollBack();

@@ -19,7 +19,7 @@ require_once __DIR__ . '/includes/header.php';
         </p>
 
         <p class="text-sm md:text-base text-champagne/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Experience the revolutionary single-phase automated direct selling ecosystem powered by an automated <span class="text-gold font-semibold">3-Matrix forced spillover engine</span>, <span class="text-gold font-semibold">60:40 Smart Wallet division</span>, and <span class="text-gold font-semibold">6-level fixed matrix income potential of ₹49,24,500</span>.
+            Experience the revolutionary single-phase automated direct selling ecosystem powered by an automated <span class="text-gold font-semibold">3-Matrix forced spillover engine</span>, <span class="text-gold font-semibold">60:40 Smart Wallet division</span>, and <span class="text-gold font-semibold">6-level fixed matrix income potential of $98,490 USD</span>.
         </p>
 
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -61,7 +61,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
         <h3 class="text-lg font-bold text-champagne mb-2">Mandatory KYC & Instant Payouts</h3>
         <p class="text-xs text-champagne/70 leading-relaxed">
-            Bank-grade security with strict KYC verification (PAN, Aadhaar, Bank Details) protecting withdrawal requests above the ₹500 minimum threshold.
+            Bank-grade security with strict KYC verification (USDT Crypto Wallet Address) protecting withdrawal requests above the $10 USD minimum threshold.
         </p>
     </div>
 </section>
@@ -88,44 +88,44 @@ require_once __DIR__ . '/includes/header.php';
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 1</td>
                         <td class="p-4">3 Nodes</td>
-                        <td class="p-4">₹500</td>
-                        <td class="p-4 font-bold text-emerald-400">₹1,500</td>
+                        <td class="p-4">$10 USD</td>
+                        <td class="p-4 font-bold text-emerald-400">$30 USD</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 2</td>
                         <td class="p-4">9 Nodes</td>
-                        <td class="p-4">₹1,000</td>
-                        <td class="p-4 font-bold text-emerald-400">₹9,000</td>
+                        <td class="p-4">$20 USD</td>
+                        <td class="p-4 font-bold text-emerald-400">$180 USD</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 3</td>
                         <td class="p-4">27 Nodes</td>
-                        <td class="p-4">₹2,000</td>
-                        <td class="p-4 font-bold text-emerald-400">₹54,000</td>
+                        <td class="p-4">$40 USD</td>
+                        <td class="p-4 font-bold text-emerald-400">$1,080 USD (+ 10 Rebirths)</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 4</td>
                         <td class="p-4">81 Nodes</td>
-                        <td class="p-4">₹3,000</td>
-                        <td class="p-4 font-bold text-emerald-400">₹2,43,000</td>
+                        <td class="p-4">$60 USD</td>
+                        <td class="p-4 font-bold text-emerald-400">$4,860 USD (+ 20 Rebirths)</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 5</td>
                         <td class="p-4">243 Nodes</td>
-                        <td class="p-4">₹4,000</td>
-                        <td class="p-4 font-bold text-emerald-400">₹9,72,000</td>
+                        <td class="p-4">$80 USD</td>
+                        <td class="p-4 font-bold text-emerald-400">$19,440 USD (+ 70 Rebirths)</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 6</td>
                         <td class="p-4">729 Nodes</td>
-                        <td class="p-4">₹5,000</td>
-                        <td class="p-4 font-bold text-emerald-400">₹36,45,000</td>
+                        <td class="p-4">$100 USD</td>
+                        <td class="p-4 font-bold text-emerald-400">$72,900 USD (+ 100 Rebirths)</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr class="bg-gold/20 text-gold font-bold text-base">
                         <td class="p-4" colspan="3">Grand Total Matrix Earning Potential</td>
-                        <td class="p-4 text-emerald-300 text-lg">₹49,24,500</td>
+                        <td class="p-4 text-emerald-300 text-lg">$98,490 USD</td>
                     </tr>
                 </tfoot>
             </table>
@@ -146,15 +146,15 @@ require_once __DIR__ . '/includes/header.php';
             <div>
                 <span class="text-xs font-semibold uppercase tracking-widest text-gold bg-gold/20 px-3 py-1 rounded-full border border-gold/40">Universal Package</span>
                 <h3 class="text-2xl font-extrabold text-champagne mt-4">Starter 1000</h3>
-                <div class="text-4xl font-extrabold text-gold my-4">₹1,000</div>
+                <div class="text-4xl font-extrabold text-gold my-4">$10 USD</div>
                 <ul class="text-xs text-champagne/80 space-y-3 mb-8 text-left max-w-xs mx-auto">
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Full 3-Matrix Auto-Spillover Tree Entry</li>
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 6-Level Fixed Commission Eligibility</li>
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 60% User & 40% Utility Wallet Division</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Max Potential ₹49,24,500</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Max Potential $98,490 USD</li>
                 </ul>
             </div>
-            <a href="/register.php" class="gold-button py-3.5 rounded-xl block font-bold">Activate Now for ₹1,000</a>
+            <a href="/register.php" class="gold-button py-3.5 rounded-xl block font-bold">Activate Now for $10 USD</a>
         </div>
     </div>
 </section>

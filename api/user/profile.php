@@ -15,27 +15,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $state = trim($input['state'] ?? '');
     $panNumber = strtoupper(trim($input['pan_number'] ?? ''));
     $aadhaarNumber = trim($input['aadhaar_number'] ?? '');
-    $bankName = trim($input['bank_name'] ?? '');
-    $bankAccountNumber = trim($input['bank_account_number'] ?? '');
-    $ifscCode = strtoupper(trim($input['ifsc_code'] ?? ''));
+    $cryptoWallet = trim($input['crypto_wallet_address'] ?? '');
+    $walletNetwork = trim($input['wallet_network'] ?? 'USDT (TRC20)');
 
-    if (empty($addressLine) || empty($city) || empty($state) || empty($pincode) ||
-        empty($panNumber) || empty($aadhaarNumber) || empty($bankName) ||
-        empty($bankAccountNumber) || empty($ifscCode)) {
-        sendJsonResponse(['success' => false, 'message' => 'All address, PAN, Aadhaar, and Bank fields are required.'], 400);
+    if (empty($addressLine) || empty($city) || empty($state) || empty($pincode) || empty($cryptoWallet)) {
+        sendJsonResponse(['success' => false, 'message' => 'Address fields and crypto_wallet_address are required.'], 400);
     }
 
     $stmt = $pdo->prepare("
         UPDATE members
         SET address_line = ?, place = ?, city = ?, pincode = ?, state = ?,
-            pan_number = ?, aadhaar_number = ?, bank_name = ?,
-            bank_account_number = ?, ifsc_code = ?, kyc_status = 'Submitted'
+            pan_number = ?, aadhaar_number = ?, crypto_wallet_address = ?,
+            wallet_network = ?, kyc_status = 'Submitted'
         WHERE member_id = ?
     ");
     $stmt->execute([
         $addressLine, $place, $city, $pincode, $state,
-        $panNumber, $aadhaarNumber, $bankName,
-        $bankAccountNumber, $ifscCode, $memberId
+        $panNumber, $aadhaarNumber, $cryptoWallet,
+        $walletNetwork, $memberId
     ]);
 
     sendJsonResponse(['success' => true, 'message' => 'Profile & KYC details updated successfully.']);
@@ -44,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // GET request: Fetch full profile
 $stmt = $pdo->prepare("
     SELECT member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, package_type, status,
-           address_line, place, city, pincode, state, pan_number, aadhaar_number, bank_name, bank_account_number, ifsc_code, kyc_status, created_at
+           address_line, place, city, pincode, state, pan_number, aadhaar_number, bank_name, bank_account_number, ifsc_code, crypto_wallet_address, wallet_network, kyc_status, created_at
     FROM members WHERE member_id = ?
 ");
 $stmt->execute([$memberId]);

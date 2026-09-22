@@ -83,9 +83,9 @@ require_once __DIR__ . '/../includes/header.php';
                 <div>
                     <label class="block text-xs font-semibold text-gold mb-1">Package Type *</label>
                     <select name="package_type" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-3 text-xs text-champagne focus:outline-none focus:border-gold">
-                        <option value="Starter_1000" selected>Starter 1000 (₹1,000)</option>
-                        <option value="Starter_5000">Starter 5000 (₹5,000)</option>
-                        <option value="Empress_15000">Empress 15000 (₹15,000)</option>
+                        <option value="Starter_1000" selected>Starter 1000 ($10 USD)</option>
+                        <option value="Starter_5000">Starter 5000 ($50 USD)</option>
+                        <option value="Empress_15000">Empress 15000 ($150 USD)</option>
                     </select>
                 </div>
 

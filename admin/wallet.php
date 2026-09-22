@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Payout Requests Console";
+$pageTitle = "Crypto Payout Requests Console";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     if ($withdrawalId > 0 && in_array($action, ['Approve', 'Reject'])) {
-        $stmtW = $pdo->prepare("SELECT w.*, m.kyc_status, m.name, m.bank_name, m.bank_account_number, m.ifsc_code FROM withdrawals w JOIN members m ON w.member_id = m.member_id WHERE w.id = ?");
+        $stmtW = $pdo->prepare("SELECT w.*, m.kyc_status, m.name, m.crypto_wallet_address, m.wallet_network FROM withdrawals w JOIN members m ON w.member_id = m.member_id WHERE w.id = ?");
         $stmtW->execute([$withdrawalId]);
         $w = $stmtW->fetch();
 
@@ -33,9 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmtApprove = $pdo->prepare("UPDATE withdrawals SET status = 'Approved', processed_date = CURRENT_TIMESTAMP WHERE id = ?");
                     $stmtApprove->execute([$withdrawalId]);
 
-                    $msg = "Payout request #WD-{$withdrawalId} of ₹" . number_format($w['amount'], 2) . " for member {$w['member_id']} has been APPROVED.";
+                    $msg = "Payout request #WD-{$withdrawalId} of $" . number_format($w['amount'], 2) . " USD for member {$w['member_id']} has been APPROVED.";
                 } else {
-                    // Reject & refund amount back to user_wallet_60
                     $stmtReject = $pdo->prepare("UPDATE withdrawals SET status = 'Rejected', processed_date = CURRENT_TIMESTAMP WHERE id = ?");
                     $stmtReject->execute([$withdrawalId]);
 
@@ -48,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ");
                     $stmtTx->execute([$w['member_id'], $w['amount'], "Refund for rejected withdrawal request #WD-{$withdrawalId}."]);
 
-                    $msg = "Payout request #WD-{$withdrawalId} REJECTED and ₹" . number_format($w['amount'], 2) . " refunded to member's User Wallet.";
+                    $msg = "Payout request #WD-{$withdrawalId} REJECTED and $" . number_format($w['amount'], 2) . " USD refunded to member's User Wallet.";
                 }
                 $pdo->commit();
             } catch (Exception $e) {
@@ -59,9 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch Withdrawal Requests Joined with Bank Details
+// Fetch Withdrawal Requests Joined with Crypto Wallet Details
 $stmtList = $pdo->query("
-    SELECT w.*, m.name, m.email, m.phone, m.kyc_status, m.bank_name, m.bank_account_number, m.ifsc_code
+    SELECT w.*, m.name, m.email, m.phone, m.kyc_status, m.crypto_wallet_address, m.wallet_network
     FROM withdrawals w
     JOIN members m ON w.member_id = m.member_id
     ORDER BY FIELD(w.status, 'Pending', 'Approved', 'Rejected'), w.id DESC
@@ -72,10 +71,10 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="space-y-6">
-    <div class="glass-card p-6 rounded-3xl border border-gold/30 flex justify-between items-center">
+    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30 flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-extrabold gold-gradient-text">Payout & Withdrawal Console</h1>
-            <p class="text-xs text-champagne/70 mt-1">Review pending payout requests, inspect KYC readiness, and process bank transfers</p>
+            <h1 class="text-2xl font-extrabold neon-gradient-text">USD Crypto Payout Console</h1>
+            <p class="text-xs text-ice/70 mt-1">Review pending payout requests, inspect member crypto wallets, and approve transfers</p>
         </div>
     </div>
 
@@ -92,38 +91,37 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 
     <!-- Withdrawals Processing Table -->
-    <div class="glass-card p-6 rounded-3xl border border-gold/20">
+    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/20">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
+                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
                         <th class="p-3">Req ID</th>
                         <th class="p-3">Member Details</th>
-                        <th class="p-3">Amount</th>
-                        <th class="p-3">Destination Bank Details</th>
+                        <th class="p-3">Amount ($ USD)</th>
+                        <th class="p-3">Destination Crypto Wallet</th>
                         <th class="p-3">KYC & Status</th>
                         <th class="p-3">Request Date</th>
                         <th class="p-3">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gold/10 text-champagne">
+                <tbody class="divide-y divide-neon-cyan/10 text-ice">
                     <?php if (empty($withdrawals)): ?>
                         <tr>
-                            <td colspan="7" class="p-4 text-center text-champagne/50">No withdrawal requests found.</td>
+                            <td colspan="7" class="p-4 text-center text-ice/50">No withdrawal requests found.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($withdrawals as $w): ?>
                             <tr>
-                                <td class="p-3 font-mono text-gold font-bold">#WD-<?php echo $w['id']; ?></td>
+                                <td class="p-3 font-mono text-neon-cyan font-bold">#WD-<?php echo $w['id']; ?></td>
                                 <td class="p-3">
-                                    <div class="font-bold text-champagne"><?php echo htmlspecialchars($w['name']); ?></div>
-                                    <div class="text-gold font-mono text-[11px]"><?php echo htmlspecialchars($w['member_id']); ?></div>
+                                    <div class="font-bold text-ice"><?php echo htmlspecialchars($w['name']); ?></div>
+                                    <div class="text-neon-cyan font-mono text-[11px]"><?php echo htmlspecialchars($w['member_id']); ?></div>
                                 </td>
-                                <td class="p-3 font-bold text-emerald-400 text-sm">₹<?php echo number_format($w['amount'], 2); ?></td>
-                                <td class="p-3 font-mono">
-                                    <div>Bank: <strong class="text-champagne"><?php echo htmlspecialchars($w['bank_name'] ?: 'N/A'); ?></strong></div>
-                                    <div>A/C: <strong class="text-champagne"><?php echo htmlspecialchars($w['bank_account_number'] ?: 'N/A'); ?></strong></div>
-                                    <div>IFSC: <strong class="text-gold"><?php echo htmlspecialchars($w['ifsc_code'] ?: 'N/A'); ?></strong></div>
+                                <td class="p-3 font-bold text-emerald-400 text-sm">$<?php echo number_format($w['amount'], 2); ?></td>
+                                <td class="p-3 font-mono max-w-xs">
+                                    <div>Network: <strong class="text-ice"><?php echo htmlspecialchars($w['wallet_network'] ?: 'USDT (TRC20)'); ?></strong></div>
+                                    <div>Address: <strong class="text-neon-cyan break-all text-[11px]"><?php echo htmlspecialchars($w['crypto_wallet_address'] ?: 'N/A'); ?></strong></div>
                                 </td>
                                 <td class="p-3">
                                     <div class="mb-1">
@@ -141,7 +139,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         ?>"><?php echo $w['status']; ?></span>
                                     </div>
                                 </td>
-                                <td class="p-3 font-mono text-champagne/60"><?php echo $w['request_date']; ?></td>
+                                <td class="p-3 font-mono text-ice/60"><?php echo $w['request_date']; ?></td>
                                 <td class="p-3">
                                     <?php if ($w['status'] === 'Pending'): ?>
                                         <form action="/admin/wallet.php" method="POST" class="flex gap-2">
@@ -154,7 +152,7 @@ require_once __DIR__ . '/../includes/header.php';
                                             </button>
                                         </form>
                                     <?php else: ?>
-                                        <span class="text-champagne/50 text-[11px] font-mono">Processed <?php echo $w['processed_date']; ?></span>
+                                        <span class="text-ice/50 text-[11px] font-mono">Processed <?php echo $w['processed_date']; ?></span>
                                     <?php endif; ?>
                                 </td>
                             </tr>

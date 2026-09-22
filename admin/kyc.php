@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "KYC Verification Console";
+$pageTitle = "KYC & Crypto Wallet Verification Console";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -33,10 +33,10 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="space-y-6">
-    <div class="glass-card p-6 rounded-3xl border border-gold/30 flex justify-between items-center">
+    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30 flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-extrabold gold-gradient-text">KYC Verification Console</h1>
-            <p class="text-xs text-champagne/70 mt-1">Review full address, PAN, Aadhaar, and Bank Account details to approve/reject payout eligibility</p>
+            <h1 class="text-2xl font-extrabold neon-gradient-text">KYC & Crypto Wallet Verification Console</h1>
+            <p class="text-xs text-ice/70 mt-1">Review full address, identity, and USD Crypto Wallet Address details to approve/reject payout eligibility</p>
         </div>
     </div>
 
@@ -47,47 +47,41 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 
     <!-- Applications Table -->
-    <div class="glass-card p-6 rounded-3xl border border-gold/20">
+    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/20">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
+                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
                         <th class="p-3">Member ID</th>
                         <th class="p-3">Full Address Details</th>
-                        <th class="p-3">Identity (PAN & Aadhaar)</th>
-                        <th class="p-3">Bank Account & IFSC</th>
+                        <th class="p-3">USD Crypto Wallet Address</th>
                         <th class="p-3">Status</th>
                         <th class="p-3">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gold/10 text-champagne">
+                <tbody class="divide-y divide-neon-cyan/10 text-ice">
                     <?php if (empty($kycList)): ?>
                         <tr>
-                            <td colspan="6" class="p-4 text-center text-champagne/50">No KYC submissions on record.</td>
+                            <td colspan="5" class="p-4 text-center text-ice/50">No KYC submissions on record.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($kycList as $m): ?>
                             <tr>
-                                <td class="p-3 font-mono text-gold font-bold">
+                                <td class="p-3 font-mono text-neon-cyan font-bold">
                                     <div><?php echo htmlspecialchars($m['member_id']); ?></div>
-                                    <div class="text-[11px] text-champagne/80 font-sans font-normal"><?php echo htmlspecialchars($m['name']); ?></div>
+                                    <div class="text-[11px] text-ice/80 font-sans font-normal"><?php echo htmlspecialchars($m['name']); ?></div>
                                 </td>
                                 <td class="p-3 max-w-xs">
                                     <?php if (!empty($m['address_line'])): ?>
                                         <div><?php echo htmlspecialchars($m['address_line']); ?>, <?php echo htmlspecialchars($m['place']); ?></div>
-                                        <div class="text-champagne/70"><?php echo htmlspecialchars($m['city']); ?>, <?php echo htmlspecialchars($m['state']); ?> - <?php echo htmlspecialchars($m['pincode']); ?></div>
+                                        <div class="text-ice/70"><?php echo htmlspecialchars($m['city']); ?>, <?php echo htmlspecialchars($m['state']); ?> - <?php echo htmlspecialchars($m['pincode']); ?></div>
                                     <?php else: ?>
-                                        <span class="text-champagne/40 italic">Not Provided</span>
+                                        <span class="text-ice/40 italic">Not Provided</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="p-3 font-mono">
-                                    <div>PAN: <strong class="text-gold"><?php echo htmlspecialchars($m['pan_number'] ?: 'N/A'); ?></strong></div>
-                                    <div>Aadhaar: <strong class="text-gold"><?php echo htmlspecialchars($m['aadhaar_number'] ?: 'N/A'); ?></strong></div>
-                                </td>
-                                <td class="p-3 font-mono">
-                                    <div>Bank: <strong class="text-champagne"><?php echo htmlspecialchars($m['bank_name'] ?: 'N/A'); ?></strong></div>
-                                    <div>A/C: <strong class="text-champagne"><?php echo htmlspecialchars($m['bank_account_number'] ?: 'N/A'); ?></strong></div>
-                                    <div>IFSC: <strong class="text-gold"><?php echo htmlspecialchars($m['ifsc_code'] ?: 'N/A'); ?></strong></div>
+                                <td class="p-3 font-mono max-w-xs">
+                                    <div>Network: <strong class="text-ice"><?php echo htmlspecialchars($m['wallet_network'] ?: 'USDT (TRC20)'); ?></strong></div>
+                                    <div>Address: <strong class="text-neon-cyan break-all text-[11px]"><?php echo htmlspecialchars($m['crypto_wallet_address'] ?: 'N/A'); ?></strong></div>
                                 </td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border <?php

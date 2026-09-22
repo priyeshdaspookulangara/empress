@@ -104,8 +104,8 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div>Par: <?php echo htmlspecialchars($m['placement_parent_id'] ?: 'ROOT'); ?> (Pos <?php echo $m['matrix_position'] ?: '-'; ?>)</div>
                                 </td>
                                 <td class="p-3 font-mono">
-                                    <div class="text-emerald-400 font-bold">U: ₹<?php echo number_format($m['user_wallet_60'] ?? 0, 2); ?></div>
-                                    <div class="text-gold">C: ₹<?php echo number_format($m['company_wallet_40'] ?? 0, 2); ?></div>
+                                    <div class="text-emerald-400 font-bold">U: $<?php echo number_format($m['user_wallet_60'] ?? 0, 2); ?></div>
+                                    <div class="text-gold">C: $<?php echo number_format($m['company_wallet_40'] ?? 0, 2); ?></div>
                                 </td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border <?php

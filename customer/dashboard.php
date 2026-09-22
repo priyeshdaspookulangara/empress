@@ -112,10 +112,10 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="flex justify-between items-center text-gold mb-3">
                 <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Total Income</span>
                 <div class="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/20">
-                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                    <i class="fa-solid fa-dollar-sign"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold gold-gradient-text">₹<?php echo number_format($wallet['balance'], 2); ?></div>
+            <div class="text-3xl font-extrabold gold-gradient-text">$<?php echo number_format($wallet['balance'], 2); ?></div>
             <div class="text-[11px] text-champagne/50 mt-2">Cumulative Matrix Commissions</div>
         </div>
 
@@ -127,7 +127,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <i class="fa-solid fa-wallet"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-emerald-400">₹<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
+            <div class="text-3xl font-extrabold text-emerald-400">$<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
             <div class="text-[11px] text-champagne/50 mt-2">Eligible for Payout Withdrawal</div>
         </div>
 
@@ -139,7 +139,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <i class="fa-solid fa-vault"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-gold">₹<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
+            <div class="text-3xl font-extrabold text-gold">$<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
             <div class="text-[11px] text-champagne/50 mt-2">Utility & Reserve Reserve</div>
         </div>
 
@@ -227,7 +227,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <tr>
                                 <td class="p-3 font-mono text-gold/70">#<?php echo $tx['id']; ?></td>
                                 <td class="p-3 font-semibold text-gold"><?php echo str_replace('_', ' ', $tx['type']); ?></td>
-                                <td class="p-3 font-bold text-emerald-400">+₹<?php echo number_format($tx['amount'], 2); ?></td>
+                                <td class="p-3 font-bold text-emerald-400">+$<?php echo number_format($tx['amount'], 2); ?></td>
                                 <td class="p-3 text-champagne/80"><?php echo htmlspecialchars($tx['description']); ?></td>
                                 <td class="p-3 text-champagne/50 font-mono"><?php echo $tx['created_at']; ?></td>
                             </tr>

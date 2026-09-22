@@ -3,14 +3,14 @@
 
 require_once __DIR__ . '/../config/db.php';
 
-// Level payout schedule (Level 1 to 6)
+// Level payout schedule in USD ($) (Level 1 to 6)
 const MATRIX_PAYOUTS = [
-    1 => 500.00,
-    2 => 1000.00,
-    3 => 2000.00,
-    4 => 3000.00,
-    5 => 4000.00,
-    6 => 5000.00,
+    1 => 10.00,
+    2 => 20.00,
+    3 => 40.00,
+    4 => 60.00,
+    5 => 80.00,
+    6 => 100.00,
 ];
 
 // Matrix node capacity per level
@@ -148,7 +148,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                 VALUES (?, ?, ?, 'Main', 'Credit', ?)
             ");
             $txType = "Matrix_Income_L" . $level;
-            $desc = "Level {$level} Matrix Commission from member {$newMemberId}. (60% User: ₹{$userAmount}, 40% Company Reserve: ₹{$companyAmount})";
+            $desc = "Level {$level} Matrix Commission from member {$newMemberId}. (60% User: \${$userAmount}, 40% Company Reserve: \${$companyAmount})";
             $logTx->execute([$currentParentId, $txType, $amount, $desc]);
         }
 

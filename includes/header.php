@@ -20,6 +20,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 extend: {
                     colors: {
                         obsidian: '#0f1015',
+                        navy: '#060b19',
                         glass: 'rgba(22, 25, 35, 0.75)',
                         glassBorder: 'rgba(197, 160, 89, 0.25)',
                         gold: {
@@ -28,6 +29,8 @@ if (session_status() === PHP_SESSION_NONE) {
                             600: '#a38140',
                         },
                         champagne: '#f3e5ab',
+                        'neon-cyan': '#00f3ff',
+                        ice: '#d8f8ff',
                     }
                 }
             }
