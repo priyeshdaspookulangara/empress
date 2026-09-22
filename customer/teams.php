@@ -13,6 +13,7 @@ $pdo = getDBConnection();
 
 $treeData = getMemberMatrixTree($pdo, $memberId);
 $downline = getMemberDownline6Levels($pdo, $memberId);
+$totalRebirths = getMemberTotalRebirths($pdo, $memberId);
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -23,8 +24,11 @@ require_once __DIR__ . '/../includes/header.php';
             <h1 class="text-2xl font-extrabold gold-gradient-text">My 3-Matrix Downline Tree</h1>
             <p class="text-xs text-champagne/70 mt-1">Visual breakdown of your 3 direct slots and 6-level forced matrix downline</p>
         </div>
-        <div>
-            <span class="text-xs font-bold text-gold bg-gold/10 px-3 py-1.5 rounded-xl border border-gold/20 font-mono">
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-neon-cyan bg-neon-cyan/10 px-3 py-1.5 rounded-xl border border-neon-cyan/20 font-mono">
+                Rebirth Positions: <?php echo $totalRebirths; ?>
+            </span>
+            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20 font-mono">
                 Total Downline: <?php echo count($downline); ?> Members
             </span>
         </div>

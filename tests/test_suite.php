@@ -128,4 +128,16 @@ $stmtTok->execute([$tokData['token']]);
 assert($stmtTok->fetch() !== false);
 echo "PASSED\n";
 
+// Test 7: Rebirths Engine Trigger Test (Level 3 completion => 10 Rebirths)
+echo "[TEST 7] Testing Rebirths Engine (Level 3 Completion = 10 Rebirths)... ";
+// Check function checkAndGrantLevelRebirths directly
+checkAndGrantLevelRebirths($pdo, 'EMP100001', 3);
+$m1Rebirths = getMemberTotalRebirths($pdo, 'EMP100001');
+assert($m1Rebirths === 10);
+
+// Check rebirth member nodes created in matrix
+$rebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = 'EMP100001' AND name LIKE '%Rebirth%'")->fetchColumn();
+assert((int)$rebirthNodes === 10);
+echo "PASSED\n";
+
 echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";

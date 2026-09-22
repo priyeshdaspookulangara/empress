@@ -143,6 +143,14 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             token VARCHAR(64) NOT NULL UNIQUE,
             expires_at DATETIME NOT NULL,
             created_at $timestamp
+        )",
+
+        "CREATE TABLE IF NOT EXISTS member_rebirths (
+            id $autoInc,
+            member_id VARCHAR(20) NOT NULL,
+            completed_level INT NOT NULL,
+            rebirth_count INT NOT NULL,
+            created_at $timestamp
         )"
     ];
 

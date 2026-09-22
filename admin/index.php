@@ -39,6 +39,9 @@ $pendingWithdrawalsSum = $wData['total'];
 // Unused ePINs count
 $unusedEpinsCount = $pdo->query("SELECT COUNT(*) FROM epins WHERE status = 'Unused'")->fetchColumn();
 
+// Total Rebirths System Wide
+$totalSystemRebirths = $pdo->query("SELECT COALESCE(SUM(rebirth_count), 0) FROM member_rebirths")->fetchColumn();
+
 // Recent 5 Members Joined
 $recentMembers = $pdo->query("SELECT * FROM members ORDER BY id DESC LIMIT 5")->fetchAll();
 
@@ -130,6 +133,18 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <div class="text-3xl font-extrabold text-emerald-400"><?php echo $pendingWithdrawalsCount; ?></div>
             <p class="text-[11px] text-champagne/50 mt-2">Total requested: <span class="text-emerald-300 font-bold">₹<?php echo number_format($pendingWithdrawalsSum, 2); ?></span></p>
+        </div>
+
+        <!-- Total Rebirth Positions Created -->
+        <div class="glass-card p-6 rounded-3xl border border-neon-cyan/40 bg-neon-cyan/5">
+            <div class="flex justify-between items-center text-neon-cyan mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-ice/70">Rebirth Positions</span>
+                <div class="w-10 h-10 rounded-xl bg-neon-cyan/20 flex items-center justify-center border border-neon-cyan/30 text-xl">
+                    <i class="fa-solid fa-rotate"></i>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-neon-cyan"><?php echo $totalSystemRebirths; ?></div>
+            <p class="text-[11px] text-ice/50 mt-2">Auto-created from L3-L6 completions</p>
         </div>
     </div>
 

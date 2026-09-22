@@ -15,8 +15,9 @@ $stmtW = $pdo->prepare("SELECT * FROM wallets WHERE member_id = ?");
 $stmtW->execute([$memberId]);
 $wallet = $stmtW->fetch() ?: ['balance' => 0.00, 'user_wallet_60' => 0.00, 'company_wallet_40' => 0.00];
 
-// Team counts
+// Team counts & Rebirths
 $downline = getMemberDownline6Levels($pdo, $memberId);
+$totalRebirths = getMemberTotalRebirths($pdo, $memberId);
 
 // Recent Transactions
 $stmtTx = $pdo->prepare("SELECT id, type, amount, wallet_type, status, description, created_at FROM transactions WHERE member_id = ? ORDER BY id DESC LIMIT 5");
@@ -33,7 +34,8 @@ sendJsonResponse([
             'company_wallet_40' => (float)$wallet['company_wallet_40']
         ],
         'network' => [
-            'total_downline_count' => count($downline)
+            'total_downline_count' => count($downline),
+            'total_rebirths_earned' => $totalRebirths
         ],
         'recent_transactions' => $recentTx
     ]

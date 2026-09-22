@@ -13,6 +13,24 @@ const MATRIX_PAYOUTS = [
     6 => 5000.00,
 ];
 
+// Matrix node capacity per level
+const MATRIX_LEVEL_CAPACITY = [
+    1 => 3,
+    2 => 9,
+    3 => 27,
+    4 => 81,
+    5 => 243,
+    6 => 729
+];
+
+// Rebirth Rewards per Level Completion Schedule
+const REBIRTH_REWARDS = [
+    3 => 10,
+    4 => 20,
+    5 => 70,
+    6 => 100
+];
+
 /**
  * Generate next unique Member ID (e.g., EMP100001)
  */
@@ -134,6 +152,9 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
             $logTx->execute([$currentParentId, $txType, $amount, $desc]);
         }
 
+        // Check for level completion rebirth triggers
+        checkAndGrantLevelRebirths($pdo, $currentParentId, $level);
+
         // Move to next parent up
         $stmtParent = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
         $stmtParent->execute([$currentParentId]);
@@ -141,6 +162,111 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
 
         $level++;
     }
+}
+
+/**
+ * Check level completion and grant automated Rebirths:
+ * Level 3 Completion => 10 Rebirths
+ * Level 4 Completion => 20 Rebirths
+ * Level 5 Completion => 70 Rebirths
+ * Level 6 Completion => 100 Rebirths
+ */
+function checkAndGrantLevelRebirths($pdo, $memberId, $level) {
+    if (!isset(REBIRTH_REWARDS[$level])) {
+        return;
+    }
+
+    $requiredNodes = MATRIX_LEVEL_CAPACITY[$level];
+
+    // Count downline members specifically at this level depth relative to $memberId
+    $currentLevelMembers = [$memberId];
+    for ($l = 1; $l <= $level; $l++) {
+        if (empty($currentLevelMembers)) break;
+        $inClause = implode(',', array_fill(0, count($currentLevelMembers), '?'));
+        $stmt = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id IN ($inClause)");
+        $stmt->execute($currentLevelMembers);
+        $currentLevelMembers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    $nodeCountAtLevel = count($currentLevelMembers);
+
+    if ($nodeCountAtLevel >= $requiredNodes) {
+        // Check if rebirths were already granted for this level
+        $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM member_rebirths WHERE member_id = ? AND completed_level = ?");
+        $stmtCheck->execute([$memberId, $level]);
+
+        if ($stmtCheck->fetchColumn() == 0) {
+            $rebirthCount = REBIRTH_REWARDS[$level];
+
+            // Record rebirth reward entry
+            $stmtIns = $pdo->prepare("INSERT INTO member_rebirths (member_id, completed_level, rebirth_count) VALUES (?, ?, ?)");
+            $stmtIns->execute([$memberId, $level, $rebirthCount]);
+
+            // Create Rebirth Positions in the global 3-matrix tree
+            createRebirthPositions($pdo, $memberId, $rebirthCount, $level);
+        }
+    }
+}
+
+/**
+ * Create rebirth spillover positions in global 3-matrix
+ */
+function createRebirthPositions($pdo, $parentMemberId, $count, $completedLevel) {
+    $stmtM = $pdo->prepare("SELECT name, email, phone, package_type FROM members WHERE member_id = ?");
+    $stmtM->execute([$parentMemberId]);
+    $parent = $stmtM->fetch();
+
+    if (!$parent) return;
+
+    for ($i = 1; $i <= $count; $i++) {
+        $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+        $placementParentId = $placement['placement_parent_id'];
+        $matrixPos = $placement['matrix_position'];
+
+        $rebirthMemberId = generateMemberID($pdo);
+        $rebirthName = $parent['name'] . " (Rebirth #{$i} - L{$completedLevel})";
+        $dummyEpin = "REBIRTH_L" . $completedLevel . "_" . bin2hex(random_bytes(3));
+        $passHash = password_hash('REBIRTH_NODE', PASSWORD_BCRYPT);
+
+        // Insert Rebirth Member
+        $stmtIns = $pdo->prepare("
+            INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', 'Approved')
+        ");
+        $stmtIns->execute([
+            $rebirthMemberId,
+            $parentMemberId,
+            $placementParentId,
+            $matrixPos,
+            $rebirthName,
+            $parent['email'],
+            $parent['phone'],
+            $passHash,
+            $dummyEpin,
+            $parent['package_type']
+        ]);
+
+        // Initialize Wallet for Rebirth Node
+        $stmtW = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00)");
+        $stmtW->execute([$rebirthMemberId]);
+
+        // Log transaction for rebirth reward creation
+        $stmtTx = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES (?, 'Admin_Adjustment', 0.00, 'Main', 'Credit', ?)
+        ");
+        $desc = "Rebirth position {$rebirthMemberId} created automatically upon Level {$completedLevel} completion.";
+        $stmtTx->execute([$parentMemberId, $desc]);
+    }
+}
+
+/**
+ * Get total rebirths granted to a member
+ */
+function getMemberTotalRebirths($pdo, $memberId) {
+    $stmt = $pdo->prepare("SELECT COALESCE(SUM(rebirth_count), 0) FROM member_rebirths WHERE member_id = ?");
+    $stmt->execute([$memberId]);
+    return (int)$stmt->fetchColumn();
 }
 
 /**

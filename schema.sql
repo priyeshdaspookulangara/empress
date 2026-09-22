@@ -89,3 +89,12 @@ CREATE TABLE IF NOT EXISTS api_tokens (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_token (token)
 );
+
+CREATE TABLE IF NOT EXISTS member_rebirths (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    member_id VARCHAR(20) NOT NULL,
+    completed_level INT NOT NULL,
+    rebirth_count INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_rebirth_member (member_id)
+);

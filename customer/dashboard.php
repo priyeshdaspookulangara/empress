@@ -36,6 +36,9 @@ $directReferralsCount = $stmtRef->fetchColumn();
 $downline = getMemberDownline6Levels($pdo, $memberId);
 $downlineCount = count($downline);
 
+// Total Rebirths
+$totalRebirths = getMemberTotalRebirths($pdo, $memberId);
+
 // Recent Transactions
 $stmtTx = $pdo->prepare("SELECT * FROM transactions WHERE member_id = ? ORDER BY id DESC LIMIT 5");
 $stmtTx->execute([$memberId]);
@@ -140,16 +143,18 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="text-[11px] text-champagne/50 mt-2">Utility & Reserve Reserve</div>
         </div>
 
-        <!-- Team Downline Count -->
+        <!-- Team Downline Count & Rebirth Badges -->
         <div class="glass-card p-6 rounded-3xl border border-gold/30">
             <div class="flex justify-between items-center text-gold mb-3">
                 <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Matrix Network</span>
                 <div class="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/20">
-                    <i class="fa-solid fa-users"></i>
+                    <i class="fa-solid fa-rotate text-neon-cyan"></i>
                 </div>
             </div>
             <div class="text-3xl font-extrabold text-champagne"><?php echo $downlineCount; ?> <span class="text-xs font-normal text-gold">Members</span></div>
-            <div class="text-[11px] text-champagne/50 mt-2">Direct Referrals: <?php echo $directReferralsCount; ?></div>
+            <div class="text-[11px] text-neon-cyan font-bold mt-2 flex items-center gap-1">
+                <i class="fa-solid fa-arrows-spin text-neon-cyan"></i> Total Rebirths Earned: <span class="text-emerald-400 font-mono text-sm"><?php echo $totalRebirths; ?></span>
+            </div>
         </div>
     </div>
 
