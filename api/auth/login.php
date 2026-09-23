@@ -29,7 +29,8 @@ if ($loginType === 'admin') {
             'user_type' => 'admin',
             'user' => [
                 'id' => $admin['id'],
-                'username' => $admin['username']
+                'username' => $admin['username'],
+                'role' => $admin['role'] ?? 'admin'
             ],
             'token' => $tokenData['token'],
             'expires_at' => $tokenData['expires_at']

@@ -192,7 +192,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
                     <?php elseif (isset($_SESSION['admin_id'])): ?>
                         <div class="pb-4 border-b border-gold/20">
-                            <span class="text-[10px] uppercase tracking-widest text-neon-cyan font-mono block">Super Admin Portal</span>
+                            <?php $roleTitle = (($_SESSION['admin_role'] ?? 'admin') === 'superadmin') ? 'Super Admin Portal' : 'Admin Portal'; ?>
+                            <span class="text-[10px] uppercase tracking-widest text-neon-cyan font-mono block"><?php echo $roleTitle; ?></span>
                             <span class="font-extrabold text-ice text-sm block mt-0.5"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator'); ?></span>
                         </div>
 

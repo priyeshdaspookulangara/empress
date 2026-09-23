@@ -66,6 +66,7 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             id $autoInc,
             username VARCHAR(50) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
+            role VARCHAR(20) NOT NULL DEFAULT 'admin',
             created_at $timestamp
         )",
 
@@ -160,13 +161,29 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $pdo->exec($q);
     }
 
-    // Seed admin if not existing
+    // Ensure role column exists if SQLite table already created
+    try {
+        $pdo->exec("ALTER TABLE admins ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'admin'");
+    } catch (Exception $e) {
+        // Column might already exist
+    }
+
+    // Seed superadmin if not existing
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM admins WHERE username = ?");
+    $stmt->execute(['superadmin']);
+    if ($stmt->fetchColumn() == 0) {
+        $superPass = password_hash('superadmin123', PASSWORD_BCRYPT);
+        $stmt = $pdo->prepare("INSERT INTO admins (username, password, role) VALUES (?, ?, ?)");
+        $stmt->execute(['superadmin', $superPass, 'superadmin']);
+    }
+
+    // Seed standard admin if not existing
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM admins WHERE username = ?");
     $stmt->execute(['admin']);
     if ($stmt->fetchColumn() == 0) {
         $adminPass = password_hash('admin123', PASSWORD_BCRYPT);
-        $stmt = $pdo->prepare("INSERT INTO admins (username, password) VALUES (?, ?)");
-        $stmt->execute(['admin', $adminPass]);
+        $stmt = $pdo->prepare("INSERT INTO admins (username, password, role) VALUES (?, ?, ?)");
+        $stmt->execute(['admin', $adminPass, 'admin']);
     }
 
     // Seed Root Member (EMP100000) if not existing

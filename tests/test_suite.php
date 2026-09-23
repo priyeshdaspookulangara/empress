@@ -13,7 +13,17 @@ echo "========================================\n\n";
 $pdo = getDBConnection();
 
 // Test 1: Admin & System Root verification
-echo "[TEST 1] Verifying System Admin & Root EMP100000 Seeding... ";
+echo "[TEST 1] Verifying Super Admin, Admin & Root EMP100000 Seeding... ";
+$stmtSuper = $pdo->prepare("SELECT * FROM admins WHERE username = 'superadmin'");
+$stmtSuper->execute();
+$super = $stmtSuper->fetch();
+assert($super !== false && $super['role'] === 'superadmin');
+
+$stmtAdmin = $pdo->prepare("SELECT * FROM admins WHERE username = 'admin'");
+$stmtAdmin->execute();
+$admin = $stmtAdmin->fetch();
+assert($admin !== false && $admin['role'] === 'admin');
+
 $stmtRoot = $pdo->prepare("SELECT * FROM members WHERE member_id = 'EMP100000'");
 $stmtRoot->execute();
 $root = $stmtRoot->fetch();
