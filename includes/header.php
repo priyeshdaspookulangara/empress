@@ -158,3 +158,73 @@ if (session_status() === PHP_SESSION_NONE) {
     </script>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-4">
+        <?php if (isset($_SESSION['member_id']) || isset($_SESSION['admin_id'])): ?>
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+                <!-- Left Sidebar (<aside>) Navigation Layout -->
+                <aside class="w-full md:w-64 glass-card p-5 rounded-3xl border border-gold/30 shrink-0 space-y-6">
+                    <?php if (isset($_SESSION['member_id'])): ?>
+                        <div class="pb-4 border-b border-gold/20">
+                            <span class="text-[10px] uppercase tracking-widest text-gold font-mono block">Member Portal</span>
+                            <span class="font-extrabold text-champagne text-sm block truncate mt-0.5"><?php echo htmlspecialchars($_SESSION['member_name'] ?? $_SESSION['member_id']); ?></span>
+                            <span class="text-[11px] font-mono text-emerald-400 font-bold"><?php echo htmlspecialchars($_SESSION['member_id']); ?></span>
+                        </div>
+
+                        <nav class="space-y-1.5 text-xs font-semibold">
+                            <a href="/customer/dashboard.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-gauge-high text-gold w-4 text-center"></i> Dashboard
+                            </a>
+                            <a href="/customer/wallet.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-wallet text-gold w-4 text-center"></i> Member Wallet
+                            </a>
+                            <a href="/customer/teams.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-sitemap text-gold w-4 text-center"></i> Matrix & Rebirths
+                            </a>
+                            <a href="/customer/profile.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-id-card text-gold w-4 text-center"></i> KYC & Profile
+                            </a>
+                            <a href="/business_plan.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-chart-pie text-gold w-4 text-center"></i> Compensation Plan
+                            </a>
+                            <a href="/logout.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-red-500/10 text-red-400 transition mt-4 border-t border-gold/10 pt-3">
+                                <i class="fa-solid fa-right-from-bracket w-4 text-center"></i> Logout
+                            </a>
+                        </nav>
+
+                    <?php elseif (isset($_SESSION['admin_id'])): ?>
+                        <div class="pb-4 border-b border-gold/20">
+                            <span class="text-[10px] uppercase tracking-widest text-neon-cyan font-mono block">Super Admin Portal</span>
+                            <span class="font-extrabold text-ice text-sm block mt-0.5"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator'); ?></span>
+                        </div>
+
+                        <nav class="space-y-1.5 text-xs font-semibold">
+                            <a href="/admin/index.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-chart-pie text-neon-cyan w-4 text-center"></i> Executive Overview
+                            </a>
+                            <a href="/admin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-users text-neon-cyan w-4 text-center"></i> Member List
+                            </a>
+                            <a href="/admin/matrix_tree.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-sitemap text-neon-cyan w-4 text-center"></i> Matrix Tree
+                            </a>
+                            <a href="/admin/kyc.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-id-card text-neon-cyan w-4 text-center"></i> KYC Approvals
+                            </a>
+                            <a href="/admin/epins.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-key text-neon-cyan w-4 text-center"></i> ePIN Generator
+                            </a>
+                            <a href="/admin/wallet.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-money-bill-transfer text-neon-cyan w-4 text-center"></i> Payout Requests
+                            </a>
+                            <a href="/admin/financials.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-vault text-neon-cyan w-4 text-center"></i> Audit Ledger
+                            </a>
+                            <a href="/logout.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-red-500/10 text-red-400 transition mt-4 border-t border-gold/10 pt-3">
+                                <i class="fa-solid fa-right-from-bracket w-4 text-center"></i> Logout
+                            </a>
+                        </nav>
+                    <?php endif; ?>
+                </aside>
+
+                <!-- Right Main Content Canvas -->
+                <div class="flex-grow w-full overflow-hidden">
+        <?php endif; ?>

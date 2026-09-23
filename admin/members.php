@@ -120,15 +120,31 @@ require_once __DIR__ . '/../includes/header.php';
                                     </span>
                                 </td>
                                 <td class="p-3 font-mono text-champagne/50"><?php echo $m['created_at']; ?></td>
-                                <td class="p-3 space-y-1">
-                                    <a href="<?php echo $waUrl; ?>" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">
-                                        <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
-                                    </a>
-                                    <?php if ($m['member_id'] !== 'EMP100000'): ?>
-                                        <a href="/admin/delete_member.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Are you sure you want to delete member <?php echo $m['member_id']; ?>? Direct matrix children will be safely re-parented to EMP100000.');" class="text-red-400 hover:text-red-300 font-bold flex items-center gap-1">
-                                            <i class="fa-solid fa-trash-can text-xs"></i> Delete
+                                <td class="p-3">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <a href="/admin/edit_member.php?member_id=<?php echo $m['member_id']; ?>" class="bg-gold/10 hover:bg-gold/20 text-gold border border-gold/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1" title="Edit Full Profile">
+                                            <i class="fa-solid fa-pen-to-square"></i> Edit
                                         </a>
-                                    <?php endif; ?>
+
+                                        <a href="/admin/matrix_tree.php?member_id=<?php echo $m['member_id']; ?>" class="bg-neon-cyan/10 hover:bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1" title="View 3-Matrix Tree">
+                                            <i class="fa-solid fa-sitemap"></i> Tree
+                                        </a>
+
+                                        <?php if ($m['member_id'] !== 'EMP100000'): ?>
+                                            <a href="/admin/toggle_suspend.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Are you sure you want to toggle status for member <?php echo $m['member_id']; ?>?');" class="<?php echo $m['status'] === 'Active' ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'; ?> px-2 py-1 rounded text-[11px] font-bold border flex items-center gap-1">
+                                                <i class="fa-solid <?php echo $m['status'] === 'Active' ? 'fa-ban' : 'fa-circle-check'; ?>"></i>
+                                                <?php echo $m['status'] === 'Active' ? 'Suspend' : 'Activate'; ?>
+                                            </a>
+
+                                            <a href="/admin/delete_member.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Are you sure you want to delete member <?php echo $m['member_id']; ?>? Direct matrix children will be safely re-parented to EMP100000.');" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1" title="Safe Delete">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        <?php endif; ?>
+
+                                        <a href="<?php echo $waUrl; ?>" target="_blank" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1">
+                                            <i class="fa-brands fa-whatsapp"></i> WA
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

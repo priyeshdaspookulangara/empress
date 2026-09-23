@@ -1,3 +1,7 @@
+        <?php if (isset($_SESSION['member_id']) || isset($_SESSION['admin_id'])): ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </main>
 
     <!-- Footer -->

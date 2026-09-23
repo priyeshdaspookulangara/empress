@@ -113,3 +113,18 @@
 [Tue Sep 22 12:19:59 2026] 127.0.0.1:53222 Accepted
 [Tue Sep 22 12:19:59 2026] 127.0.0.1:53222 [200]: GET /customer/dashboard.php
 [Tue Sep 22 12:19:59 2026] 127.0.0.1:53222 Closing
+[Wed Sep 23 01:53:33 2026] 127.0.0.1:45658 Accepted
+[Wed Sep 23 01:53:33 2026] 127.0.0.1:45658 [200]: GET /admin_login.php
+[Wed Sep 23 01:53:33 2026] 127.0.0.1:45658 Closing
+[Wed Sep 23 01:53:34 2026] 127.0.0.1:45674 Accepted
+[Wed Sep 23 01:53:34 2026] 127.0.0.1:45674 [302]: POST /admin_login.php
+[Wed Sep 23 01:53:34 2026] 127.0.0.1:45674 Closing
+[Wed Sep 23 01:53:34 2026] 127.0.0.1:45688 Accepted
+[Wed Sep 23 01:53:34 2026] 127.0.0.1:45688 [200]: GET /admin/index.php
+[Wed Sep 23 01:53:34 2026] 127.0.0.1:45688 Closing
+[Wed Sep 23 01:53:35 2026] 127.0.0.1:45702 Accepted
+[Wed Sep 23 01:53:35 2026] 127.0.0.1:45702 [200]: GET /admin/index.php
+[Wed Sep 23 01:53:35 2026] 127.0.0.1:45702 Closing
+[Wed Sep 23 01:53:37 2026] 127.0.0.1:45704 Accepted
+[Wed Sep 23 01:53:37 2026] 127.0.0.1:45704 [200]: GET /admin/members.php
+[Wed Sep 23 01:53:37 2026] 127.0.0.1:45704 Closing
