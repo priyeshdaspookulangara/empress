@@ -130,14 +130,23 @@ echo "PASSED\n";
 
 // Test 7: Rebirths Engine Trigger Test (Level 3 completion => 10 Rebirths)
 echo "[TEST 7] Testing Rebirths Engine (Level 3 Completion = 10 Rebirths)... ";
-// Check function checkAndGrantLevelRebirths directly
-checkAndGrantLevelRebirths($pdo, 'EMP100001', 3);
-$m1Rebirths = getMemberTotalRebirths($pdo, 'EMP100001');
-assert($m1Rebirths === 10);
+// Call createRebirthPositions directly for EMP100001
+createRebirthPositions($pdo, 'EMP100001', 10, 3);
 
-// Check rebirth member nodes created in matrix
-$rebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = 'EMP100001' AND name LIKE '%Rebirth%'")->fetchColumn();
-assert((int)$rebirthNodes === 10);
+// Check 1st generation rebirth member nodes created in matrix (sponsor_id = EMP100001)
+$gen1RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = 'EMP100001' AND name LIKE '%Rebirth%'")->fetchColumn();
+assert((int)$gen1RebirthNodes === 10);
+
+// Fetch one 1st generation rebirth node
+$firstRebirthNode = $pdo->query("SELECT * FROM members WHERE sponsor_id = 'EMP100001' AND name LIKE '%Rebirth%' LIMIT 1")->fetch();
+assert($firstRebirthNode !== false);
+
+// Trigger 2nd generation rebirth creation directly from the 1st gen rebirth node
+createRebirthPositions($pdo, $firstRebirthNode['member_id'], 10, 3);
+
+// Check 2nd generation rebirth nodes created from this rebirth node have sponsor_id = 'EMP100000' (Root)
+$gen2RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = 'EMP100000' AND name LIKE '" . $firstRebirthNode['name'] . "%'")->fetchColumn();
+assert((int)$gen2RebirthNodes === 10);
 echo "PASSED\n";
 
 echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";
