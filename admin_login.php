@@ -70,8 +70,9 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </form>
 
-        <div class="mt-6 pt-6 border-t border-gold/20 text-center text-xs text-champagne/60">
-            <a href="/login.php" class="hover:text-gold"><i class="fa-solid fa-arrow-left"></i> Return to Member Login</a>
+        <div class="mt-6 pt-6 border-t border-gold/20 text-center text-xs text-champagne/60 flex justify-between">
+            <a href="/login.php" class="hover:text-gold"><i class="fa-solid fa-arrow-left"></i> Member Login</a>
+            <a href="/superadmin_login.php" class="hover:text-gold font-semibold">Super Admin <i class="fa-solid fa-crown text-neon-cyan"></i></a>
         </div>
     </div>
 </div>

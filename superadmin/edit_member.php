@@ -3,14 +3,14 @@ $pageTitle = "Edit Member Profile";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: /admin_login.php");
+if (!isset($_SESSION['superadmin_id'])) {
+    header("Location: /superadmin_login.php");
     exit();
 }
 
 $memberId = trim($_GET['member_id'] ?? '');
 if (empty($memberId)) {
-    header("Location: /admin/members.php?err=" . urlencode("Member ID required."));
+    header("Location: /superadmin/members.php?err=" . urlencode("Member ID required."));
     exit();
 }
 
@@ -71,7 +71,7 @@ $stmt->execute([$memberId]);
 $m = $stmt->fetch();
 
 if (!$m) {
-    header("Location: /admin/members.php?err=" . urlencode("Member not found."));
+    header("Location: /superadmin/members.php?err=" . urlencode("Member not found."));
     exit();
 }
 
@@ -82,9 +82,9 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="glass-card p-6 rounded-3xl border border-gold/30 flex justify-between items-center">
         <div>
             <h1 class="text-2xl font-extrabold gold-gradient-text">Edit Member Profile: <?php echo htmlspecialchars($m['member_id']); ?></h1>
-            <p class="text-xs text-champagne/70 mt-1">Admin view and modification control panel</p>
+            <p class="text-xs text-champagne/70 mt-1">Super Admin full view and modification control panel</p>
         </div>
-        <a href="/admin/members.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
+        <a href="/superadmin/members.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
             <i class="fa-solid fa-arrow-left"></i> Back to Members
         </a>
     </div>
@@ -230,7 +230,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <div class="flex justify-end gap-3">
-            <a href="/admin/members.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-6 py-3 rounded-xl text-xs font-bold">Cancel</a>
+            <a href="/superadmin/members.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-6 py-3 rounded-xl text-xs font-bold">Cancel</a>
             <button type="submit" class="gold-button px-8 py-3 rounded-xl text-xs font-bold">Save Changes</button>
         </div>
     </form>

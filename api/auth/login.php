@@ -10,7 +10,7 @@ $pdo = getDBConnection();
 
 $loginType = strtolower(trim($input['user_type'] ?? 'member'));
 
-if ($loginType === 'admin') {
+if ($loginType === 'admin' || $loginType === 'superadmin') {
     $username = trim($input['username'] ?? '');
     $password = $input['password'] ?? '';
 

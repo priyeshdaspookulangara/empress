@@ -111,6 +111,13 @@ if (session_status() === PHP_SESSION_NONE) {
                     <a href="/logout.php" class="text-red-400 hover:text-red-300">
                         <i class="fa-solid fa-right-from-bracket"></i> Logout
                     </a>
+                <?php elseif (isset($_SESSION['superadmin_id'])): ?>
+                    <a href="/superadmin/index.php" class="text-neon-cyan font-bold hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-crown"></i> Super Admin
+                    </a>
+                    <a href="/logout.php" class="text-red-400 hover:text-red-300">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
                 <?php elseif (isset($_SESSION['admin_id'])): ?>
                     <a href="/admin/index.php" class="text-gold font-bold hover:underline flex items-center gap-1">
                         <i class="fa-solid fa-user-shield"></i> Admin Panel
@@ -120,7 +127,8 @@ if (session_status() === PHP_SESSION_NONE) {
                     </a>
                 <?php else: ?>
                     <a href="/login.php" class="hover:text-gold transition">Member Login</a>
-                    <a href="/admin_login.php" class="text-gold/70 hover:text-gold transition">Admin Portal</a>
+                    <a href="/admin_login.php" class="text-gold/70 hover:text-gold transition">Admin</a>
+                    <a href="/superadmin_login.php" class="text-neon-cyan/80 hover:text-neon-cyan transition font-semibold">Super Admin</a>
                     <a href="/register.php" class="gold-button px-4 py-2 rounded-lg text-sm flex items-center gap-2">
                         <i class="fa-solid fa-user-plus"></i> Join Now
                     </a>
@@ -158,7 +166,7 @@ if (session_status() === PHP_SESSION_NONE) {
     </script>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-4">
-        <?php if (isset($_SESSION['member_id']) || isset($_SESSION['admin_id'])): ?>
+        <?php if (isset($_SESSION['member_id']) || isset($_SESSION['superadmin_id']) || isset($_SESSION['admin_id'])): ?>
             <div class="flex flex-col md:flex-row gap-6 items-start">
                 <!-- Left Sidebar (<aside>) Navigation Layout -->
                 <aside class="w-full md:w-64 glass-card p-5 rounded-3xl border border-gold/30 shrink-0 space-y-6">
@@ -190,34 +198,66 @@ if (session_status() === PHP_SESSION_NONE) {
                             </a>
                         </nav>
 
-                    <?php elseif (isset($_SESSION['admin_id'])): ?>
-                        <div class="pb-4 border-b border-gold/20">
-                            <?php $roleTitle = (($_SESSION['admin_role'] ?? 'admin') === 'superadmin') ? 'Super Admin Portal' : 'Admin Portal'; ?>
-                            <span class="text-[10px] uppercase tracking-widest text-neon-cyan font-mono block"><?php echo $roleTitle; ?></span>
-                            <span class="font-extrabold text-ice text-sm block mt-0.5"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator'); ?></span>
+                    <?php elseif (isset($_SESSION['superadmin_id'])): ?>
+                        <div class="pb-4 border-b border-neon-cyan/20">
+                            <span class="text-[10px] uppercase tracking-widest text-neon-cyan font-mono block">Super Admin Portal</span>
+                            <span class="font-extrabold text-ice text-sm block mt-0.5"><?php echo htmlspecialchars($_SESSION['superadmin_username'] ?? 'Super Admin'); ?></span>
                         </div>
 
                         <nav class="space-y-1.5 text-xs font-semibold">
-                            <a href="/admin/index.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
-                                <i class="fa-solid fa-chart-pie text-neon-cyan w-4 text-center"></i> Executive Overview
+                            <a href="/superadmin/index.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-crown text-neon-cyan w-4 text-center"></i> Executive Overview
                             </a>
-                            <a href="/admin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                            <a href="/superadmin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-users text-neon-cyan w-4 text-center"></i> Member List
                             </a>
-                            <a href="/admin/matrix_tree.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                            <a href="/superadmin/matrix_tree.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-sitemap text-neon-cyan w-4 text-center"></i> Matrix Tree
                             </a>
-                            <a href="/admin/kyc.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                            <a href="/superadmin/kyc.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-id-card text-neon-cyan w-4 text-center"></i> KYC Approvals
                             </a>
-                            <a href="/admin/epins.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                            <a href="/superadmin/epins.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-key text-neon-cyan w-4 text-center"></i> ePIN Generator
                             </a>
-                            <a href="/admin/wallet.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                            <a href="/superadmin/wallet.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-money-bill-transfer text-neon-cyan w-4 text-center"></i> Payout Requests
                             </a>
-                            <a href="/admin/financials.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                            <a href="/superadmin/financials.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-vault text-neon-cyan w-4 text-center"></i> Audit Ledger
+                            </a>
+                            <a href="/logout.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-red-500/10 text-red-400 transition mt-4 border-t border-gold/10 pt-3">
+                                <i class="fa-solid fa-right-from-bracket w-4 text-center"></i> Logout
+                            </a>
+                        </nav>
+
+                    <?php elseif (isset($_SESSION['admin_id'])): ?>
+                        <div class="pb-4 border-b border-gold/20">
+                            <span class="text-[10px] uppercase tracking-widest text-gold font-mono block">Admin Portal</span>
+                            <span class="font-extrabold text-champagne text-sm block mt-0.5"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator'); ?></span>
+                        </div>
+
+                        <nav class="space-y-1.5 text-xs font-semibold">
+                            <a href="/admin/index.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-chart-pie text-gold w-4 text-center"></i> Admin Overview
+                            </a>
+                            <a href="/admin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-users text-gold w-4 text-center"></i> Member List
+                            </a>
+                            <a href="/admin/matrix_tree.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-sitemap text-gold w-4 text-center"></i> Matrix Tree
+                            </a>
+                            <a href="/admin/kyc.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-id-card text-gold w-4 text-center"></i> KYC Approvals
+                            </a>
+                            <a href="/admin/epins.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-key text-gold w-4 text-center"></i> ePIN Generator
+                            </a>
+                            <a href="/admin/wallet.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-money-bill-transfer text-gold w-4 text-center"></i> Payout Requests
+                            </a>
+                            <a href="/admin/financials.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-vault text-gold w-4 text-center"></i> Audit Ledger
                             </a>
                             <a href="/logout.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-red-500/10 text-red-400 transition mt-4 border-t border-gold/10 pt-3">
                                 <i class="fa-solid fa-right-from-bracket w-4 text-center"></i> Logout

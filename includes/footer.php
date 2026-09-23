@@ -1,4 +1,4 @@
-        <?php if (isset($_SESSION['member_id']) || isset($_SESSION['admin_id'])): ?>
+        <?php if (isset($_SESSION['member_id']) || isset($_SESSION['superadmin_id']) || isset($_SESSION['admin_id'])): ?>
                 </div>
             </div>
         <?php endif; ?>
