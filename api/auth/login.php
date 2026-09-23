@@ -22,7 +22,7 @@ if ($loginType === 'admin') {
     $stmt->execute([$username]);
     $admin = $stmt->fetch();
 
-    if ($admin && (password_verify($password, $admin['password']) || $password === 'admin123')) {
+    if ($admin && password_verify($password, $admin['password'])) {
         $tokenData = generateBearerToken($pdo, 'admin', (string)$admin['id']);
         sendJsonResponse([
             'success' => true,
