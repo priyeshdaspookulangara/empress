@@ -110,12 +110,12 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody class="divide-y divide-neon-cyan/10 text-ice font-mono">
                     <?php
                     $levels = [
-                        1 => ['nodes' => 3,    'rate' => 1.00, 'rebirths' => '-'],
-                        2 => ['nodes' => 9,    'rate' => 2.00, 'rebirths' => '-'],
-                        3 => ['nodes' => 27,   'rate' => 4.00, 'rebirths' => '10 Rebirth Nodes'],
-                        4 => ['nodes' => 81,   'rate' => 6.00, 'rebirths' => '20 Rebirth Nodes'],
-                        5 => ['nodes' => 243,  'rate' => 8.00, 'rebirths' => '70 Rebirth Nodes'],
-                        6 => ['nodes' => 729,  'rate' => 10.00, 'rebirths' => '100 Rebirth Nodes'],
+                        1 => ['nodes' => 3,    'rate' => 5.00,  'rebirths' => '-'],
+                        2 => ['nodes' => 9,    'rate' => 10.00, 'rebirths' => '-'],
+                        3 => ['nodes' => 27,   'rate' => 20.00, 'rebirths' => '10 Rebirth Nodes'],
+                        4 => ['nodes' => 81,   'rate' => 30.00, 'rebirths' => '20 Rebirth Nodes'],
+                        5 => ['nodes' => 243,  'rate' => 40.00, 'rebirths' => '70 Rebirth Nodes'],
+                        6 => ['nodes' => 729,  'rate' => 50.00, 'rebirths' => '100 Rebirth Nodes'],
                     ];
                     $totNodes = 0; $totGross = 0; $totCust = 0; $totBurf = 0; $totChar = 0;
                     foreach ($levels as $lvl => $info):

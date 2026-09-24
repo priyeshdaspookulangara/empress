@@ -4,13 +4,14 @@
 require_once __DIR__ . '/../config/db.php';
 
 // Level payout schedule in USD ($) (Level 1 to 6)
+// Converted from handwritten schedule ratio (500/1000/2000/3000/4000/5000)
 const MATRIX_PAYOUTS = [
-    1 => 10.00,
-    2 => 20.00,
-    3 => 40.00,
-    4 => 60.00,
-    5 => 80.00,
-    6 => 100.00,
+    1 => 5.00,
+    2 => 10.00,
+    3 => 20.00,
+    4 => 30.00,
+    5 => 40.00,
+    6 => 50.00,
 ];
 
 // Matrix node capacity per level
