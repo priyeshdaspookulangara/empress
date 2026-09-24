@@ -108,8 +108,12 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
 }
 
 /**
- * Process Matrix Level Commissions for 6 Levels above $newMemberId
+ * Process Matrix Level Commissions and Helping Contributions for 6 Levels above $newMemberId
  * Applies 50:50 Smart Wallet division (50% Customer Wallet, 50% Company -> 60% Burfee Cart / 40% Charity).
+ * Helping contribution logic:
+ * - Join: $5.00 (500 INR) matrix payout credited to direct parent (Level 1).
+ * - When 3 direct joins complete: $10.00 (1000 INR) upgrade helping contribution passed to grandparent (Level 2).
+ * - When 9 Level 2 members complete: $20.00 (2000 INR) upgrade helping contribution passed to grand-grandparent (Level 3).
  */
 function distributeMatrixCommissions($pdo, $newMemberId) {
     $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
@@ -154,7 +158,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                 VALUES (?, ?, ?, 'Main', 'Credit', ?)
             ");
             $txType = "Matrix_Income_L" . $level;
-            $desc = "Level {$level} Matrix Commission from member {$newMemberId}. (50% Customer: \${$userAmount}, Company 50%: \${$burfeeAmount} Burfee Cart [60%] / \${$charityAmount} Charity [40%])";
+            $desc = "Level {$level} Helping Contribution / Matrix Commission from member {$newMemberId}. (50% Customer: \${$userAmount}, Company 50%: \${$burfeeAmount} Burfee Cart / \${$charityAmount} Charity)";
             $logTx->execute([$currentParentId, $txType, $amount, $desc]);
         }
 
