@@ -16,9 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $kycStatus = $stmtM->fetchColumn();
 
     // Fetch Wallet
-    $stmtW = $pdo->prepare("SELECT user_wallet_60 FROM wallets WHERE member_id = ?");
+    $stmtW = $pdo->prepare("SELECT user_wallet_50, user_wallet_60 FROM wallets WHERE member_id = ?");
     $stmtW->execute([$memberId]);
-    $userWallet = (float)$stmtW->fetchColumn();
+    $wRow = $stmtW->fetch() ?: [];
+    $userWallet = (float)($wRow['user_wallet_50'] ?? $wRow['user_wallet_60'] ?? 0);
 
     if ($kycStatus !== 'Approved') {
         sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: KYC status must be Approved. Current status: {$kycStatus}"], 403);
@@ -29,14 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($amount > $userWallet) {
-        sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: Insufficient balance in User Wallet (60%). Available: $" . number_format($userWallet, 2) . " USD"], 400);
+        sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: Insufficient balance in Customer Wallet (50%). Available: $" . number_format($userWallet, 2) . " USD"], 400);
     }
 
     $pdo->beginTransaction();
     try {
         // Deduct
-        $stmtDeduct = $pdo->prepare("UPDATE wallets SET user_wallet_60 = user_wallet_60 - ? WHERE member_id = ?");
-        $stmtDeduct->execute([$amount, $memberId]);
+        $stmtDeduct = $pdo->prepare("UPDATE wallets SET user_wallet_50 = user_wallet_50 - ?, user_wallet_60 = user_wallet_60 - ? WHERE member_id = ?");
+        $stmtDeduct->execute([$amount, $amount, $memberId]);
 
         // Insert Request
         $stmtWithdraw = $pdo->prepare("INSERT INTO withdrawals (member_id, amount, status) VALUES (?, ?, 'Pending')");
@@ -76,8 +77,9 @@ sendJsonResponse([
     'data' => [
         'wallet' => [
             'balance' => (float)$wallet['balance'],
-            'user_wallet_60' => (float)$wallet['user_wallet_60'],
-            'company_wallet_40' => (float)$wallet['company_wallet_40']
+            'user_wallet_50' => (float)($wallet['user_wallet_50'] ?? $wallet['user_wallet_60']),
+            'burfee_cart_wallet' => (float)($wallet['burfee_cart_wallet'] ?? 0),
+            'charity_wallet' => (float)($wallet['charity_wallet'] ?? 0)
         ],
         'withdrawals' => $withdrawals,
         'transactions' => $transactions

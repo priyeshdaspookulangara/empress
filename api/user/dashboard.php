@@ -30,8 +30,9 @@ sendJsonResponse([
         'profile' => $member,
         'wallet' => [
             'balance' => (float)$wallet['balance'],
-            'user_wallet_60' => (float)$wallet['user_wallet_60'],
-            'company_wallet_40' => (float)$wallet['company_wallet_40']
+            'user_wallet_50' => (float)($wallet['user_wallet_50'] ?? $wallet['user_wallet_60']),
+            'burfee_cart_wallet' => (float)($wallet['burfee_cart_wallet'] ?? 0),
+            'charity_wallet' => (float)($wallet['charity_wallet'] ?? 0)
         ],
         'network' => [
             'total_downline_count' => count($downline),

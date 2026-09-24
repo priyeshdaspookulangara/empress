@@ -14,16 +14,16 @@ $pdo = getDBConnection();
 $stmtW = $pdo->query("
     SELECT
         COALESCE(SUM(balance), 0) as total_earnings,
-        COALESCE(SUM(user_wallet_60), 0) as total_user_wallet,
+        COALESCE(SUM(user_wallet_50), SUM(user_wallet_60)) as total_user_wallet,
+        COALESCE(SUM(burfee_cart_wallet), 0) as total_burfee_cart,
+        COALESCE(SUM(charity_wallet), 0) as total_charity,
         COALESCE(SUM(company_wallet_40), 0) as total_company_wallet
     FROM wallets
 ");
 $wTotals = $stmtW->fetch();
 
-$totalCompanyReserve = $wTotals['total_company_wallet'];
-// Split 50:50 of company allocation: 20% Charity, 30% Company Retained
-$charityShare = round($totalCompanyReserve * (20 / 50), 2);
-$companyRetainedShare = round($totalCompanyReserve * (30 / 50), 2);
+$burfeeCartShare = $wTotals['total_burfee_cart'] > 0 ? $wTotals['total_burfee_cart'] : round($wTotals['total_company_wallet'] * 0.60, 2);
+$charityShare = $wTotals['total_charity'] > 0 ? $wTotals['total_charity'] : round($wTotals['total_company_wallet'] * 0.40, 2);
 
 // Total Approved Payouts
 $totalApprovedPayouts = $pdo->query("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE status = 'Approved'")->fetchColumn();
@@ -57,21 +57,21 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <div class="glass-card p-6 rounded-3xl border border-emerald-500/40 bg-emerald-500/5">
-            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">User Wallet Liability (60%)</span>
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Customer Wallet (50%)</span>
             <div class="text-3xl font-extrabold text-emerald-400 mt-2">$<?php echo number_format($wTotals['total_user_wallet'], 2); ?> USD</div>
             <p class="text-[11px] text-ice/50 mt-1">Eligible for member withdrawals</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-3xl border border-amber-500/40 bg-amber-500/5">
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Burfee Cart Wallet (30%)</span>
+            <div class="text-3xl font-extrabold text-amber-400 mt-2">$<?php echo number_format($burfeeCartShare, 2); ?> USD</div>
+            <p class="text-[11px] text-ice/50 mt-1">60% of Company 50% allocation</p>
         </div>
 
         <div class="glass-card p-6 rounded-3xl border border-blue-500/40 bg-blue-500/5">
             <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Empress Charity Fund (20%)</span>
             <div class="text-3xl font-extrabold text-blue-400 mt-2">$<?php echo number_format($charityShare, 2); ?> USD</div>
-            <p class="text-[11px] text-ice/50 mt-1">20 out of 50 company allocation</p>
-        </div>
-
-        <div class="glass-card p-6 rounded-3xl border border-amber-500/40 bg-amber-500/5">
-            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Company Retained (30%)</span>
-            <div class="text-3xl font-extrabold text-amber-400 mt-2">$<?php echo number_format($companyRetainedShare, 2); ?> USD</div>
-            <p class="text-[11px] text-ice/50 mt-1">30 out of 50 company allocation</p>
+            <p class="text-[11px] text-ice/50 mt-1">40% of Company 50% allocation</p>
         </div>
     </div>
 

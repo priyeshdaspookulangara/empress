@@ -179,7 +179,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <h3 class="text-lg font-bold text-neon-cyan mb-2 flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie"></i> Financial Ledger & Splits
                 </h3>
-                <p class="text-xs text-ice/70 mb-4">Audit 60:40 smart wallet splits and company retains vs 20% charity distribution.</p>
+                <p class="text-xs text-ice/70 mb-4">Audit 50:50 smart wallet splits (50% Customer / Company: 60% Burfee Cart & 40% Charity).</p>
             </div>
             <a href="/admin/financials.php" class="glass-card border border-neon-cyan/40 hover:bg-neon-cyan/10 text-neon-cyan py-2.5 rounded-xl text-xs text-center font-bold">
                 View Audit Ledger

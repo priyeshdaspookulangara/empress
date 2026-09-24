@@ -119,10 +119,10 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="text-[11px] text-champagne/50 mt-2">Cumulative Matrix Commissions</div>
         </div>
 
-        <!-- User Wallet (60%) -->
+        <!-- User Wallet (50%) -->
         <div class="glass-card p-6 rounded-3xl border border-emerald-500/30">
             <div class="flex justify-between items-center text-emerald-400 mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">User Wallet (60%)</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Customer Wallet (50%)</span>
                 <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
@@ -131,16 +131,18 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="text-[11px] text-champagne/50 mt-2">Eligible for Payout Withdrawal</div>
         </div>
 
-        <!-- Company Wallet (40%) -->
+        <!-- Burfee Cart & Charity Allocation -->
         <div class="glass-card p-6 rounded-3xl border border-gold/20">
             <div class="flex justify-between items-center text-gold mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Company Wallet (40%)</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Burfee Cart / Charity</span>
                 <div class="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/20">
                     <i class="fa-solid fa-vault"></i>
                 </div>
             </div>
-            <div class="text-3xl font-extrabold text-gold">$<?php echo number_format($wallet['company_wallet_40'], 2); ?></div>
-            <div class="text-[11px] text-champagne/50 mt-2">Utility & Reserve Reserve</div>
+            <div class="text-xl font-extrabold text-gold">
+                Cart: $<?php echo number_format($wallet['burfee_cart_wallet'] ?? 0, 2); ?>
+            </div>
+            <div class="text-[11px] text-champagne/70 mt-1">Charity: <span class="text-emerald-400 font-bold">$<?php echo number_format($wallet['charity_wallet'] ?? 0, 2); ?></span></div>
         </div>
 
         <!-- Team Downline Count & Rebirth Badges -->

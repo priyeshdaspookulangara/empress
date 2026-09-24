@@ -50,9 +50,7 @@ function getSQLiteConnection() {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 
-    if ($isNew || filesize($dbFile) === 0) {
-        initDatabaseSchema($sqlitePdo, true);
-    }
+    initDatabaseSchema($sqlitePdo, true);
 
     return $sqlitePdo;
 }
@@ -115,6 +113,9 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             id $autoInc,
             member_id VARCHAR(20) NOT NULL UNIQUE,
             balance DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+            user_wallet_50 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+            burfee_cart_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+            charity_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00,
             user_wallet_60 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
             company_wallet_40 DECIMAL(12,2) NOT NULL DEFAULT 0.00
         )",
@@ -161,12 +162,22 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $pdo->exec($q);
     }
 
-    // Ensure role column exists if SQLite table already created
+    // Ensure role and wallet columns exist if SQLite/MySQL table already created
     try {
         $pdo->exec("ALTER TABLE admins ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'admin'");
-    } catch (Exception $e) {
-        // Column might already exist
-    }
+    } catch (Exception $e) {}
+
+    try {
+        $pdo->exec("ALTER TABLE wallets ADD COLUMN user_wallet_50 DECIMAL(12,2) NOT NULL DEFAULT 0.00");
+    } catch (Exception $e) {}
+
+    try {
+        $pdo->exec("ALTER TABLE wallets ADD COLUMN burfee_cart_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00");
+    } catch (Exception $e) {}
+
+    try {
+        $pdo->exec("ALTER TABLE wallets ADD COLUMN charity_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00");
+    } catch (Exception $e) {}
 
     // Seed superadmin if not existing
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM admins WHERE username = ?");
@@ -195,7 +206,7 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             VALUES (?, NULL, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute(['EMP100000', 'Empress Root', 'root@empress2way.com', '9999999999', $rootPass, 'SYSTEM_ROOT_EPIN', 'Starter_1000', 'Active', 'Approved']);
 
-        $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00)");
+        $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
         $stmt->execute(['EMP100000']);
     }
 }

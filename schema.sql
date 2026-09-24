@@ -56,6 +56,9 @@ CREATE TABLE IF NOT EXISTS wallets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(20) NOT NULL UNIQUE,
     balance DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    user_wallet_50 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    burfee_cart_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    charity_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     user_wallet_60 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     company_wallet_40 DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE CASCADE

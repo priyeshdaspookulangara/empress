@@ -27,20 +27,21 @@ $wallet = $stmtW->fetch() ?: ['balance' => 0.00, 'user_wallet_60' => 0.00, 'comp
 // Handle Withdrawal Request Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = (float)($_POST['amount'] ?? 0);
+    $availableUserWallet = (float)($wallet['user_wallet_50'] ?? $wallet['user_wallet_60']);
 
     if ($member['kyc_status'] !== 'Approved') {
         $error = "Withdrawal blocked: Your KYC status must be 'Approved' by admin. Current status: " . strtoupper($member['kyc_status']);
     } elseif ($amount < 10.00) {
         $error = "Withdrawal blocked: Minimum withdrawal amount is $10.00 USD.";
-    } elseif ($amount > $wallet['user_wallet_60']) {
-        $error = "Withdrawal blocked: Insufficient balance in your User Wallet (60%). Available: $" . number_format($wallet['user_wallet_60'], 2);
+    } elseif ($amount > $availableUserWallet) {
+        $error = "Withdrawal blocked: Insufficient balance in your Customer Wallet (50%). Available: $" . number_format($availableUserWallet, 2);
     } elseif (empty($member['crypto_wallet_address'])) {
         $error = "Withdrawal blocked: Please save your USD Crypto Wallet Address on your profile page.";
     } else {
         $pdo->beginTransaction();
         try {
-            $stmtDeduct = $pdo->prepare("UPDATE wallets SET user_wallet_60 = user_wallet_60 - ? WHERE member_id = ?");
-            $stmtDeduct->execute([$amount, $memberId]);
+            $stmtDeduct = $pdo->prepare("UPDATE wallets SET user_wallet_50 = user_wallet_50 - ?, user_wallet_60 = user_wallet_60 - ? WHERE member_id = ?");
+            $stmtDeduct->execute([$amount, $amount, $memberId]);
 
             $stmtWithdraw = $pdo->prepare("INSERT INTO withdrawals (member_id, amount, status) VALUES (?, ?, 'Pending')");
             $stmtWithdraw->execute([$memberId, $amount]);
@@ -105,20 +106,22 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="glass-card p-6 rounded-3xl border border-emerald-500/40 bg-emerald-500/5">
             <div class="flex justify-between items-center">
-                <span class="text-xs font-bold text-emerald-400 uppercase">User Wallet (60%)</span>
+                <span class="text-xs font-bold text-emerald-400 uppercase">Customer Wallet (50%)</span>
                 <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono">Withdrawal Eligible</span>
             </div>
-            <div class="text-3xl font-extrabold text-emerald-400 mt-2">$<?php echo number_format($wallet['user_wallet_60'], 2); ?> <span class="text-xs">USD</span></div>
+            <div class="text-3xl font-extrabold text-emerald-400 mt-2">$<?php echo number_format($wallet['user_wallet_50'] ?? $wallet['user_wallet_60'], 2); ?> <span class="text-xs">USD</span></div>
             <p class="text-[10px] text-ice/50 mt-1">Available for direct Crypto withdrawal (Min: $10 USD)</p>
         </div>
 
         <div class="glass-card p-6 rounded-3xl border border-neon-cyan/20">
             <div class="flex justify-between items-center">
-                <span class="text-xs font-bold text-neon-cyan uppercase">Company Reserve (40%)</span>
-                <span class="text-[10px] bg-neon-cyan/10 text-neon-cyan px-2 py-0.5 rounded font-mono">Utility Reserve</span>
+                <span class="text-xs font-bold text-neon-cyan uppercase">Burfee Cart (30%) & Charity (20%)</span>
+                <span class="text-[10px] bg-neon-cyan/10 text-neon-cyan px-2 py-0.5 rounded font-mono">Company 50%</span>
             </div>
-            <div class="text-3xl font-extrabold text-neon-cyan mt-2">$<?php echo number_format($wallet['company_wallet_40'], 2); ?> <span class="text-xs">USD</span></div>
-            <p class="text-[10px] text-ice/50 mt-1">Allocated to company reserve & charity fund</p>
+            <div class="text-xl font-extrabold text-neon-cyan mt-2">
+                Cart: $<?php echo number_format($wallet['burfee_cart_wallet'] ?? 0, 2); ?>
+            </div>
+            <p class="text-[11px] text-emerald-400 font-bold mt-1">Charity: $<?php echo number_format($wallet['charity_wallet'] ?? 0, 2); ?></p>
         </div>
     </div>
 
@@ -155,9 +158,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <label class="block text-xs font-semibold text-neon-cyan mb-1">Withdrawal Amount ($ USD) *</label>
                     <div class="relative">
                         <span class="absolute left-4 top-3 text-neon-cyan font-bold text-sm">$</span>
-                        <input type="number" step="0.01" min="10" max="<?php echo $wallet['user_wallet_60']; ?>" name="amount" required placeholder="10.00" <?php echo ($member['kyc_status'] !== 'Approved' || $wallet['user_wallet_60'] < 10) ? 'disabled' : ''; ?> class="w-full bg-navy/80 border border-neon-cyan/30 rounded-xl pl-8 pr-4 py-3 text-sm text-ice font-mono focus:outline-none focus:border-neon-cyan disabled:opacity-50">
+                        <?php $availUser = $wallet['user_wallet_50'] ?? $wallet['user_wallet_60']; ?>
+                        <input type="number" step="0.01" min="10" max="<?php echo $availUser; ?>" name="amount" required placeholder="10.00" <?php echo ($member['kyc_status'] !== 'Approved' || $availUser < 10) ? 'disabled' : ''; ?> class="w-full bg-navy/80 border border-neon-cyan/30 rounded-xl pl-8 pr-4 py-3 text-sm text-ice font-mono focus:outline-none focus:border-neon-cyan disabled:opacity-50">
                     </div>
-                    <span class="text-[10px] text-ice/50">Minimum $10 USD. Maximum available: $<?php echo number_format($wallet['user_wallet_60'], 2); ?> USD</span>
+                    <span class="text-[10px] text-ice/50">Minimum $10 USD. Maximum available: $<?php echo number_format($availUser, 2); ?> USD</span>
                 </div>
 
                 <div class="bg-navy/60 p-4 rounded-xl border border-neon-cyan/15 text-xs text-ice/80 space-y-1">
@@ -167,7 +171,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <div>
-                    <button type="submit" <?php echo ($member['kyc_status'] !== 'Approved' || $wallet['user_wallet_60'] < 10) ? 'disabled' : ''; ?> class="neon-button w-full py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-neon-cyan/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" <?php echo ($member['kyc_status'] !== 'Approved' || $availUser < 10) ? 'disabled' : ''; ?> class="neon-button w-full py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-neon-cyan/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <i class="fa-solid fa-paper-plane"></i> Submit USD Withdrawal Request
                     </button>
                 </div>

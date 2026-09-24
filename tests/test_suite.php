@@ -49,11 +49,12 @@ assert($regRes1['success'] === true);
 $m1Id = $regRes1['member_id'];
 assert($m1Id === 'EMP100001');
 
-// Check Root Wallet received Level 1 Commission ($10: 60% = $6.00, 40% = $4.00)
+// Check Root Wallet received Level 1 Commission ($10: 50% Customer = $5.00, Company 50%: 60% Burfee = $3.00, 40% Charity = $2.00)
 $rootWallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
 assert((float)$rootWallet['balance'] === 10.00);
-assert((float)$rootWallet['user_wallet_60'] === 6.00);
-assert((float)$rootWallet['company_wallet_40'] === 4.00);
+assert((float)$rootWallet['user_wallet_50'] === 5.00);
+assert((float)$rootWallet['burfee_cart_wallet'] === 3.00);
+assert((float)$rootWallet['charity_wallet'] === 2.00);
 echo "PASSED\n";
 
 // Test 3: BFS Auto-Spillover placement test (Filling Level 1 of Root with 3 members)
@@ -97,8 +98,9 @@ echo "PASSED\n";
 // Test 4: Check Multi-level Commission Flow (Level 1 for EMP100001, Level 2 for Root EMP100000)
 echo "[TEST 4] Testing Multi-level Fixed Commission Distribution (Level 1 + Level 2)... ";
 $m1Wallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100001'")->fetch();
-// EMP100001 should get Level 1 payout: $10 (60% = 6, 40% = 4)
+// EMP100001 should get Level 1 payout: $10 (50% Customer = 5.00)
 assert((float)$m1Wallet['balance'] === 10.00);
+assert((float)$m1Wallet['user_wallet_50'] === 5.00);
 
 // Root (EMP100000) should get previous 3x10 = 30 + Level 2 payout 1x20 = 50 total
 $rootWallet2 = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
@@ -107,19 +109,19 @@ echo "PASSED\n";
 
 // Test 5: KYC Approval & Payout Withdrawal Validation Rules
 echo "[TEST 5] Testing KYC Block & Withdrawal Thresholds... ";
-// EMP100001 has user_wallet_60 = 6.00 (under $10.00 min and KYC is Pending)
+// EMP100001 has user_wallet_50 = 5.00 (under $10.00 min and KYC is Pending)
 $wFail1 = false;
-if ($m1Wallet['user_wallet_60'] < 10.00) {
+if ($m1Wallet['user_wallet_50'] < 10.00) {
     $wFail1 = true;
 }
 assert($wFail1 === true);
 
 // Approve KYC for EMP100001 and add balance to meet $10.00
 $pdo->prepare("UPDATE members SET kyc_status = 'Approved', crypto_wallet_address = 'T123456789' WHERE member_id = 'EMP100001'")->execute();
-$pdo->prepare("UPDATE wallets SET user_wallet_60 = 100.00 WHERE member_id = 'EMP100001'")->execute();
+$pdo->prepare("UPDATE wallets SET user_wallet_50 = 100.00, user_wallet_60 = 100.00 WHERE member_id = 'EMP100001'")->execute();
 
 // Perform withdrawal of $50.00
-$pdo->prepare("UPDATE wallets SET user_wallet_60 = user_wallet_60 - 50.00 WHERE member_id = 'EMP100001'")->execute();
+$pdo->prepare("UPDATE wallets SET user_wallet_50 = user_wallet_50 - 50.00, user_wallet_60 = user_wallet_60 - 50.00 WHERE member_id = 'EMP100001'")->execute();
 $pdo->prepare("INSERT INTO withdrawals (member_id, amount, status) VALUES ('EMP100001', 50.00, 'Pending')")->execute();
 
 $wRow = $pdo->query("SELECT * FROM withdrawals WHERE member_id = 'EMP100001'")->fetch();

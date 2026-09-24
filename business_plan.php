@@ -30,19 +30,19 @@ require_once __DIR__ . '/includes/header.php';
 
         <div class="glass-card p-6 rounded-2xl border border-gold/20">
             <h3 class="text-xl font-bold text-gold mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-scale-balanced"></i> 60:40 Smart Wallet Allocation
+                <i class="fa-solid fa-scale-balanced"></i> 50:50 Smart Wallet Allocation
             </h3>
             <p class="text-xs text-champagne/80 leading-relaxed mb-3">
-                Every commission generated is automatically split to maintain platform longevity and member profitability:
+                Every commission generated is split 50% to Customer Wallet and 50% to Company (which is split 60% Burfee Cart / 40% Charity):
             </p>
             <div class="space-y-2">
                 <div class="bg-gold/10 p-3 rounded-xl border border-gold/30 flex justify-between items-center text-xs">
-                    <span class="font-bold text-gold">60% User Wallet</span>
+                    <span class="font-bold text-gold">50% Customer Wallet</span>
                     <span class="text-emerald-400 font-bold">Eligible for Payout Withdrawal</span>
                 </div>
                 <div class="bg-gold/10 p-3 rounded-xl border border-gold/30 flex justify-between items-center text-xs">
-                    <span class="font-bold text-gold">40% Company Wallet</span>
-                    <span class="text-champagne font-bold">Utility / Product Reserve & Charity</span>
+                    <span class="font-bold text-gold">Company 50% Portion</span>
+                    <span class="text-champagne font-bold">60% Burfee Cart ($A \times 30\%$) / 40% Charity ($A \times 20\%$)</span>
                 </div>
             </div>
         </div>
@@ -60,8 +60,9 @@ require_once __DIR__ . '/includes/header.php';
                         <th class="p-4">Node Capacity</th>
                         <th class="p-4">Payout Per Node</th>
                         <th class="p-4">Level Total</th>
-                        <th class="p-4">60% User Wallet</th>
-                        <th class="p-4">40% Company Wallet</th>
+                        <th class="p-4">50% Customer Wallet</th>
+                        <th class="p-4">30% Burfee Cart (60% of Co)</th>
+                        <th class="p-4">20% Charity (40% of Co)</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gold/10 text-champagne">
@@ -70,56 +71,63 @@ require_once __DIR__ . '/includes/header.php';
                         <td class="p-4">3 Nodes</td>
                         <td class="p-4">$10 USD</td>
                         <td class="p-4 font-bold text-emerald-400">$30 USD</td>
-                        <td class="p-4">$18 USD</td>
-                        <td class="p-4 text-champagne/70">$12 USD</td>
+                        <td class="p-4">$15 USD</td>
+                        <td class="p-4 text-champagne/70">$9 USD</td>
+                        <td class="p-4 text-champagne/70">$6 USD</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 2</td>
                         <td class="p-4">9 Nodes</td>
                         <td class="p-4">$20 USD</td>
                         <td class="p-4 font-bold text-emerald-400">$180 USD</td>
-                        <td class="p-4">$108 USD</td>
-                        <td class="p-4 text-champagne/70">$72 USD</td>
+                        <td class="p-4">$90 USD</td>
+                        <td class="p-4 text-champagne/70">$54 USD</td>
+                        <td class="p-4 text-champagne/70">$36 USD</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 3</td>
                         <td class="p-4">27 Nodes</td>
                         <td class="p-4">$40 USD</td>
                         <td class="p-4 font-bold text-emerald-400">$1,080 USD (+ 10 Rebirths)</td>
-                        <td class="p-4">$648 USD</td>
-                        <td class="p-4 text-champagne/70">$432 USD</td>
+                        <td class="p-4">$540 USD</td>
+                        <td class="p-4 text-champagne/70">$324 USD</td>
+                        <td class="p-4 text-champagne/70">$216 USD</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 4</td>
                         <td class="p-4">81 Nodes</td>
                         <td class="p-4">$60 USD</td>
                         <td class="p-4 font-bold text-emerald-400">$4,860 USD (+ 20 Rebirths)</td>
-                        <td class="p-4">$2,916 USD</td>
-                        <td class="p-4 text-champagne/70">$1,944 USD</td>
+                        <td class="p-4">$2,430 USD</td>
+                        <td class="p-4 text-champagne/70">$1,458 USD</td>
+                        <td class="p-4 text-champagne/70">$972 USD</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 5</td>
                         <td class="p-4">243 Nodes</td>
                         <td class="p-4">$80 USD</td>
                         <td class="p-4 font-bold text-emerald-400">$19,440 USD (+ 70 Rebirths)</td>
-                        <td class="p-4">$11,664 USD</td>
-                        <td class="p-4 text-champagne/70">$7,776 USD</td>
+                        <td class="p-4">$9,720 USD</td>
+                        <td class="p-4 text-champagne/70">$5,832 USD</td>
+                        <td class="p-4 text-champagne/70">$3,888 USD</td>
                     </tr>
                     <tr>
                         <td class="p-4 font-bold text-gold">Level 6</td>
                         <td class="p-4">729 Nodes</td>
                         <td class="p-4">$100 USD</td>
                         <td class="p-4 font-bold text-emerald-400">$72,900 USD (+ 100 Rebirths)</td>
-                        <td class="p-4">$43,740 USD</td>
-                        <td class="p-4 text-champagne/70">$29,160 USD</td>
+                        <td class="p-4">$36,450 USD</td>
+                        <td class="p-4 text-champagne/70">$21,870 USD</td>
+                        <td class="p-4 text-champagne/70">$14,580 USD</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr class="bg-gold/20 text-gold font-bold text-base">
                         <td class="p-4" colspan="3">Total Potential (1,092 Nodes)</td>
                         <td class="p-4 text-emerald-300">$98,490 USD</td>
-                        <td class="p-4 text-emerald-300">$59,094 USD</td>
-                        <td class="p-4 text-champagne">$39,396 USD</td>
+                        <td class="p-4 text-emerald-300">$49,245 USD</td>
+                        <td class="p-4 text-champagne">$29,547 USD</td>
+                        <td class="p-4 text-champagne">$19,698 USD</td>
                     </tr>
                 </tfoot>
             </table>

@@ -11,7 +11,7 @@ if (!isset($_SESSION['admin_id'])) {
 $pdo = getDBConnection();
 $search = trim($_GET['search'] ?? '');
 
-$sql = "SELECT m.*, w.balance, w.user_wallet_60, w.company_wallet_40
+$sql = "SELECT m.*, w.balance, w.user_wallet_50, w.burfee_cart_wallet, w.charity_wallet, w.user_wallet_60, w.company_wallet_40
         FROM members m
         LEFT JOIN wallets w ON m.member_id = w.member_id";
 $params = [];
@@ -70,7 +70,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3">Name & Contact</th>
                         <th class="p-3">Package</th>
                         <th class="p-3">Sponsor / Parent</th>
-                        <th class="p-3">Wallet (60 / 40)</th>
+                        <th class="p-3">Wallet Allocations</th>
                         <th class="p-3">KYC</th>
                         <th class="p-3">Joined Date</th>
                         <th class="p-3">Actions</th>
@@ -104,8 +104,8 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div>Par: <?php echo htmlspecialchars($m['placement_parent_id'] ?: 'ROOT'); ?> (Pos <?php echo $m['matrix_position'] ?: '-'; ?>)</div>
                                 </td>
                                 <td class="p-3 font-mono">
-                                    <div class="text-emerald-400 font-bold">U: $<?php echo number_format($m['user_wallet_60'] ?? 0, 2); ?></div>
-                                    <div class="text-gold">C: $<?php echo number_format($m['company_wallet_40'] ?? 0, 2); ?></div>
+                                    <div class="text-emerald-400 font-bold">Cust (50%): $<?php echo number_format($m['user_wallet_50'] ?? $m['user_wallet_60'] ?? 0, 2); ?></div>
+                                    <div class="text-gold text-[10px]">Cart: $<?php echo number_format($m['burfee_cart_wallet'] ?? 0, 2); ?> | Char: $<?php echo number_format($m['charity_wallet'] ?? 0, 2); ?></div>
                                 </td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border <?php

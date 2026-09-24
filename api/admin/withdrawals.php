@@ -36,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtReject = $pdo->prepare("UPDATE withdrawals SET status = 'Rejected', processed_date = CURRENT_TIMESTAMP WHERE id = ?");
             $stmtReject->execute([$withdrawalId]);
 
-            $stmtRefund = $pdo->prepare("UPDATE wallets SET user_wallet_60 = user_wallet_60 + ? WHERE member_id = ?");
-            $stmtRefund->execute([$w['amount'], $w['member_id']]);
+            $stmtRefund = $pdo->prepare("UPDATE wallets SET user_wallet_50 = user_wallet_50 + ?, user_wallet_60 = user_wallet_60 + ? WHERE member_id = ?");
+            $stmtRefund->execute([$w['amount'], $w['amount'], $w['member_id']]);
 
             $stmtTx = $pdo->prepare("
                 INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)

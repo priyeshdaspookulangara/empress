@@ -108,7 +108,7 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
 
 /**
  * Process Matrix Level Commissions for 6 Levels above $newMemberId
- * Applies 60:40 Smart Wallet division.
+ * Applies 50:50 Smart Wallet division (50% Customer Wallet, 50% Company -> 60% Burfee Cart / 40% Charity).
  */
 function distributeMatrixCommissions($pdo, $newMemberId) {
     $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
@@ -121,14 +121,16 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
         $amount = MATRIX_PAYOUTS[$level] ?? 0;
 
         if ($amount > 0) {
-            $userAmount = round($amount * 0.60, 2);
-            $companyAmount = round($amount * 0.40, 2);
+            $userAmount = round($amount * 0.50, 2);       // 50% Customer Wallet
+            $burfeeAmount = round($amount * 0.30, 2);     // 60% of Company 50% = 30% total
+            $charityAmount = round($amount * 0.20, 2);    // 40% of Company 50% = 20% total
+            $companyAmount = round($amount * 0.50, 2);    // Total Company Portion (30% Burfee + 20% Charity)
 
             // Ensure parent wallet row exists
             $stmtWallet = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
             $stmtWallet->execute([$currentParentId]);
             if (!$stmtWallet->fetch()) {
-                $insW = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0)");
+                $insW = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)");
                 $insW->execute([$currentParentId]);
             }
 
@@ -136,11 +138,14 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
             $updateWallet = $pdo->prepare("
                 UPDATE wallets
                 SET balance = balance + ?,
+                    user_wallet_50 = user_wallet_50 + ?,
+                    burfee_cart_wallet = burfee_cart_wallet + ?,
+                    charity_wallet = charity_wallet + ?,
                     user_wallet_60 = user_wallet_60 + ?,
                     company_wallet_40 = company_wallet_40 + ?
                 WHERE member_id = ?
             ");
-            $updateWallet->execute([$amount, $userAmount, $companyAmount, $currentParentId]);
+            $updateWallet->execute([$amount, $userAmount, $burfeeAmount, $charityAmount, $userAmount, $companyAmount, $currentParentId]);
 
             // Log Transaction
             $logTx = $pdo->prepare("
@@ -148,7 +153,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                 VALUES (?, ?, ?, 'Main', 'Credit', ?)
             ");
             $txType = "Matrix_Income_L" . $level;
-            $desc = "Level {$level} Matrix Commission from member {$newMemberId}. (60% User: \${$userAmount}, 40% Company Reserve: \${$companyAmount})";
+            $desc = "Level {$level} Matrix Commission from member {$newMemberId}. (50% Customer: \${$userAmount}, Company 50%: \${$burfeeAmount} Burfee Cart [60%] / \${$charityAmount} Charity [40%])";
             $logTx->execute([$currentParentId, $txType, $amount, $desc]);
         }
 
@@ -253,7 +258,7 @@ function createRebirthPositions($pdo, $parentMemberId, $count, $completedLevel) 
         ]);
 
         // Initialize Wallet for Rebirth Node
-        $stmtW = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00)");
+        $stmtW = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
         $stmtW->execute([$rebirthMemberId]);
 
         // Log transaction for rebirth reward creation
@@ -337,7 +342,7 @@ function registerMember($pdo, $data) {
         $stmtUpdateEpin->execute([$memberId, $epin['id']]);
 
         // Initialize Wallet
-        $stmtWallet = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00)");
+        $stmtWallet = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
         $stmtWallet->execute([$memberId]);
 
         // Distribute Matrix Commissions across ancestors

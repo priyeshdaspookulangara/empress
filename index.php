@@ -19,7 +19,7 @@ require_once __DIR__ . '/includes/header.php';
         </p>
 
         <p class="text-sm md:text-base text-champagne/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Experience the revolutionary single-phase automated direct selling ecosystem powered by an automated <span class="text-gold font-semibold">3-Matrix forced spillover engine</span>, <span class="text-gold font-semibold">60:40 Smart Wallet division</span>, and <span class="text-gold font-semibold">6-level fixed matrix income potential of $98,490 USD</span>.
+            Experience the revolutionary single-phase automated direct selling ecosystem powered by an automated <span class="text-gold font-semibold">3-Matrix forced spillover engine</span>, <span class="text-gold font-semibold">50:50 Smart Wallet division</span> (50% Customer Wallet & 50% Company -> 60% Burfee Cart / 40% Charity), and <span class="text-gold font-semibold">6-level fixed matrix income potential of $98,490 USD</span>.
         </p>
 
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -49,9 +49,9 @@ require_once __DIR__ . '/includes/header.php';
         <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center text-2xl mb-4 border border-gold/30">
             <i class="fa-solid fa-wallet"></i>
         </div>
-        <h3 class="text-lg font-bold text-champagne mb-2">60:40 Smart Wallet Split</h3>
+        <h3 class="text-lg font-bold text-champagne mb-2">50:50 Smart Wallet Split</h3>
         <p class="text-xs text-champagne/70 leading-relaxed">
-            Automated division credits 60% of earnings directly to User Withdrawal Wallet and 40% to Company Reserve Wallet for maximum platform sustainability.
+            Automated division credits 50% directly to Customer Withdrawal Wallet and 50% to Company (which splits 60% to Burfee Cart Wallet & 40% to Charity Wallet).
         </p>
     </div>
 
@@ -150,7 +150,7 @@ require_once __DIR__ . '/includes/header.php';
                 <ul class="text-xs text-champagne/80 space-y-3 mb-8 text-left max-w-xs mx-auto">
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Full 3-Matrix Auto-Spillover Tree Entry</li>
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 6-Level Fixed Commission Eligibility</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 60% User & 40% Utility Wallet Division</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 50:50 Customer & Company Wallet Split</li>
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Max Potential $98,490 USD</li>
                 </ul>
             </div>
