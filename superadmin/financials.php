@@ -86,6 +86,73 @@ require_once __DIR__ . '/../includes/header.php';
         </a>
     </div>
 
+    <!-- 6-Level Income Matrix Schedule & Split Calculations Table -->
+    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30">
+        <h3 class="text-lg font-extrabold text-neon-cyan mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-layer-group"></i> 6-Level Fixed Matrix Compensation Schedule & Split Audit
+        </h3>
+        <p class="text-xs text-ice/70 mb-4">Detailed schedule breakdown showing per-node payout rate, total node count, maximum level earnings, and exact 50:50 splits ($ USD).</p>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
+                        <th class="p-3">Level</th>
+                        <th class="p-3">Max Nodes</th>
+                        <th class="p-3">Commission / Node</th>
+                        <th class="p-3">Gross Potential</th>
+                        <th class="p-3 text-emerald-400">Customer Wallet (50%)</th>
+                        <th class="p-3 text-amber-400">Burfee Cart (30%)</th>
+                        <th class="p-3 text-blue-400">Charity Fund (20%)</th>
+                        <th class="p-3">Rebirth Reward Trigger</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neon-cyan/10 text-ice font-mono">
+                    <?php
+                    $levels = [
+                        1 => ['nodes' => 3,    'rate' => 1.00, 'rebirths' => '-'],
+                        2 => ['nodes' => 9,    'rate' => 2.00, 'rebirths' => '-'],
+                        3 => ['nodes' => 27,   'rate' => 4.00, 'rebirths' => '10 Rebirth Nodes'],
+                        4 => ['nodes' => 81,   'rate' => 6.00, 'rebirths' => '20 Rebirth Nodes'],
+                        5 => ['nodes' => 243,  'rate' => 8.00, 'rebirths' => '70 Rebirth Nodes'],
+                        6 => ['nodes' => 729,  'rate' => 10.00, 'rebirths' => '100 Rebirth Nodes'],
+                    ];
+                    $totNodes = 0; $totGross = 0; $totCust = 0; $totBurf = 0; $totChar = 0;
+                    foreach ($levels as $lvl => $info):
+                        $gross = $info['nodes'] * $info['rate'];
+                        $cust = $gross * 0.50;
+                        $burf = $gross * 0.30;
+                        $char = $gross * 0.20;
+                        $totNodes += $info['nodes']; $totGross += $gross; $totCust += $cust; $totBurf += $burf; $totChar += $char;
+                    ?>
+                        <tr class="hover:bg-neon-cyan/5">
+                            <td class="p-3 font-bold text-neon-cyan">Level <?php echo $lvl; ?></td>
+                            <td class="p-3 text-ice"><?php echo $info['nodes']; ?> Nodes</td>
+                            <td class="p-3 text-emerald-400 font-bold">$<?php echo number_format($info['rate'], 2); ?></td>
+                            <td class="p-3 text-neon-gradient-text font-bold">$<?php echo number_format($gross, 2); ?></td>
+                            <td class="p-3 text-emerald-400 font-bold">$<?php echo number_format($cust, 2); ?></td>
+                            <td class="p-3 text-amber-400 font-bold">$<?php echo number_format($burf, 2); ?></td>
+                            <td class="p-3 text-blue-400 font-bold">$<?php echo number_format($char, 2); ?></td>
+                            <td class="p-3 text-neon-cyan font-bold font-sans"><?php echo $info['rebirths']; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot>
+                    <tr class="bg-neon-cyan/20 font-bold text-neon-cyan border-t border-neon-cyan/30 text-xs">
+                        <td class="p-3">TOTAL (L1-L6)</td>
+                        <td class="p-3"><?php echo $totNodes; ?> Nodes</td>
+                        <td class="p-3">-</td>
+                        <td class="p-3 text-neon-gradient-text font-extrabold">$<?php echo number_format($totGross, 2); ?> USD</td>
+                        <td class="p-3 text-emerald-400">$<?php echo number_format($totCust, 2); ?> USD</td>
+                        <td class="p-3 text-amber-400">$<?php echo number_format($totBurf, 2); ?> USD</td>
+                        <td class="p-3 text-blue-400">$<?php echo number_format($totChar, 2); ?> USD</td>
+                        <td class="p-3">200 Total Rebirths</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
     <!-- Calculation Verification Details Inspector -->
     <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30 bg-slate-900/40">
         <div class="flex justify-between items-center mb-4">
