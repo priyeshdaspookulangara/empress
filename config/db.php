@@ -179,6 +179,29 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $pdo->exec("ALTER TABLE wallets ADD COLUMN charity_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00");
     } catch (Exception $e) {}
 
+    // Recalculate and correct existing wallets data for 50:50 Customer vs Company (60% Burfee Cart / 40% Charity)
+    try {
+        $wallets = $pdo->query("SELECT member_id, balance FROM wallets WHERE balance > 0")->fetchAll();
+        foreach ($wallets as $w) {
+            $mId = $w['member_id'];
+            $bal = (float)$w['balance'];
+
+            // Sum of non-rejected withdrawal deductions
+            $stmtW = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE member_id = ? AND status != 'Rejected'");
+            $stmtW->execute([$mId]);
+            $withdrawals = (float)$stmtW->fetchColumn();
+
+            $userWallet50 = max(0.00, round(($bal * 0.50) - $withdrawals, 2));
+            $burfeeCart = round($bal * 0.30, 2);
+            $charity = round($bal * 0.20, 2);
+
+            $stmtUp = $pdo->prepare("UPDATE wallets SET user_wallet_50 = ?, burfee_cart_wallet = ?, charity_wallet = ? WHERE member_id = ?");
+            $stmtUp->execute([$userWallet50, $burfeeCart, $charity, $mId]);
+        }
+    } catch (Exception $e) {
+        // Data correction query fallback
+    }
+
     // Seed superadmin if not existing
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM admins WHERE username = ?");
     $stmt->execute(['superadmin']);
