@@ -146,18 +146,18 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Team Downline Count & Rebirth Badges -->
-        <div class="glass-card p-6 rounded-3xl border border-gold/30">
+        <a href="/customer/rebirths.php" class="glass-card p-6 rounded-3xl border border-gold/30 hover:border-neon-cyan transition block group">
             <div class="flex justify-between items-center text-gold mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Matrix Network</span>
-                <div class="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/20">
-                    <i class="fa-solid fa-rotate text-neon-cyan"></i>
+                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70 group-hover:text-neon-cyan transition">Matrix Network</span>
+                <div class="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/20 group-hover:border-neon-cyan transition">
+                    <i class="fa-solid fa-rotate text-neon-cyan group-hover:rotate-180 transition duration-500"></i>
                 </div>
             </div>
             <div class="text-3xl font-extrabold text-champagne"><?php echo $downlineCount; ?> <span class="text-xs font-normal text-gold">Members</span></div>
             <div class="text-[11px] text-neon-cyan font-bold mt-2 flex items-center gap-1">
                 <i class="fa-solid fa-arrows-spin text-neon-cyan"></i> Total Rebirths Earned: <span class="text-emerald-400 font-mono text-sm"><?php echo $totalRebirths; ?></span>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- Quick Quick Links Section -->

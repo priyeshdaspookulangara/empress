@@ -136,16 +136,16 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Total Rebirth Positions Created -->
-        <div class="glass-card p-6 rounded-3xl border border-neon-cyan/40 bg-neon-cyan/5">
+        <a href="/superadmin/rebirths.php" class="glass-card p-6 rounded-3xl border border-neon-cyan/40 bg-neon-cyan/5 hover:border-neon-cyan transition block group">
             <div class="flex justify-between items-center text-neon-cyan mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-ice/70">Rebirth Positions</span>
-                <div class="w-10 h-10 rounded-xl bg-neon-cyan/20 flex items-center justify-center border border-neon-cyan/30 text-xl">
+                <span class="text-xs font-bold uppercase tracking-wider text-ice/70 group-hover:text-neon-cyan transition">Rebirth Positions</span>
+                <div class="w-10 h-10 rounded-xl bg-neon-cyan/20 flex items-center justify-center border border-neon-cyan/30 text-xl group-hover:rotate-180 transition duration-500">
                     <i class="fa-solid fa-rotate"></i>
                 </div>
             </div>
             <div class="text-3xl font-extrabold text-neon-cyan"><?php echo $totalSystemRebirths; ?></div>
-            <p class="text-[11px] text-ice/50 mt-2">Auto-created from L3-L6 completions</p>
-        </div>
+            <p class="text-[11px] text-ice/50 mt-2">Auto-created from L3-L6 completions (Click to Inspect)</p>
+        </a>
     </div>
 
     <!-- Quick Action Cards Grid -->
