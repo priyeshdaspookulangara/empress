@@ -124,16 +124,16 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Pending Payout Requests -->
-        <div class="glass-card p-6 rounded-3xl border border-emerald-500/40 bg-emerald-500/5">
+        <a href="/admin/wallet.php" class="glass-card p-6 rounded-3xl border border-emerald-500/40 bg-emerald-500/5 hover:border-emerald-400 transition block group">
             <div class="flex justify-between items-center text-emerald-400 mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-ice/70">Pending Payout Requests</span>
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 text-xl">
+                <span class="text-xs font-bold uppercase tracking-wider text-ice/70 group-hover:text-emerald-400 transition">Pending Payout Requests</span>
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 text-xl group-hover:scale-110 transition">
                     <i class="fa-solid fa-money-bill-wave"></i>
                 </div>
             </div>
             <div class="text-3xl font-extrabold text-emerald-400"><?php echo $pendingWithdrawalsCount; ?></div>
-            <p class="text-[11px] text-ice/50 mt-2">Total requested: <span class="text-emerald-300 font-bold">$<?php echo number_format($pendingWithdrawalsSum, 2); ?> USD</span></p>
-        </div>
+            <p class="text-[11px] text-ice/50 mt-2">Total requested: <span class="text-emerald-300 font-bold">$<?php echo number_format($pendingWithdrawalsSum, 2); ?> USD</span> (Click to Process)</p>
+        </a>
 
         <!-- Total Rebirth Positions Created -->
         <a href="/admin/rebirths.php" class="glass-card p-6 rounded-3xl border border-neon-cyan/40 bg-neon-cyan/5 hover:border-neon-cyan transition block group">
