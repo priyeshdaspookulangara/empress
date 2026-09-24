@@ -13,7 +13,7 @@
             </div>
             <div class="text-center md:text-right text-champagne/50">
                 <p>&copy; <?php echo date('Y'); ?> Empress Two Way 3.0. All Rights Reserved.</p>
-                <p class="text-gold/40 text-[10px] mt-1">Powered by BFS Forced 3-Matrix & Smart 60:40 Wallet Ecosystem</p>
+                <p class="text-gold/40 text-[10px] mt-1">Powered by BFS Forced 3-Matrix & Smart 50:50 Wallet Ecosystem</p>
             </div>
         </div>
     </footer>

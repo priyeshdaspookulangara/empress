@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="glass-card p-8 md:p-12 rounded-3xl border border-gold/30 text-center">
         <h1 class="text-3xl md:text-5xl font-extrabold gold-gradient-text">Empress Two Way 3.0 Business Model</h1>
         <p class="text-champagne/80 text-sm md:text-base mt-3 max-w-2xl mx-auto">
-            A revolutionary, single-phase direct selling platform with automated 3-matrix forced spillover, 60:40 smart wallet allocation, and guaranteed 6-level payout potential.
+            A revolutionary, single-phase direct selling platform with automated 3-matrix forced spillover, 50:50 smart wallet allocation (50% Customer Wallet / 50% Company Portion: 60% Burfee Cart & 40% Charity), and guaranteed 6-level payout potential.
         </p>
     </div>
 
