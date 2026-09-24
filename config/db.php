@@ -179,27 +179,36 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $pdo->exec("ALTER TABLE wallets ADD COLUMN charity_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00");
     } catch (Exception $e) {}
 
-    // Recalculate and correct existing wallets data for 50:50 Customer vs Company (60% Burfee Cart / 40% Charity)
-    try {
-        $wallets = $pdo->query("SELECT member_id, balance FROM wallets WHERE balance > 0")->fetchAll();
-        foreach ($wallets as $w) {
-            $mId = $w['member_id'];
-            $bal = (float)$w['balance'];
+    // Recalculate and correct existing wallets data and names once
+    static $migrationExecuted = false;
+    if (!$migrationExecuted) {
+        $migrationExecuted = true;
+        $flagFile = __DIR__ . '/../.migration_5050_applied';
+        if (!file_exists($flagFile)) {
+            try {
+                $wallets = $pdo->query("SELECT member_id, balance FROM wallets WHERE balance > 0")->fetchAll();
+                foreach ($wallets as $w) {
+                    $mId = $w['member_id'];
+                    $bal = (float)$w['balance'];
 
-            // Sum of non-rejected withdrawal deductions
-            $stmtW = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE member_id = ? AND status != 'Rejected'");
-            $stmtW->execute([$mId]);
-            $withdrawals = (float)$stmtW->fetchColumn();
+                    $stmtW = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE member_id = ? AND status != 'Rejected'");
+                    $stmtW->execute([$mId]);
+                    $withdrawals = (float)$stmtW->fetchColumn();
 
-            $userWallet50 = max(0.00, round(($bal * 0.50) - $withdrawals, 2));
-            $burfeeCart = round($bal * 0.30, 2);
-            $charity = round($bal * 0.20, 2);
+                    $userWallet50 = max(0.00, round(($bal * 0.50) - $withdrawals, 2));
+                    $burfeeCart = round($bal * 0.30, 2);
+                    $charity = round($bal * 0.20, 2);
 
-            $stmtUp = $pdo->prepare("UPDATE wallets SET user_wallet_50 = ?, burfee_cart_wallet = ?, charity_wallet = ? WHERE member_id = ?");
-            $stmtUp->execute([$userWallet50, $burfeeCart, $charity, $mId]);
+                    $stmtUp = $pdo->prepare("UPDATE wallets SET user_wallet_50 = ?, burfee_cart_wallet = ?, charity_wallet = ? WHERE member_id = ?");
+                    $stmtUp->execute([$userWallet50, $burfeeCart, $charity, $mId]);
+                }
+
+                $pdo->exec("UPDATE members SET name = 'Burfee Cart' WHERE member_id != 'EMP100000'");
+                @file_put_contents($flagFile, date('Y-m-d H:i:s'));
+            } catch (Exception $e) {
+                // Data correction query fallback
+            }
         }
-    } catch (Exception $e) {
-        // Data correction query fallback
     }
 
     // Seed superadmin if not existing
