@@ -29,15 +29,9 @@ $rebirthRewards = $stmtRewards->fetchAll();
 
 $totalRebirthsEarned = getMemberTotalRebirths($pdo, $memberId);
 
-// Fetch All Rebirth Member Nodes created in Matrix for this user (by email/phone matching or sponsor_id/rebirth name pattern)
-$stmtNodes = $pdo->prepare("
-    SELECT * FROM members
-    WHERE (email = ? AND (used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%'))
-       OR (sponsor_id = ?)
-    ORDER BY id ASC
-");
-$stmtNodes->execute([$member['email'], $memberId]);
-$rebirthNodes = $stmtNodes->fetchAll();
+// Fetch Aggregated Rebirth Node Earnings
+$rebirthData = getAggregateRebirthEarnings($pdo, $memberId);
+$rebirthNodes = $rebirthData['nodes'];
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -57,6 +51,41 @@ require_once __DIR__ . '/../includes/header.php';
         <a href="/customer/dashboard.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
             <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
         </a>
+    </div>
+
+    <!-- Aggregate Rebirth Income Summary Card -->
+    <div class="glass-card p-6 rounded-3xl border border-gold/40 bg-gradient-to-r from-gold/10 via-black to-emerald-900/10">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gold/20 pb-4 mb-4">
+            <div>
+                <span class="text-[10px] uppercase font-mono tracking-widest text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">Aggregated Rebirth Income</span>
+                <h2 class="text-xl font-extrabold text-gold mt-2">Combined Earnings From All Rebirth Positions</h2>
+                <p class="text-xs text-champagne/70">All matrix commissions earned by your automated rebirth child nodes are consolidated here</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs text-champagne/60 block">Total Rebirth Income</span>
+                <div class="text-3xl font-extrabold gold-gradient-text">$<?php echo number_format($rebirthData['total_balance'], 2); ?></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div class="glass-card p-4 rounded-2xl border border-emerald-500/30">
+                <span class="text-[10px] uppercase font-bold text-champagne/70 block">Customer Wallet (50%)</span>
+                <div class="text-2xl font-extrabold text-emerald-400 mt-1">$<?php echo number_format($rebirthData['user_wallet_50'], 2); ?></div>
+                <span class="text-[10px] text-champagne/50">Withdrawable share from rebirths</span>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border border-gold/30">
+                <span class="text-[10px] uppercase font-bold text-champagne/70 block">Burfee Cart (30%)</span>
+                <div class="text-2xl font-extrabold text-gold mt-1">$<?php echo number_format($rebirthData['burfee_cart_wallet'], 2); ?></div>
+                <span class="text-[10px] text-champagne/50">Utility reserve from rebirths</span>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border border-emerald-500/20">
+                <span class="text-[10px] uppercase font-bold text-champagne/70 block">Charity Fund (20%)</span>
+                <div class="text-2xl font-extrabold text-champagne mt-1">$<?php echo number_format($rebirthData['charity_wallet'], 2); ?></div>
+                <span class="text-[10px] text-champagne/50">Empress charity allocation</span>
+            </div>
+        </div>
     </div>
 
     <!-- Rebirth KPI Summary Cards -->
@@ -145,7 +174,8 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3">Node Label</th>
                         <th class="p-3">Sponsor ID</th>
                         <th class="p-3">Placement Parent ID</th>
-                        <th class="p-3">Matrix Position</th>
+                        <th class="p-3">Earnings Earned</th>
+                        <th class="p-3">Customer Wallet</th>
                         <th class="p-3">Status</th>
                         <th class="p-3">Created Date</th>
                         <th class="p-3">Tree Link</th>
@@ -154,7 +184,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody class="divide-y divide-gold/10 text-champagne">
                     <?php if (empty($rebirthNodes)): ?>
                         <tr>
-                            <td colspan="8" class="p-4 text-center text-champagne/50">No rebirth positions active in tree yet.</td>
+                            <td colspan="9" class="p-4 text-center text-champagne/50">No rebirth positions active in tree yet.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($rebirthNodes as $rn): ?>
@@ -163,7 +193,8 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td class="p-3 font-semibold text-champagne"><?php echo htmlspecialchars($rn['name']); ?></td>
                                 <td class="p-3 font-mono text-emerald-400 font-bold"><?php echo htmlspecialchars($rn['sponsor_id'] ?: 'EMP100000'); ?></td>
                                 <td class="p-3 font-mono text-champagne/80"><?php echo htmlspecialchars($rn['placement_parent_id'] ?: 'EMP100000'); ?></td>
-                                <td class="p-3 font-mono font-bold text-center text-gold">Pos #<?php echo $rn['matrix_position'] ?: 1; ?></td>
+                                <td class="p-3 font-mono font-bold text-gold">$<?php echo number_format($rn['wallet']['balance'] ?? 0, 2); ?></td>
+                                <td class="p-3 font-mono font-bold text-emerald-400">$<?php echo number_format($rn['wallet']['user_wallet_50'] ?? 0, 2); ?></td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
                                         <?php echo $rn['status']; ?>

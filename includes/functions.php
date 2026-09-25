@@ -286,6 +286,79 @@ function getMemberTotalRebirths($pdo, $memberId) {
 }
 
 /**
+ * Get all active rebirth member nodes created in matrix for a user
+ */
+function getMemberRebirthNodes($pdo, $memberId) {
+    $stmtM = $pdo->prepare("SELECT email FROM members WHERE member_id = ?");
+    $stmtM->execute([$memberId]);
+    $email = $stmtM->fetchColumn();
+
+    $stmtNodes = $pdo->prepare("
+        SELECT * FROM members
+        WHERE (email = ? AND (used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%'))
+           OR (sponsor_id = ? AND (used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%'))
+        ORDER BY id ASC
+    ");
+    $stmtNodes->execute([$email, $memberId]);
+    return $stmtNodes->fetchAll();
+}
+
+/**
+ * Get aggregated earnings and wallet balances across all rebirth nodes for a member
+ */
+function getAggregateRebirthEarnings($pdo, $memberId) {
+    $rebirthNodes = getMemberRebirthNodes($pdo, $memberId);
+    $nodeIds = array_column($rebirthNodes, 'member_id');
+
+    $totals = [
+        'count' => count($rebirthNodes),
+        'total_balance' => 0.00,
+        'user_wallet_50' => 0.00,
+        'burfee_cart_wallet' => 0.00,
+        'charity_wallet' => 0.00,
+        'nodes' => []
+    ];
+
+    if (empty($nodeIds)) {
+        return $totals;
+    }
+
+    $inClause = implode(',', array_fill(0, count($nodeIds), '?'));
+    $stmtW = $pdo->prepare("
+        SELECT member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40
+        FROM wallets
+        WHERE member_id IN ($inClause)
+    ");
+    $stmtW->execute($nodeIds);
+    $wallets = $stmtW->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+
+    foreach ($rebirthNodes as $rn) {
+        $nid = $rn['member_id'];
+        $w = $wallets[$nid] ?? ['balance' => 0, 'user_wallet_50' => 0, 'burfee_cart_wallet' => 0, 'charity_wallet' => 0, 'user_wallet_60' => 0];
+
+        $uW = $w['user_wallet_50'] > 0 ? $w['user_wallet_50'] : $w['user_wallet_60'];
+        $bal = (float)$w['balance'];
+        $burfee = (float)($w['burfee_cart_wallet'] ?? 0);
+        $charity = (float)($w['charity_wallet'] ?? 0);
+
+        $totals['total_balance'] += $bal;
+        $totals['user_wallet_50'] += $uW;
+        $totals['burfee_cart_wallet'] += $burfee;
+        $totals['charity_wallet'] += $charity;
+
+        $rn['wallet'] = [
+            'balance' => $bal,
+            'user_wallet_50' => $uW,
+            'burfee_cart_wallet' => $burfee,
+            'charity_wallet' => $charity
+        ];
+        $totals['nodes'][] = $rn;
+    }
+
+    return $totals;
+}
+
+/**
  * Register a new member with ePIN validation and BFS Matrix placement
  */
 function registerMember($pdo, $data) {

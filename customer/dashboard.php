@@ -36,8 +36,11 @@ $directReferralsCount = $stmtRef->fetchColumn();
 $downline = getMemberDownline6Levels($pdo, $memberId);
 $downlineCount = count($downline);
 
-// Total Rebirths
+// Total Rebirths & Aggregated Rebirth Income
 $totalRebirths = getMemberTotalRebirths($pdo, $memberId);
+$rebirthData = getAggregateRebirthEarnings($pdo, $memberId);
+$combinedTotalIncome = $wallet['balance'] + $rebirthData['total_balance'];
+$combinedCustomerWallet = $wallet['user_wallet_60'] + $rebirthData['user_wallet_50'];
 
 // Recent Transactions
 $stmtTx = $pdo->prepare("SELECT * FROM transactions WHERE member_id = ? ORDER BY id DESC LIMIT 5");
@@ -110,13 +113,17 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Total Earnings -->
         <div class="glass-card p-6 rounded-3xl border border-gold/30">
             <div class="flex justify-between items-center text-gold mb-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Total Income</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Primary Total Income</span>
                 <div class="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/20">
                     <i class="fa-solid fa-dollar-sign"></i>
                 </div>
             </div>
             <div class="text-3xl font-extrabold gold-gradient-text">$<?php echo number_format($wallet['balance'], 2); ?></div>
-            <div class="text-[11px] text-champagne/50 mt-2">Cumulative Matrix Commissions</div>
+            <?php if ($rebirthData['total_balance'] > 0): ?>
+                <div class="text-[11px] text-emerald-400 font-bold mt-2">Group Total: $<?php echo number_format($combinedTotalIncome, 2); ?> (incl. Rebirths)</div>
+            <?php else: ?>
+                <div class="text-[11px] text-champagne/50 mt-2">Cumulative Matrix Commissions</div>
+            <?php endif; ?>
         </div>
 
         <!-- User Wallet (50%) -->
@@ -128,7 +135,11 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </div>
             <div class="text-3xl font-extrabold text-emerald-400">$<?php echo number_format($wallet['user_wallet_60'], 2); ?></div>
-            <div class="text-[11px] text-champagne/50 mt-2">Eligible for Payout Withdrawal</div>
+            <?php if ($rebirthData['user_wallet_50'] > 0): ?>
+                <div class="text-[11px] text-emerald-300 font-bold mt-2">Group Withdrawable: $<?php echo number_format($combinedCustomerWallet, 2); ?></div>
+            <?php else: ?>
+                <div class="text-[11px] text-champagne/50 mt-2">Eligible for Payout Withdrawal</div>
+            <?php endif; ?>
         </div>
 
         <!-- Burfee Cart & Charity Allocation -->
