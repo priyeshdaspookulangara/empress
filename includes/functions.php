@@ -529,31 +529,34 @@ function registerMemberWithoutEpin($pdo, $data) {
 }
 
 /**
- * Get visual tree data for a member up to 3 levels deep
+ * Get visual tree data for a member up to $maxDepth levels deep (default 3, configurable e.g., 4)
  */
-function getMemberMatrixTree($pdo, $memberId) {
+function getMemberMatrixTree($pdo, $memberId, $maxDepth = 3, $currentDepth = 1) {
     $stmt = $pdo->prepare("SELECT member_id, name, package_type, kyc_status, created_at FROM members WHERE member_id = ?");
     $stmt->execute([$memberId]);
     $node = $stmt->fetch();
 
     if (!$node) return null;
 
-    $stmtChildren = $pdo->prepare("SELECT member_id, name, package_type, matrix_position, kyc_status FROM members WHERE placement_parent_id = ? ORDER BY matrix_position ASC");
-    $stmtChildren->execute([$memberId]);
-    $rawChildren = $stmtChildren->fetchAll();
-
-    $childrenByPos = [];
-    foreach ($rawChildren as $child) {
-        $childrenByPos[$child['matrix_position']] = $child;
-    }
-
     $node['children'] = [];
-    for ($pos = 1; $pos <= 3; $pos++) {
-        if (isset($childrenByPos[$pos])) {
-            $childMemberId = $childrenByPos[$pos]['member_id'];
-            $node['children'][$pos] = getMemberMatrixTree($pdo, $childMemberId);
-        } else {
-            $node['children'][$pos] = null; // Empty slot
+
+    if ($currentDepth < $maxDepth) {
+        $stmtChildren = $pdo->prepare("SELECT member_id, name, package_type, matrix_position, kyc_status FROM members WHERE placement_parent_id = ? ORDER BY matrix_position ASC");
+        $stmtChildren->execute([$memberId]);
+        $rawChildren = $stmtChildren->fetchAll();
+
+        $childrenByPos = [];
+        foreach ($rawChildren as $child) {
+            $childrenByPos[$child['matrix_position']] = $child;
+        }
+
+        for ($pos = 1; $pos <= 3; $pos++) {
+            if (isset($childrenByPos[$pos])) {
+                $childMemberId = $childrenByPos[$pos]['member_id'];
+                $node['children'][$pos] = getMemberMatrixTree($pdo, $childMemberId, $maxDepth, $currentDepth + 1);
+            } else {
+                $node['children'][$pos] = null; // Empty slot
+            }
         }
     }
 

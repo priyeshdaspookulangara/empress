@@ -30,13 +30,18 @@ require_once __DIR__ . '/../includes/header.php';
             <p class="text-xs text-champagne/70 mt-1">Drill down into any node's 3-matrix tree across the entire company network</p>
         </div>
 
-        <form action="/admin/matrix_tree.php" method="GET" class="flex gap-2">
-            <input type="text" name="member_id" value="<?php echo htmlspecialchars($targetId); ?>" placeholder="EMP100001" class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne uppercase font-mono focus:outline-none focus:border-gold">
-            <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold">Inspect Tree</button>
-            <?php if ($targetId !== 'EMP100000'): ?>
-                <a href="/admin/matrix_tree.php?member_id=EMP100000" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset Root</a>
-            <?php endif; ?>
-        </form>
+        <div class="flex flex-wrap gap-2 items-center">
+            <a href="/admin/print_tree.php?member_id=<?php echo urlencode($targetId); ?>" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-lg transition">
+                <i class="fa-solid fa-print"></i> 4-Level Print View
+            </a>
+            <form action="/admin/matrix_tree.php" method="GET" class="flex gap-2">
+                <input type="text" name="member_id" value="<?php echo htmlspecialchars($targetId); ?>" placeholder="EMP100001" class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne uppercase font-mono focus:outline-none focus:border-gold">
+                <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold">Inspect Tree</button>
+                <?php if ($targetId !== 'EMP100000'): ?>
+                    <a href="/admin/matrix_tree.php?member_id=EMP100000" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset Root</a>
+                <?php endif; ?>
+            </form>
+        </div>
     </div>
 
     <!-- Tree View Card -->
