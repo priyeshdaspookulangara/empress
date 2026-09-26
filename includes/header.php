@@ -217,6 +217,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             <a href="/superadmin/index.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-crown text-neon-cyan w-4 text-center"></i> Executive Overview
                             </a>
+                            <a href="/superadmin/welcome.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-brands fa-whatsapp text-emerald-400 w-4 text-center"></i> Welcome & Greet
+                            </a>
                             <a href="/superadmin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-users text-neon-cyan w-4 text-center"></i> Member List
                             </a>
@@ -258,6 +261,9 @@ if (session_status() === PHP_SESSION_NONE) {
                         <nav class="space-y-1.5 text-xs font-semibold">
                             <a href="/admin/index.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-chart-pie text-gold w-4 text-center"></i> Admin Overview
+                            </a>
+                            <a href="/admin/welcome.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-brands fa-whatsapp text-emerald-400 w-4 text-center"></i> Welcome & Greet
                             </a>
                             <a href="/admin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-users text-gold w-4 text-center"></i> Member List
