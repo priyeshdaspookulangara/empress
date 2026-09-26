@@ -249,16 +249,50 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $stmt->execute(['admin', $adminPass, 'admin']);
     }
 
-    // Seed Root Member (EMP100000) if not existing
+    // Seed Root Member (EMP100000) if not existing or ensure root details
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE member_id = ?");
     $stmt->execute(['EMP100000']);
     if ($stmt->fetchColumn() == 0) {
         $rootPass = password_hash('root123', PASSWORD_BCRYPT);
-        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status)
-            VALUES (?, NULL, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute(['EMP100000', 'Empress Root', 'root@empress2way.com', '9999999999', $rootPass, 'SYSTEM_ROOT_EPIN', 'Starter_1000', 'Active', 'Approved']);
+        $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status, address_line, city, state, pincode, pan_number, bep20_address)
+            VALUES (?, NULL, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+            'EMP100000',
+            'Burfee Cart',
+            'support@burfeecart.com',
+            '9544707955',
+            $rootPass,
+            'SYSTEM_ROOT_EPIN',
+            'Starter_1000',
+            'Active',
+            'Approved',
+            'Door No.: 15/273, First Floor, Chankarayithara Building, Muzris Nagar, Pattanam Jn.',
+            'N. Paravur',
+            'Kerala',
+            '683513',
+            'HIJKL5678M',
+            '0x6789012345abcdef6789012345abcdef67890123'
+        ]);
 
         $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
         $stmt->execute(['EMP100000']);
+    } else {
+        // Update existing EMP100000 root details
+        $stmtUp = $pdo->prepare("
+            UPDATE members
+            SET name = ?, email = ?, phone = ?, address_line = ?, city = ?, state = ?, pincode = ?, pan_number = ?, bep20_address = ?, kyc_status = 'Approved'
+            WHERE member_id = 'EMP100000'
+        ");
+        $stmtUp->execute([
+            'Burfee Cart',
+            'support@burfeecart.com',
+            '9544707955',
+            'Door No.: 15/273, First Floor, Chankarayithara Building, Muzris Nagar, Pattanam Jn.',
+            'N. Paravur',
+            'Kerala',
+            '683513',
+            'HIJKL5678M',
+            '0x6789012345abcdef6789012345abcdef67890123'
+        ]);
     }
 }

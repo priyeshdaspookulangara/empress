@@ -118,3 +118,15 @@ CREATE TABLE IF NOT EXISTS member_rebirths (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_rebirth_member (member_id)
 );
+
+-- Seed System Root Node (Burfee Cart)
+INSERT INTO admins (username, password, role) VALUES ('admin', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'admin') ON DUPLICATE KEY UPDATE id=id;
+INSERT INTO admins (username, password, role) VALUES ('superadmin', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'superadmin') ON DUPLICATE KEY UPDATE id=id;
+
+INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status, address_line, city, state, pincode, pan_number, bep20_address)
+VALUES ('EMP100000', NULL, NULL, NULL, 'Burfee Cart', 'support@burfeecart.com', '9544707955', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'SYSTEM_ROOT_EPIN', 'Starter_1000', 'Active', 'Approved', 'Door No.: 15/273, First Floor, Chankarayithara Building, Muzris Nagar, Pattanam Jn.', 'N. Paravur', 'Kerala', '683513', 'HIJKL5678M', '0x6789012345abcdef6789012345abcdef67890123')
+ON DUPLICATE KEY UPDATE name='Burfee Cart', email='support@burfeecart.com', phone='9544707955';
+
+INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40)
+VALUES ('EMP100000', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)
+ON DUPLICATE KEY UPDATE id=id;

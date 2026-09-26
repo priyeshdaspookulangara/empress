@@ -470,11 +470,18 @@ function registerMemberWithoutEpin($pdo, $data) {
 
     $pdo->beginTransaction();
 
+    $addressLine = !empty($data['address_line']) ? trim($data['address_line']) : null;
+    $city = !empty($data['city']) ? trim($data['city']) : null;
+    $state = !empty($data['state']) ? trim($data['state']) : null;
+    $pincode = !empty($data['pincode']) ? trim($data['pincode']) : null;
+    $panNumber = !empty($data['pan_number']) ? trim($data['pan_number']) : null;
+    $bep20Address = !empty($data['bep20_address']) ? trim($data['bep20_address']) : null;
+
     try {
         // Insert Member
         $stmtIns = $pdo->prepare("
-            INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', 'Approved')
+            INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status, address_line, city, state, pincode, pan_number, bep20_address)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', 'Approved', ?, ?, ?, ?, ?, ?)
         ");
         $stmtIns->execute([
             $memberId,
@@ -486,7 +493,13 @@ function registerMemberWithoutEpin($pdo, $data) {
             $phone,
             $password,
             $epinCode,
-            $packageType
+            $packageType,
+            $addressLine,
+            $city,
+            $state,
+            $pincode,
+            $panNumber,
+            $bep20Address
         ]);
 
         // Initialize Wallet
