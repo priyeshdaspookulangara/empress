@@ -226,6 +226,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             <a href="/superadmin/rebirths.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-rotate text-neon-cyan w-4 text-center"></i> Rebirth Positions
                             </a>
+                            <a href="/superadmin/p2p_wallets.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-qrcode text-neon-cyan w-4 text-center"></i> P2P Wallet QR Codes
+                            </a>
                             <a href="/superadmin/kyc.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-id-card text-neon-cyan w-4 text-center"></i> KYC Approvals
                             </a>
@@ -261,6 +264,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             </a>
                             <a href="/admin/rebirths.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-rotate text-gold w-4 text-center"></i> Rebirth Positions
+                            </a>
+                            <a href="/admin/p2p_wallets.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-qrcode text-gold w-4 text-center"></i> P2P Wallet QR Codes
                             </a>
                             <a href="/admin/kyc.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-id-card text-gold w-4 text-center"></i> KYC Approvals

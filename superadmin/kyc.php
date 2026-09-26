@@ -80,8 +80,17 @@ require_once __DIR__ . '/../includes/header.php';
                                     <?php endif; ?>
                                 </td>
                                 <td class="p-3 font-mono max-w-xs">
-                                    <div>Network: <strong class="text-ice"><?php echo htmlspecialchars($m['wallet_network'] ?: 'USDT (TRC20)'); ?></strong></div>
+                                    <?php if (!empty($m['bep20_address'])): ?>
+                                        <div class="text-emerald-400 font-bold text-[11px] break-all">BEP-20: <?php echo htmlspecialchars($m['bep20_address']); ?></div>
+                                    <?php endif; ?>
                                     <div>Address: <strong class="text-neon-cyan break-all text-[11px]"><?php echo htmlspecialchars($m['crypto_wallet_address'] ?: 'N/A'); ?></strong></div>
+                                    <?php if (!empty($m['qr_code_url'])): ?>
+                                        <div class="mt-1">
+                                            <a href="<?php echo htmlspecialchars($m['qr_code_url']); ?>" target="_blank" class="text-neon-cyan text-[10px] underline flex items-center gap-1">
+                                                <i class="fa-solid fa-qrcode"></i> View P2P QR Code
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
                                 </td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border <?php
