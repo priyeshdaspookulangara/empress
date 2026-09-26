@@ -104,6 +104,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
                 <a href="/index.php" class="hover:text-gold transition">Home</a>
                 <a href="/business_plan.php" class="hover:text-gold transition">Business Plan</a>
+                <a href="/faq.php" class="hover:text-gold transition">FAQ</a>
                 <?php if (isset($_SESSION['member_id'])): ?>
                     <a href="/customer/dashboard.php" class="text-gold font-bold hover:underline flex items-center gap-1">
                         <i class="fa-solid fa-gauge-high"></i> Dashboard
@@ -145,6 +146,8 @@ if (session_status() === PHP_SESSION_NONE) {
         <div id="mobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-gold/20 flex flex-col gap-3 text-sm">
             <a href="/index.php" class="hover:text-gold py-1">Home</a>
             <a href="/business_plan.php" class="hover:text-gold py-1">Business Plan</a>
+            <a href="/faq.php" class="hover:text-gold py-1">FAQ</a>
+            <a href="/terms.php" class="hover:text-gold py-1">Terms & Conditions</a>
             <?php if (isset($_SESSION['member_id'])): ?>
                 <a href="/customer/dashboard.php" class="text-gold font-bold py-1">Customer Dashboard</a>
                 <a href="/logout.php" class="text-red-400 py-1">Logout</a>

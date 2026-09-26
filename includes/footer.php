@@ -12,6 +12,11 @@
                 <p class="text-champagne/60 mt-1">"Double Your Path, Empower Your Future."</p>
             </div>
             <div class="text-center md:text-right text-champagne/50">
+                <div class="flex items-center justify-center md:justify-end gap-4 text-xs text-gold font-medium mb-1">
+                    <a href="/terms.php" class="hover:underline">Terms & Conditions</a>
+                    <span>•</span>
+                    <a href="/faq.php" class="hover:underline">FAQ</a>
+                </div>
                 <p>&copy; <?php echo date('Y'); ?> Empress Two Way 3.0. All Rights Reserved.</p>
                 <p class="text-gold/40 text-[10px] mt-1">Powered by BFS Forced 3-Matrix & Smart 50:50 Wallet Ecosystem</p>
             </div>
