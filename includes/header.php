@@ -197,7 +197,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <i class="fa-solid fa-rotate text-gold w-4 text-center"></i> Rebirth Positions
                             </a>
                             <a href="/customer/profile.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
-                                <i class="fa-solid fa-id-card text-gold w-4 text-center"></i> KYC & Profile
+                                <i class="fa-solid fa-id-card text-gold w-4 text-center"></i> Profile & Wallet
                             </a>
                             <a href="/business_plan.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-chart-pie text-gold w-4 text-center"></i> Compensation Plan
