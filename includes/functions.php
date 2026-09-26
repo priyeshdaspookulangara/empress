@@ -508,6 +508,92 @@ function getMemberDownline6Levels($pdo, $memberId) {
 }
 
 /**
+ * Update P2P Wallet Settings (BEP-20 Address & Receiving QR Code Image)
+ */
+function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null) {
+    $bep20Address = trim($bep20Address);
+
+    // Validate BEP-20 Address (42-character Ethereum/BSC standard address format starting with 0x)
+    if (!empty($bep20Address) && !preg_match('/^0x[a-fA-F0-9]{40}$/', $bep20Address)) {
+        return [
+            'success' => false,
+            'message' => 'Invalid BEP-20 Wallet Address. Address must be a valid 42-character hex string starting with "0x" (e.g., 0x9811cCf1E9dcc6451357D9f983E6E9bA615920B5).'
+        ];
+    }
+
+    $qrCodeUrl = null;
+
+    // Handle File Upload if provided
+    if ($fileArr && isset($fileArr['tmp_name']) && is_uploaded_file($fileArr['tmp_name'])) {
+        $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+
+        $fileName = $fileArr['name'];
+        $fileTmp = $fileArr['tmp_name'];
+        $fileSize = $fileArr['size'];
+
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        // Validate Extension & MIME
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $fileTmp);
+        finfo_close($finfo);
+
+        if (!in_array($ext, $allowedExts) || !in_array($mimeType, $allowedMimes)) {
+            return [
+                'success' => false,
+                'message' => 'Invalid file format. Only JPG, JPEG, PNG, and WEBP image files are allowed for personal QR code.'
+            ];
+        }
+
+        if ($fileSize > 5 * 1024 * 1024) { // 5MB limit
+            return [
+                'success' => false,
+                'message' => 'File size exceeds 5MB maximum limit.'
+            ];
+        }
+
+        $uploadDir = __DIR__ . '/../uploads/qrs/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $newFileName = 'qr_' . preg_replace('/[^a-zA-Z0-9]/', '', $memberId) . '_' . time() . '.' . $ext;
+        $targetFile = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($fileTmp, $targetFile)) {
+            $qrCodeUrl = '/uploads/qrs/' . $newFileName;
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Failed to save QR code image file to server.'
+            ];
+        }
+    }
+
+    try {
+        if ($qrCodeUrl !== null) {
+            $stmt = $pdo->prepare("UPDATE members SET bep20_address = ?, qr_code_url = ? WHERE member_id = ?");
+            $stmt->execute([$bep20Address, $qrCodeUrl, $memberId]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE members SET bep20_address = ? WHERE member_id = ?");
+            $stmt->execute([$bep20Address, $memberId]);
+        }
+
+        return [
+            'success' => true,
+            'message' => 'P2P Wallet Settings updated successfully!',
+            'qr_code_url' => $qrCodeUrl
+        ];
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'message' => 'Database update failed: ' . $e->getMessage()
+        ];
+    }
+}
+
+/**
  * Submit USDT Fund Deposit Request
  */
 function submitFundDeposit($pdo, $userId, $txHash, $amount, $network = 'BEP-20') {

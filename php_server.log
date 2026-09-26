@@ -23,3 +23,21 @@
 [Sat Sep 26 01:38:45 2026] 127.0.0.1:42428 Accepted
 [Sat Sep 26 01:38:45 2026] 127.0.0.1:42428 [200]: GET /assets/images/image_45cf5f.jpg
 [Sat Sep 26 01:38:45 2026] 127.0.0.1:42428 Closing
+[Sat Sep 26 01:57:36 2026] 127.0.0.1:44496 Accepted
+[Sat Sep 26 01:57:36 2026] 127.0.0.1:44496 [200]: GET /login.php
+[Sat Sep 26 01:57:36 2026] 127.0.0.1:44496 Closing
+[Sat Sep 26 01:57:39 2026] 127.0.0.1:43168 Accepted
+[Sat Sep 26 01:57:39 2026] 127.0.0.1:43168 [302]: POST /login.php
+[Sat Sep 26 01:57:39 2026] 127.0.0.1:43168 Closing
+[Sat Sep 26 01:57:39 2026] 127.0.0.1:43172 Accepted
+[Sat Sep 26 01:57:39 2026] 127.0.0.1:43172 [200]: GET /customer/dashboard.php
+[Sat Sep 26 01:57:39 2026] 127.0.0.1:43172 Closing
+[Sat Sep 26 01:57:40 2026] 127.0.0.1:43182 Accepted
+[Sat Sep 26 01:57:40 2026] 127.0.0.1:43182 [200]: GET /customer/profile.php
+[Sat Sep 26 01:57:40 2026] 127.0.0.1:43182 Closing
+[Sat Sep 26 01:57:43 2026] 127.0.0.1:43194 Accepted
+[Sat Sep 26 01:57:43 2026] 127.0.0.1:43194 [200]: POST /customer/profile.php
+[Sat Sep 26 01:57:43 2026] 127.0.0.1:43194 Closing
+[Sat Sep 26 01:57:43 2026] 127.0.0.1:43208 Accepted
+[Sat Sep 26 01:57:43 2026] 127.0.0.1:43208 [200]: GET /uploads/qrs/qr_EMP100000_1790387863.jpg
+[Sat Sep 26 01:57:43 2026] 127.0.0.1:43208 Closing

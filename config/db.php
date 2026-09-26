@@ -105,6 +105,8 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             ifsc_code VARCHAR(20) DEFAULT NULL,
             crypto_wallet_address VARCHAR(255) DEFAULT NULL,
             wallet_network VARCHAR(50) DEFAULT 'USDT (TRC20)',
+            bep20_address VARCHAR(100) DEFAULT NULL,
+            qr_code_url VARCHAR(255) DEFAULT NULL,
             kyc_status VARCHAR(20) NOT NULL DEFAULT 'Pending',
             created_at $timestamp
         )",
@@ -187,6 +189,14 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
 
     try {
         $pdo->exec("ALTER TABLE wallets ADD COLUMN charity_wallet DECIMAL(12,2) NOT NULL DEFAULT 0.00");
+    } catch (Exception $e) {}
+
+    try {
+        $pdo->exec("ALTER TABLE members ADD COLUMN bep20_address VARCHAR(100) DEFAULT NULL");
+    } catch (Exception $e) {}
+
+    try {
+        $pdo->exec("ALTER TABLE members ADD COLUMN qr_code_url VARCHAR(255) DEFAULT NULL");
     } catch (Exception $e) {}
 
     // Recalculate and correct existing wallets data and names once
