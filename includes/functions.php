@@ -441,6 +441,81 @@ function registerMember($pdo, $data) {
 }
 
 /**
+ * Register a new member WITHOUT requiring an ePIN code (for Admin SQL Import & direct registration).
+ * Triggers full BFS Matrix placement, wallet initialization, 50:50 commission distribution, and rebirth checks.
+ */
+function registerMemberWithoutEpin($pdo, $data) {
+    $sponsorId = !empty($data['sponsor_id']) ? trim($data['sponsor_id']) : 'EMP100000';
+    $name = !empty($data['name']) ? trim($data['name']) : 'Burfee Cart';
+    $email = !empty($data['email']) ? trim($data['email']) : ('member_' . time() . '_' . rand(100,999) . '@empress2way.com');
+    $phone = !empty($data['phone']) ? trim($data['phone']) : ('9' . str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT));
+    $rawPassword = !empty($data['password']) ? $data['password'] : '123456';
+    $password = password_hash($rawPassword, PASSWORD_BCRYPT);
+    $packageType = !empty($data['package_type']) ? trim($data['package_type']) : 'Starter_1000';
+    $epinCode = !empty($data['used_epin']) ? trim($data['used_epin']) : ('ADMIN_SQL_IMPORT_' . strtoupper(bin2hex(random_bytes(3))));
+
+    // Check sponsor exists
+    $stmtSponsor = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
+    $stmtSponsor->execute([$sponsorId]);
+    if (!$stmtSponsor->fetch()) {
+        $sponsorId = 'EMP100000';
+    }
+
+    // Find BFS Matrix Placement
+    $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+    $placementParentId = $placement['placement_parent_id'];
+    $matrixPos = $placement['matrix_position'];
+
+    $memberId = generateMemberID($pdo);
+
+    $pdo->beginTransaction();
+
+    try {
+        // Insert Member
+        $stmtIns = $pdo->prepare("
+            INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', 'Approved')
+        ");
+        $stmtIns->execute([
+            $memberId,
+            $sponsorId,
+            $placementParentId,
+            $matrixPos,
+            $name,
+            $email,
+            $phone,
+            $password,
+            $epinCode,
+            $packageType
+        ]);
+
+        // Initialize Wallet
+        $stmtWallet = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
+        $stmtWallet->execute([$memberId]);
+
+        // Distribute Matrix Commissions across ancestors
+        distributeMatrixCommissions($pdo, $memberId);
+
+        $pdo->commit();
+
+        return [
+            'success' => true,
+            'member_id' => $memberId,
+            'placement_parent_id' => $placementParentId,
+            'matrix_position' => $matrixPos,
+            'name' => $name,
+            'email' => $email,
+            'sponsor_id' => $sponsorId,
+            'message' => "Member {$memberId} successfully registered and placed under {$placementParentId} (Position {$matrixPos})."
+        ];
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => 'Registration failed: ' . $e->getMessage()];
+    }
+}
+
+/**
  * Get visual tree data for a member up to 3 levels deep
  */
 function getMemberMatrixTree($pdo, $memberId) {
