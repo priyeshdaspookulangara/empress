@@ -181,6 +181,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             <a href="/customer/dashboard.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-gauge-high text-gold w-4 text-center"></i> Dashboard
                             </a>
+                            <a href="/customer/deposit.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-qrcode text-emerald-400 w-4 text-center"></i> USDT Deposit
+                            </a>
                             <a href="/customer/wallet.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-wallet text-gold w-4 text-center"></i> Member Wallet
                             </a>

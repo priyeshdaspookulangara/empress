@@ -155,6 +155,16 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             completed_level INT NOT NULL,
             rebirth_count INT NOT NULL,
             created_at $timestamp
+        )",
+
+        "CREATE TABLE IF NOT EXISTS deposits (
+            id $autoInc,
+            user_id VARCHAR(50) NOT NULL,
+            tx_hash VARCHAR(100) NOT NULL UNIQUE,
+            amount DECIMAL(12,2) NOT NULL,
+            network VARCHAR(50) NOT NULL DEFAULT 'BEP-20',
+            status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+            created_at $timestamp
         )"
     ];
 

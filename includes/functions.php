@@ -508,6 +508,53 @@ function getMemberDownline6Levels($pdo, $memberId) {
 }
 
 /**
+ * Submit USDT Fund Deposit Request
+ */
+function submitFundDeposit($pdo, $userId, $txHash, $amount, $network = 'BEP-20') {
+    $txHash = trim($txHash);
+    $amount = (float)$amount;
+
+    if ($amount <= 0) {
+        return ['success' => false, 'message' => 'Deposit amount must be greater than 0 USDT.'];
+    }
+
+    if (!preg_match('/^0x[a-fA-F0-9]{64}$/', $txHash) && !preg_match('/^0x[a-fA-F0-9]+$/', $txHash)) {
+        return ['success' => false, 'message' => 'Invalid Transaction Hash format. Must start with "0x" followed by valid hexadecimal character string.'];
+    }
+
+    // Check if Tx Hash already submitted
+    $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM deposits WHERE tx_hash = ?");
+    $stmtCheck->execute([$txHash]);
+    if ($stmtCheck->fetchColumn() > 0) {
+        return ['success' => false, 'message' => 'This Transaction Hash / TxID has already been submitted.'];
+    }
+
+    try {
+        $stmtIns = $pdo->prepare("
+            INSERT INTO deposits (user_id, tx_hash, amount, network, status)
+            VALUES (?, ?, ?, ?, 'Pending')
+        ");
+        $stmtIns->execute([$userId, $txHash, $amount, $network]);
+
+        return [
+            'success' => true,
+            'message' => 'USDT (BEP-20) deposit request submitted successfully! Pending verification by financial auditor.'
+        ];
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => 'Failed to submit deposit: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Get user deposit history
+ */
+function getUserDeposits($pdo, $userId) {
+    $stmt = $pdo->prepare("SELECT * FROM deposits WHERE user_id = ? ORDER BY id DESC");
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll();
+}
+
+/**
  * Safe Member Deletion: Re-parents matrix children to Root EMP100000
  */
 function deleteMemberSafely($pdo, $memberIdToDelete) {

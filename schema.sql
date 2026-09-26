@@ -96,6 +96,18 @@ CREATE TABLE IF NOT EXISTS api_tokens (
     INDEX idx_token (token)
 );
 
+CREATE TABLE IF NOT EXISTS deposits (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    tx_hash VARCHAR(100) NOT NULL UNIQUE,
+    amount DECIMAL(12,2) NOT NULL,
+    network VARCHAR(50) NOT NULL DEFAULT 'BEP-20',
+    status ENUM('Pending', 'Approved', 'Rejected') NOT NULL DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_id),
+    INDEX idx_tx (tx_hash)
+);
+
 CREATE TABLE IF NOT EXISTS member_rebirths (
     id INT AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(20) NOT NULL,

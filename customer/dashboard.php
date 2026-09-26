@@ -172,7 +172,20 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Quick Quick Links Section -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <a href="/customer/deposit.php" class="glass-card p-6 rounded-2xl border border-emerald-500/30 hover:border-emerald-500/60 flex items-center justify-between group transition">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl group-hover:scale-110 transition">
+                    <i class="fa-solid fa-qrcode"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-champagne">USDT Deposit</h3>
+                    <p class="text-xs text-champagne/60">Deposit via BEP-20 network</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-emerald-400 text-sm group-hover:translate-x-1 transition"></i>
+        </a>
+
         <a href="/customer/teams.php" class="glass-card p-6 rounded-2xl border border-gold/20 hover:border-gold/50 flex items-center justify-between group transition">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 text-gold flex items-center justify-center text-xl group-hover:scale-110 transition">
