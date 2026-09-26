@@ -70,7 +70,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $singleCount = (int)($_POST['single_count'] ?? 1);
     $actionType = $_POST['action_type'] ?? 'sql';
 
-    if ($actionType === 'sql' && !empty($sqlInput)) {
+    if ($actionType === 'reset_database') {
+        $resetRes = resetDatabaseToCleanState($pdo);
+        if ($resetRes['success']) {
+            $errorMsg = '';
+            $results[] = [
+                'success' => true,
+                'member_id' => 'SYSTEM_RESET',
+                'name' => 'Database Purged',
+                'placement_parent_id' => 'NONE',
+                'matrix_position' => 0,
+                'sponsor_id' => 'ADMIN',
+                'message' => $resetRes['message']
+            ];
+            $countSuccess = 1;
+        } else {
+            $errorMsg = $resetRes['message'];
+        }
+    } elseif ($actionType === 'sql' && !empty($sqlInput)) {
         $parsed = parseMemberInsertSQL($sqlInput);
 
         if (empty($parsed)) {
@@ -214,8 +231,9 @@ require_once __DIR__ . '/../includes/header.php';
             </form>
         </div>
 
-        <!-- Quick Bulk Generator -->
-        <div class="glass-card p-6 rounded-3xl border border-gold/20 space-y-4">
+        <!-- Quick Bulk Generator & Database Reset -->
+        <div class="space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-gold/20 space-y-4">
             <h3 class="text-base font-bold text-gold border-b border-gold/20 pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-bolt"></i> Quick Bulk Node Generator
             </h3>
@@ -247,6 +265,23 @@ require_once __DIR__ . '/../includes/header.php';
                     </button>
                 </div>
             </form>
+            </div>
+
+            <!-- Fresh Copy / Purge DB Card -->
+            <div class="glass-card p-6 rounded-3xl border border-red-500/30 space-y-3 bg-red-950/10">
+                <h3 class="text-sm font-bold text-red-400 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Purge & Fresh DB Copy
+                </h3>
+                <p class="text-[11px] text-champagne/70 leading-relaxed">
+                    Wipe all customer members, matrix nodes, transactions, and wallets to start a 100% fresh copy with 0 members. Only Root <code class="text-gold font-mono">EMP100000</code> and Admin accounts will remain.
+                </p>
+                <form method="POST" onsubmit="return confirm('WARNING: Are you sure you want to purge all members and reset the database to a fresh empty state? This action cannot be undone!');">
+                    <input type="hidden" name="action_type" value="reset_database">
+                    <button type="submit" class="w-full bg-red-600/80 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trash-can"></i> Reset Database to Fresh State
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

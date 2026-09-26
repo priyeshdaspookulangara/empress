@@ -750,3 +750,27 @@ function deleteMemberSafely($pdo, $memberIdToDelete) {
         return ['success' => false, 'message' => 'Deletion failed: ' . $e->getMessage()];
     }
 }
+
+/**
+ * Reset Database to Fresh Initial State (0 Customer Members, only Root EMP100000 & Admins remain)
+ */
+function resetDatabaseToCleanState($pdo) {
+    $pdo->beginTransaction();
+    try {
+        $pdo->exec("DELETE FROM members WHERE member_id != 'EMP100000'");
+        $pdo->exec("DELETE FROM wallets WHERE member_id != 'EMP100000'");
+        $pdo->exec("UPDATE wallets SET balance = 0.00, user_wallet_50 = 0.00, burfee_cart_wallet = 0.00, charity_wallet = 0.00, user_wallet_60 = 0.00, company_wallet_40 = 0.00 WHERE member_id = 'EMP100000'");
+        $pdo->exec("DELETE FROM transactions");
+        $pdo->exec("DELETE FROM withdrawals");
+        $pdo->exec("DELETE FROM deposits");
+        $pdo->exec("DELETE FROM member_rebirths");
+        $pdo->exec("DELETE FROM epins WHERE epin_code != 'SYSTEM_ROOT_EPIN'");
+        $pdo->exec("DELETE FROM api_tokens");
+
+        $pdo->commit();
+        return ['success' => true, 'message' => 'Database successfully reset to clean state! All customer members and transactions purged. Only Root EMP100000 and Admins remain.'];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => 'Database reset failed: ' . $e->getMessage()];
+    }
+}
