@@ -787,6 +787,192 @@ function formatMemberName($name) {
 }
 
 /**
+ * Verify USDT (BEP-20) Transaction on BSC Blockchain (via BSC JSON-RPC and BscScan API)
+ * Returns array: ['success' => bool, 'verified' => bool, 'amount' => float, 'sender' => string, 'receiver' => string, 'message' => string]
+ */
+function verifyBscTransactionOnChain($txHash, $expectedReceiverWallet = '0x9811cCf1E9dcc6451357D9f983E6E9bA615920B5', $bscScanApiKey = '') {
+    $txHash = trim($txHash);
+    $expectedReceiverWallet = strtolower(trim($expectedReceiverWallet));
+    $usdtContract = '0x55d398326f99059ff775485246999027b3197955'; // Official BSC USDT Token Contract
+
+    if (!preg_match('/^0x[a-fA-F0-9]{64}$/', $txHash)) {
+        return [
+            'success' => false,
+            'verified' => false,
+            'message' => 'Invalid 66-character TxHash format.'
+        ];
+    }
+
+    // 1. Attempt BscScan API Endpoint
+    $apiUrl = "https://api.bscscan.com/api?module=account&action=tokentx&contractaddress=" . $usdtContract . "&address=" . $expectedReceiverWallet . "&sort=desc";
+    if (!empty($bscScanApiKey)) {
+        $apiUrl .= "&apikey=" . urlencode($bscScanApiKey);
+    }
+
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $apiUrl,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 8,
+        CURLOPT_HTTPHEADER => ['Accept: application/json']
+    ]);
+    $response = curl_exec($ch);
+    $curlErr = curl_error($ch);
+    curl_close($ch);
+
+    if ($response) {
+        $json = json_decode($response, true);
+        if (isset($json['status']) && $json['status'] == '1' && !empty($json['result'])) {
+            foreach ($json['result'] as $tx) {
+                if (strtolower($tx['hash']) === strtolower($txHash)) {
+                    $toAddr = strtolower($tx['to']);
+                    if ($toAddr === $expectedReceiverWallet) {
+                        $rawAmount = (float)($tx['value'] ?? 0);
+                        $decimals = (int)($tx['tokenDecimal'] ?? 18);
+                        $usdtAmount = $rawAmount / pow(10, $decimals);
+
+                        return [
+                            'success' => true,
+                            'verified' => true,
+                            'amount' => round($usdtAmount, 2),
+                            'sender' => $tx['from'] ?? '',
+                            'receiver' => $tx['to'] ?? '',
+                            'message' => 'Transaction verified successfully on BSC via BscScan API!'
+                        ];
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Fallback: Public BSC JSON-RPC Node (https://bsc-dataseed.binance.org/)
+    $rpcPayload = json_encode([
+        'jsonrpc' => '2.0',
+        'method' => 'eth_getTransactionReceipt',
+        'params' => [$txHash],
+        'id' => 1
+    ]);
+
+    $chRpc = curl_init('https://bsc-dataseed.binance.org/');
+    curl_setopt_array($chRpc, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $rpcPayload,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_TIMEOUT => 8
+    ]);
+    $rpcResponse = curl_exec($chRpc);
+    curl_close($chRpc);
+
+    if ($rpcResponse) {
+        $rpcJson = json_decode($rpcResponse, true);
+        if (isset($rpcJson['result']) && !empty($rpcJson['result'])) {
+            $receipt = $rpcJson['result'];
+            $status = $receipt['status'] ?? '0x0';
+
+            if ($status === '0x1') {
+                $logs = $receipt['logs'] ?? [];
+                $transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+
+                foreach ($logs as $log) {
+                    $address = strtolower($log['address'] ?? '');
+                    $topics = $log['topics'] ?? [];
+
+                    if ($address === strtolower($usdtContract) && isset($topics[0]) && strtolower($topics[0]) === $transferTopic) {
+                        $toHex = strtolower($topics[2] ?? '');
+                        $recipientPadded = '0x' . str_pad(substr($expectedReceiverWallet, 2), 64, '0', STR_PAD_LEFT);
+
+                        if ($toHex === strtolower($recipientPadded)) {
+                            $dataHex = $log['data'] ?? '0x0';
+                            $hexClean = ltrim(substr($dataHex, 2), '0');
+                            $rawVal = !empty($hexClean) ? hexdec($hexClean) : 0;
+                            $usdtAmount = $rawVal / 1e18;
+
+                            return [
+                                'success' => true,
+                                'verified' => true,
+                                'amount' => round($usdtAmount, 2),
+                                'sender' => isset($topics[1]) ? '0x' . substr($topics[1], 26) : '',
+                                'receiver' => $expectedReceiverWallet,
+                                'message' => 'Transaction receipt verified on BSC Smart Contract!'
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return [
+        'success' => false,
+        'verified' => false,
+        'message' => 'Transaction Hash not found or not yet confirmed on BSC blockchain. Ensure funds were sent to ' . $expectedReceiverWallet
+    ];
+}
+
+/**
+ * Process Automatic or Admin Deposit Approval on Database
+ */
+function approveDepositAndCreditWallet($pdo, $depositId, $adminNotes = 'Verified on BSC Blockchain') {
+    $stmt = $pdo->prepare("SELECT * FROM deposits WHERE id = ?");
+    $stmt->execute([$depositId]);
+    $dep = $stmt->fetch();
+
+    if (!$dep) {
+        return ['success' => false, 'message' => 'Deposit record not found.'];
+    }
+
+    if ($dep['status'] === 'Approved') {
+        return ['success' => false, 'message' => 'Deposit has already been approved and credited previously.'];
+    }
+
+    $userId = $dep['user_id'];
+    $amount = (float)$dep['amount'];
+
+    $pdo->beginTransaction();
+    try {
+        // Mark deposit as Approved
+        $stmtUp = $pdo->prepare("UPDATE deposits SET status = 'Approved' WHERE id = ?");
+        $stmtUp->execute([$depositId]);
+
+        // Ensure user wallet exists
+        $stmtW = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
+        $stmtW->execute([$userId]);
+        if (!$stmtW->fetch()) {
+            $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$userId]);
+        }
+
+        // Credit user wallet
+        $stmtCredit = $pdo->prepare("
+            UPDATE wallets
+            SET balance = balance + ?,
+                user_wallet_50 = user_wallet_50 + ?,
+                user_wallet_60 = user_wallet_60 + ?
+            WHERE member_id = ?
+        ");
+        $stmtCredit->execute([$amount, $amount, $amount, $userId]);
+
+        // Record Transaction
+        $stmtTx = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES (?, 'Admin_Adjustment', ?, 'User_Wallet', 'Credit', ?)
+        ");
+        $desc = "USDT (BEP-20) Deposit Credited. TxID: " . $dep['tx_hash'] . " (" . $adminNotes . ")";
+        $stmtTx->execute([$userId, $amount, $desc]);
+
+        $pdo->commit();
+
+        return [
+            'success' => true,
+            'message' => "Deposit #{$depositId} (\${$amount} USDT) successfully verified and credited to member {$userId} wallet!"
+        ];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => 'Failed to approve deposit: ' . $e->getMessage()];
+    }
+}
+
+/**
  * Reset Database to Fresh Initial State (0 Customer Members, only Root EMP100000 & Admins remain)
  */
 function resetDatabaseToCleanState($pdo) {
