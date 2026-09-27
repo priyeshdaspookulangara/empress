@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Welcome & WhatsApp Greeting Center";
+$pageTitle = "New Member WhatsApp Welcome & Greeting Portal";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -10,6 +10,7 @@ if (!isset($_SESSION['admin_id'])) {
 
 $pdo = getDBConnection();
 $search = trim($_GET['search'] ?? '');
+$selectedMemberId = trim($_GET['member_id'] ?? '');
 
 $sql = "SELECT m.*, w.balance, w.user_wallet_50, w.burfee_cart_wallet, w.charity_wallet
         FROM members m
@@ -28,19 +29,47 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $members = $stmt->fetchAll();
 
+// Get target member for preview generator (default to newest member or selected)
+$targetMember = null;
+if (!empty($selectedMemberId)) {
+    foreach ($members as $m) {
+        if ($m['member_id'] === $selectedMemberId) {
+            $targetMember = $m;
+            break;
+        }
+    }
+}
+if (!$targetMember && !empty($members)) {
+    $targetMember = $members[0];
+}
+
+// Preset Motivational Quotes
+$motivationalQuotes = [
+    "1" => "Success is not final, failure is not fatal: it is the courage to continue that counts. Your journey to financial freedom starts today! 💎🔥",
+    "2" => "The future belongs to those who believe in the beauty of their dreams. Double your path and build your empire! 🚀✨",
+    "3" => "Small daily steps lead to massive lifetime achievements. Welcome to a platform built for your ultimate empowerment! 🌟🏆",
+    "4" => "Opportunities don't happen, you create them. Together with Empress Two Way 3.0, your growth knows no boundaries! 💎👑"
+];
+
+$selectedQuoteKey = $_GET['quote_key'] ?? '1';
+$customQuote = trim($_GET['custom_quote'] ?? $motivationalQuotes[$selectedQuoteKey] ?? $motivationalQuotes['1']);
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="space-y-6">
+    <!-- Header Banner -->
     <div class="glass-card p-6 rounded-3xl border border-gold/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-extrabold gold-gradient-text">Welcome & WhatsApp Greeting Portal</h1>
-            <p class="text-xs text-champagne/70 mt-1">Send formatted account welcome details & motivational greetings to members directly via WhatsApp</p>
+            <h1 class="text-2xl font-extrabold gold-gradient-text flex items-center gap-3">
+                <i class="fa-brands fa-whatsapp text-emerald-400"></i> New Member WhatsApp Welcome Portal
+            </h1>
+            <p class="text-xs text-champagne/70 mt-1">Generate beautifully formatted WhatsApp credentials, motivational quotes, and portal access links for new members</p>
         </div>
 
         <!-- Search Bar -->
         <form action="/admin/welcome.php" method="GET" class="flex gap-2 w-full md:w-auto">
-            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search ID, Name, Phone..." class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne focus:outline-none focus:border-gold w-64">
+            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search Member ID, Name, Phone..." class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne focus:outline-none focus:border-gold w-64">
             <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold">Search</button>
             <?php if (!empty($search)): ?>
                 <a href="/admin/welcome.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset</a>
@@ -48,8 +77,109 @@ require_once __DIR__ . '/../includes/header.php';
         </form>
     </div>
 
-    <!-- Members Table with Greet Button -->
-    <div class="glass-card p-6 rounded-3xl border border-gold/20">
+    <!-- Featured WhatsApp Composer Card -->
+    <?php if ($targetMember): ?>
+        <?php
+        $cleanPhone = preg_replace('/[^0-9]/', '', $targetMember['phone']);
+        if (strlen($cleanPhone) === 10) {
+            $cleanPhone = '91' . $cleanPhone;
+        }
+
+        $pkgName = str_replace('_', ' ', $targetMember['package_type']);
+        $loginUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
+
+        $waText = "🌟 *WELCOME TO EMPRESS TWO WAY 3.0!* 🌟\n\n" .
+                  "Dear *{$targetMember['name']}*,\n" .
+                  "Congratulations and a warm welcome to the Empress Two Way 3.0 family! 🚀✨\n\n" .
+                  "📋 *YOUR ACCOUNT CREDENTIALS & DETAILS:*\n" .
+                  "▫️ *Member ID:* {$targetMember['member_id']}\n" .
+                  "▫️ *Full Name:* {$targetMember['name']}\n" .
+                  "▫️ *Mobile:* {$targetMember['phone']}\n" .
+                  "▫️ *Email:* {$targetMember['email']}\n" .
+                  "▫️ *Activation Package:* {$pkgName}\n" .
+                  "▫️ *Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'EMP100000') . "\n" .
+                  "▫️ *Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
+                  "🔑 *MEMBER PORTAL LOGIN:*\n{$loginUrl}\n\n" .
+                  "💡 *MOTIVATIONAL THOUGHT FOR YOU:*\n" .
+                  "_" . $customQuote . "_\n\n" .
+                  "Empress Two Way 3.0 Management Team\n" .
+                  "Tagline: _Double Your Path, Empower Your Future._";
+
+        $waUrl = "https://wa.me/" . $cleanPhone . "?text=" . rawurlencode($waText);
+        ?>
+
+        <div class="glass-card p-6 rounded-3xl border border-emerald-500/40 bg-emerald-950/10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Configurator -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm border-b border-emerald-500/20 pb-2">
+                    <i class="fa-solid fa-sliders"></i> WhatsApp Message Customizer
+                </div>
+
+                <form method="GET" action="/admin/welcome.php" class="space-y-3 text-xs">
+                    <?php if (!empty($search)): ?>
+                        <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                    <?php endif; ?>
+
+                    <div>
+                        <label class="block font-semibold text-gold mb-1">Select Member to Greet</label>
+                        <select name="member_id" onchange="this.form.submit()" class="w-full bg-obsidian border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold font-mono">
+                            <?php foreach ($members as $m): ?>
+                                <option value="<?php echo $m['member_id']; ?>" <?php echo $m['member_id'] === $targetMember['member_id'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($m['member_id'] . ' - ' . $m['name'] . ' (' . $m['phone'] . ')'); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-gold mb-1">Select Motivational Quote</label>
+                        <select name="quote_key" onchange="this.form.submit()" class="w-full bg-obsidian border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold">
+                            <?php foreach ($motivationalQuotes as $k => $q): ?>
+                                <option value="<?php echo $k; ?>" <?php echo $k == $selectedQuoteKey ? 'selected' : ''; ?>>
+                                    Quote #<?php echo $k; ?>: <?php echo htmlspecialchars(substr($q, 0, 60)) . '...'; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-gold mb-1">Customize Quote / Personal Message</label>
+                        <textarea name="custom_quote" rows="3" onblur="this.form.submit()" class="w-full bg-obsidian border border-gold/30 rounded-xl p-3 text-champagne focus:outline-none focus:border-gold text-xs"><?php echo htmlspecialchars($customQuote); ?></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <a href="<?php echo $waUrl; ?>" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 text-sm">
+                            <i class="fa-brands fa-whatsapp text-lg"></i> Send WhatsApp Welcome Message
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Live Preview Bubble -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold text-champagne border-b border-gold/20 pb-2">
+                    <span class="flex items-center gap-2 text-gold"><i class="fa-solid fa-mobile-screen"></i> WhatsApp Live Formatting Preview</span>
+                    <span class="text-emerald-400 font-mono"><i class="fa-solid fa-circle text-[8px]"></i> Ready to Send</span>
+                </div>
+
+                <div class="bg-[#0b141a] border border-[#222d34] rounded-2xl p-4 font-sans text-xs text-[#e9edef] whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto custom-scrollbar shadow-inner relative">
+                    <div class="bg-[#005c4b] text-[#e9edef] p-3.5 rounded-2xl rounded-tl-none shadow-md border border-[#007a63]/40">
+<?php echo htmlspecialchars($waText); ?>
+                        <div class="text-[10px] text-emerald-200/60 text-right mt-2 font-mono">
+                            Just now <i class="fa-solid fa-check-double text-emerald-300 ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- All Registered Members Directory -->
+    <div class="glass-card p-6 rounded-3xl border border-gold/20 space-y-4">
+        <h3 class="text-base font-bold text-gold border-b border-gold/20 pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-users"></i> Member Directory - One-Click WhatsApp Greet
+        </h3>
+
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
@@ -65,39 +195,37 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody class="divide-y divide-gold/10 text-champagne">
                     <?php if (empty($members)): ?>
                         <tr>
-                            <td colspan="6" class="p-4 text-center text-champagne/50">No registered members found.</td>
+                            <td colspan="6" class="p-4 text-center text-champagne/50">No registered members found in directory.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($members as $m): ?>
                             <?php
-                            $cleanPhone = preg_replace('/[^0-9]/', '', $m['phone']);
-                            if (strlen($cleanPhone) === 10) {
-                                $cleanPhone = '91' . $cleanPhone;
-                            }
+                            $cleanP = preg_replace('/[^0-9]/', '', $m['phone']);
+                            if (strlen($cleanP) === 10) $cleanP = '91' . $cleanP;
 
-                            $pkgName = str_replace('_', ' ', $m['package_type']);
-                            $loginUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
+                            $pkgN = str_replace('_', ' ', $m['package_type']);
+                            $lUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
 
-                            $waText = "🌟 *WELCOME TO EMPRESS TWO WAY 3.0!* 🌟\n\n" .
+                            $mText = "🌟 *WELCOME TO EMPRESS TWO WAY 3.0!* 🌟\n\n" .
                                       "Dear *{$m['name']}*,\n" .
-                                      "Congratulations on taking a powerful step toward doubling your path and empowering your future! 🚀✨\n\n" .
+                                      "Congratulations and welcome aboard! 🚀✨\n\n" .
                                       "📋 *YOUR ACCOUNT DETAILS:*\n" .
                                       "▫️ *Member ID:* {$m['member_id']}\n" .
                                       "▫️ *Full Name:* {$m['name']}\n" .
                                       "▫️ *Mobile:* {$m['phone']}\n" .
                                       "▫️ *Email:* {$m['email']}\n" .
-                                      "▫️ *Activation Package:* {$pkgName}\n" .
+                                      "▫️ *Package:* {$pkgN}\n" .
                                       "▫️ *Sponsor ID:* " . ($m['sponsor_id'] ?: 'EMP100000') . "\n" .
-                                      "▫️ *Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
-                                      "🔑 *Portal Login URL:*\n{$loginUrl}\n\n" .
-                                      "💡 *MOTIVATIONAL THOUGHT OF THE DAY:*\n" .
-                                      "_\"Success is not final, failure is not fatal: it is the courage to continue that counts. Your journey to financial freedom starts today!\"_ 💎🔥\n\n" .
-                                      "Empress Two Way 3.0 Management Team\n" .
-                                      "Tagline: _Double Your Path, Empower Your Future._";
+                                      "▫️ *Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . "\n\n" .
+                                      "🔑 *Portal Login:* {$lUrl}\n\n" .
+                                      "💡 *MOTIVATIONAL THOUGHT:*\n" .
+                                      "_\"" . $customQuote . "\"_\n\n" .
+                                      "Empress Two Way 3.0 Management Team";
 
-                            $waUrl = "https://wa.me/" . $cleanPhone . "?text=" . rawurlencode($waText);
+                            $mUrl = "https://wa.me/" . $cleanP . "?text=" . rawurlencode($mText);
+                            $isSelected = $targetMember && $targetMember['member_id'] === $m['member_id'];
                             ?>
-                            <tr class="hover:bg-gold/5 transition">
+                            <tr class="<?php echo $isSelected ? 'bg-gold/10 border-l-4 border-gold' : 'hover:bg-gold/5'; ?> transition">
                                 <td class="p-3 font-mono text-gold font-bold text-sm">
                                     <?php echo htmlspecialchars($m['member_id']); ?>
                                 </td>
@@ -110,12 +238,18 @@ require_once __DIR__ . '/../includes/header.php';
                                     <div>Sp: <span class="text-gold font-semibold"><?php echo htmlspecialchars($m['sponsor_id'] ?: 'ROOT'); ?></span></div>
                                     <div>Par: <span class="text-emerald-400 font-semibold"><?php echo htmlspecialchars($m['placement_parent_id'] ?: 'ROOT'); ?></span> (Pos <?php echo $m['matrix_position'] ?: '1'; ?>)</div>
                                 </td>
-                                <td class="p-3 font-semibold text-gold"><?php echo $pkgName; ?></td>
+                                <td class="p-3 font-semibold text-gold"><?php echo $pkgN; ?></td>
                                 <td class="p-3 font-mono text-champagne/50"><?php echo $m['created_at']; ?></td>
                                 <td class="p-3 text-right">
-                                    <a href="<?php echo $waUrl; ?>" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-4 py-2 rounded-xl text-xs transition shadow-lg shadow-emerald-900/30">
-                                        <i class="fa-brands fa-whatsapp text-sm"></i> Greet
-                                    </a>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="/admin/welcome.php?member_id=<?php echo $m['member_id']; ?>" class="bg-gold/10 hover:bg-gold/20 text-gold border border-gold/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1" title="Customize Message">
+                                            <i class="fa-solid fa-sliders"></i> Customize
+                                        </a>
+
+                                        <a href="<?php echo $mUrl; ?>" target="_blank" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-4 py-1.5 rounded-xl text-xs transition shadow-md shadow-emerald-900/30">
+                                            <i class="fa-brands fa-whatsapp text-sm"></i> Greet
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
