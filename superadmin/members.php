@@ -93,8 +93,16 @@ require_once __DIR__ . '/../includes/header.php';
                                         <?php echo htmlspecialchars($m['member_id']); ?> <i class="fa-solid fa-network-wired text-[10px] ml-1"></i>
                                     </a>
                                 </td>
+                                <?php $nameFmt = formatMemberName($m['name']); ?>
                                 <td class="p-3">
-                                    <span class="font-bold text-champagne block"><?php echo htmlspecialchars($m['name']); ?></span>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="font-bold text-ice block"><?php echo htmlspecialchars($nameFmt['clean_name']); ?></span>
+                                        <?php if ($nameFmt['is_rebirth']): ?>
+                                            <span class="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold">
+                                                <i class="fa-solid fa-rotate-right text-[8px] mr-1"></i><?php echo htmlspecialchars($nameFmt['rebirth_label']); ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                     <span class="text-champagne/60 block text-[11px]"><?php echo htmlspecialchars($m['email']); ?></span>
                                     <span class="font-mono text-gold/70 text-[11px]"><?php echo htmlspecialchars($m['phone']); ?></span>
                                 </td>

@@ -87,13 +87,14 @@ require_once __DIR__ . '/../includes/header.php';
 
         $pkgName = str_replace('_', ' ', $targetMember['package_type']);
         $loginUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
+        $cleanTargetName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $targetMember['name']));
 
         $waText = "🌟 *WELCOME TO EMPRESS TWO WAY 3.0!* 🌟\n\n" .
-                  "Dear *{$targetMember['name']}*,\n" .
+                  "Dear *{$cleanTargetName}*,\n" .
                   "Congratulations and a warm welcome to the Empress Two Way 3.0 family! 🚀✨\n\n" .
                   "📋 *YOUR ACCOUNT CREDENTIALS & DETAILS:*\n" .
                   "▫️ *Member ID:* {$targetMember['member_id']}\n" .
-                  "▫️ *Full Name:* {$targetMember['name']}\n" .
+                  "▫️ *Full Name:* {$cleanTargetName}\n" .
                   "▫️ *Mobile:* {$targetMember['phone']}\n" .
                   "▫️ *Email:* {$targetMember['email']}\n" .
                   "▫️ *Activation Package:* {$pkgName}\n" .
@@ -124,8 +125,9 @@ require_once __DIR__ . '/../includes/header.php';
                         <label class="block font-semibold text-neon-cyan mb-1">Select Member to Greet</label>
                         <select name="member_id" onchange="this.form.submit()" class="w-full bg-obsidian border border-neon-cyan/30 rounded-xl px-3 py-2 text-ice focus:outline-none focus:border-neon-cyan font-mono">
                             <?php foreach ($members as $m): ?>
+                                <?php $nf = formatMemberName($m['name']); ?>
                                 <option value="<?php echo $m['member_id']; ?>" <?php echo $m['member_id'] === $targetMember['member_id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($m['member_id'] . ' - ' . $m['name'] . ' (' . $m['phone'] . ')'); ?>
+                                    <?php echo htmlspecialchars($m['member_id'] . ' - ' . $nf['clean_name'] . ($nf['is_rebirth'] ? ' [' . $nf['rebirth_label'] . ']' : '') . ' (' . $m['phone'] . ')'); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -205,13 +207,14 @@ require_once __DIR__ . '/../includes/header.php';
 
                             $pkgN = str_replace('_', ' ', $m['package_type']);
                             $lUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
+                            $cleanMName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $m['name']));
 
                             $mText = "🌟 *WELCOME TO EMPRESS TWO WAY 3.0!* 🌟\n\n" .
-                                      "Dear *{$m['name']}*,\n" .
+                                      "Dear *{$cleanMName}*,\n" .
                                       "Congratulations and welcome aboard! 🚀✨\n\n" .
                                       "📋 *YOUR ACCOUNT DETAILS:*\n" .
                                       "▫️ *Member ID:* {$m['member_id']}\n" .
-                                      "▫️ *Full Name:* {$m['name']}\n" .
+                                      "▫️ *Full Name:* {$cleanMName}\n" .
                                       "▫️ *Mobile:* {$m['phone']}\n" .
                                       "▫️ *Email:* {$m['email']}\n" .
                                       "▫️ *Package:* {$pkgN}\n" .
@@ -225,12 +228,20 @@ require_once __DIR__ . '/../includes/header.php';
                             $mUrl = "https://wa.me/" . $cleanP . "?text=" . rawurlencode($mText);
                             $isSelected = $targetMember && $targetMember['member_id'] === $m['member_id'];
                             ?>
+                            <?php $nameFmt = formatMemberName($m['name']); ?>
                             <tr class="<?php echo $isSelected ? 'bg-neon-cyan/10 border-l-4 border-neon-cyan' : 'hover:bg-neon-cyan/5'; ?> transition">
                                 <td class="p-3 font-mono text-neon-cyan font-bold text-sm">
                                     <?php echo htmlspecialchars($m['member_id']); ?>
                                 </td>
                                 <td class="p-3">
-                                    <span class="font-bold text-ice block text-sm"><?php echo htmlspecialchars($m['name']); ?></span>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="font-bold text-ice block text-sm"><?php echo htmlspecialchars($nameFmt['clean_name']); ?></span>
+                                        <?php if ($nameFmt['is_rebirth']): ?>
+                                            <span class="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold">
+                                                <i class="fa-solid fa-rotate-right text-[8px] mr-1"></i><?php echo htmlspecialchars($nameFmt['rebirth_label']); ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                     <span class="text-ice/60 block text-[11px]"><?php echo htmlspecialchars($m['email']); ?></span>
                                     <span class="font-mono text-neon-cyan/80 text-[11px]"><i class="fa-solid fa-phone text-[9px] mr-1"></i><?php echo htmlspecialchars($m['phone']); ?></span>
                                 </td>
