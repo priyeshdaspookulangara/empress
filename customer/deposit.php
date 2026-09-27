@@ -86,7 +86,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- QR Code Image -->
             <div class="p-3 bg-white rounded-2xl border-2 border-gold/50 shadow-xl shadow-gold/10 mb-4">
-                <img src="/assets/images/image_45cf5f.jpg" onerror="this.src='/image_45cf5f.jpg'" alt="USDT BEP-20 Deposit QR Code" class="w-48 h-48 object-contain">
+                <img src="/images/usdt-wallet-qr-code.jpeg" onerror="this.src='/assets/images/image_45cf5f.jpg'" alt="USDT BEP-20 Deposit QR Code" class="w-48 h-48 object-contain">
             </div>
 
             <span class="text-xs text-champagne/60 font-medium">Scan QR Code or Copy Address</span>
