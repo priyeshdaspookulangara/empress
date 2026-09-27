@@ -26,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'] ?? 'Active';
     $kyc_status = $_POST['kyc_status'] ?? 'Pending';
     $package_type = $_POST['package_type'] ?? 'Starter_1000';
+    $sponsor_id = strtoupper(trim($_POST['sponsor_id'] ?? ''));
+    $placement_parent_id = strtoupper(trim($_POST['placement_parent_id'] ?? ''));
     $address_line = trim($_POST['address_line'] ?? '');
     $place = trim($_POST['place'] ?? '');
     $city = trim($_POST['city'] ?? '');
@@ -42,25 +44,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($name) || empty($email) || empty($phone)) {
         $err = "Name, Email, and Phone number are required.";
     } else {
-        try {
-            $stmtUp = $pdo->prepare("
-                UPDATE members SET
-                    name = ?, email = ?, phone = ?, status = ?, kyc_status = ?, package_type = ?,
-                    address_line = ?, place = ?, city = ?, pincode = ?, state = ?,
-                    pan_number = ?, aadhaar_number = ?, bank_name = ?, bank_account_number = ?,
-                    ifsc_code = ?, crypto_wallet_address = ?, wallet_network = ?
-                WHERE member_id = ?
-            ");
-            $stmtUp->execute([
-                $name, $email, $phone, $status, $kyc_status, $package_type,
-                $address_line, $place, $city, $pincode, $state,
-                $pan_number, $aadhaar_number, $bank_name, $bank_account_number,
-                $ifsc_code, $crypto_wallet_address, $wallet_network,
-                $memberId
-            ]);
-            $msg = "Member profile for {$memberId} successfully updated!";
-        } catch (Exception $e) {
-            $err = "Failed to update member: " . $e->getMessage();
+        // Validate Sponsor ID if provided
+        if (!empty($sponsor_id)) {
+            $stmtSp = $pdo->prepare("SELECT id FROM members WHERE member_id = ?");
+            $stmtSp->execute([$sponsor_id]);
+            if (!$stmtSp->fetch()) {
+                $err = "Sponsor Member ID '{$sponsor_id}' does not exist.";
+            }
+        }
+
+        // Validate Placement Parent ID if provided
+        if (empty($err) && !empty($placement_parent_id)) {
+            $stmtPar = $pdo->prepare("SELECT id FROM members WHERE member_id = ?");
+            $stmtPar->execute([$placement_parent_id]);
+            if (!$stmtPar->fetch()) {
+                $err = "Placement Parent Member ID '{$placement_parent_id}' does not exist.";
+            }
+        }
+
+        if (empty($err)) {
+            try {
+                $spVal = !empty($sponsor_id) ? $sponsor_id : NULL;
+                $parVal = !empty($placement_parent_id) ? $placement_parent_id : NULL;
+
+                $stmtUp = $pdo->prepare("
+                    UPDATE members SET
+                        name = ?, email = ?, phone = ?, status = ?, kyc_status = ?, package_type = ?,
+                        sponsor_id = ?, placement_parent_id = ?,
+                        address_line = ?, place = ?, city = ?, pincode = ?, state = ?,
+                        pan_number = ?, aadhaar_number = ?, bank_name = ?, bank_account_number = ?,
+                        ifsc_code = ?, crypto_wallet_address = ?, wallet_network = ?
+                    WHERE member_id = ?
+                ");
+                $stmtUp->execute([
+                    $name, $email, $phone, $status, $kyc_status, $package_type,
+                    $spVal, $parVal,
+                    $address_line, $place, $city, $pincode, $state,
+                    $pan_number, $aadhaar_number, $bank_name, $bank_account_number,
+                    $ifsc_code, $crypto_wallet_address, $wallet_network,
+                    $memberId
+                ]);
+                $msg = "Member profile for {$memberId} successfully updated!";
+            } catch (Exception $e) {
+                $err = "Failed to update member: " . $e->getMessage();
+            }
         }
     }
 }
@@ -149,6 +176,16 @@ require_once __DIR__ . '/../includes/header.php';
                         <option value="Starter_5000" <?php echo $m['package_type'] === 'Starter_5000' ? 'selected' : ''; ?>>Starter 5000 ($50 USD)</option>
                         <option value="Empress_15000" <?php echo $m['package_type'] === 'Empress_15000' ? 'selected' : ''; ?>>Empress 15000 ($150 USD)</option>
                     </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gold mb-1">Sponsor ID</label>
+                    <input type="text" name="sponsor_id" value="<?php echo htmlspecialchars($m['sponsor_id'] ?? 'EMP100000'); ?>" placeholder="e.g. EMP100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne font-mono focus:outline-none focus:border-gold uppercase">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-gold mb-1">Placement Parent ID</label>
+                    <input type="text" name="placement_parent_id" value="<?php echo htmlspecialchars($m['placement_parent_id'] ?? 'EMP100000'); ?>" placeholder="e.g. EMP100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne font-mono focus:outline-none focus:border-gold uppercase">
                 </div>
             </div>
         </div>
