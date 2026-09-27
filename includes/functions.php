@@ -4,16 +4,16 @@
 require_once __DIR__ . '/../config/db.php';
 
 // Level payout schedule in USD ($) (Level 1 to 6)
-// Scaled to 90% of joining amount ($9.00 / 900 INR matrix pool allocation after 10% direct referrer commission)
+// Based on 1000 INR ($10.00 USD) joining package ratio (500/1000/2000/3000/4000/5000 INR)
 const DIRECT_REFERRAL_AMOUNT = 1.00; // 10% of $10.00 joining package (100 INR)
 
 const MATRIX_PAYOUTS = [
-    1 => 4.50,
-    2 => 9.00,
-    3 => 18.00,
-    4 => 27.00,
-    5 => 36.00,
-    6 => 45.00,
+    1 => 5.00,
+    2 => 10.00,
+    3 => 20.00,
+    4 => 30.00,
+    5 => 40.00,
+    6 => 50.00,
 ];
 
 // Matrix node capacity per level
@@ -153,9 +153,17 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
         ");
         $descRef = "10% Direct Referrer Commission from new member {$newMemberId}. (50% Customer: \${$userRef}, Company 50%: \${$burfeeRef} Burfee Cart / \${$charityRef} Charity)";
         $stmtTx->execute([$sponsorId, $refAmount, $descRef]);
+
+        // Record 10% Referrer Income Deduction Entry on the new member audit log
+        $stmtTxDed = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES (?, 'Admin_Adjustment', ?, 'Main', 'Debit', ?)
+        ");
+        $descDed = "10% Direct Referrer Income Deduction (-\${$refAmount} / -100 INR) set aside from $10.00 joining package for sponsor {$sponsorId}.";
+        $stmtTxDed->execute([$newMemberId, $refAmount, $descDed]);
     }
 
-    // 2. Distribute 90% Matrix Pool Allocation across 6 levels
+    // 2. Distribute 6-Level Matrix Pool Commissions (Based on 1000 INR / $10.00 USD ratio)
     $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
     $stmt->execute([$newMemberId]);
     $currentParentId = $stmt->fetchColumn();

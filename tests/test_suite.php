@@ -49,13 +49,13 @@ assert($regRes1['success'] === true);
 $m1Id = $regRes1['member_id'];
 assert($m1Id === 'EMP100001');
 
-// Check Root Wallet received 10% Direct Referrer ($1.00) + Level 1 Matrix Commission ($4.50) = $5.50 Total Gross
-// (50% Customer = $2.75, Company 50%: 60% Burfee = $1.65, 40% Charity = $1.10)
+// Check Root Wallet received 10% Direct Referrer ($1.00) + Level 1 Matrix Commission ($5.00) = $6.00 Total Gross
+// (50% Customer = $3.00, Company 50%: 60% Burfee = $1.80, 40% Charity = $1.20)
 $rootWallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
-assert((float)$rootWallet['balance'] === 5.50);
-assert((float)$rootWallet['user_wallet_50'] === 2.75);
-assert((float)$rootWallet['burfee_cart_wallet'] === 1.65);
-assert((float)$rootWallet['charity_wallet'] === 1.10);
+assert((float)$rootWallet['balance'] === 6.00);
+assert((float)$rootWallet['user_wallet_50'] === 3.00);
+assert((float)$rootWallet['burfee_cart_wallet'] === 1.80);
+assert((float)$rootWallet['charity_wallet'] === 1.20);
 echo "PASSED\n";
 
 // Test 3: BFS Auto-Spillover placement test (Filling Level 1 of Root with 3 members)
@@ -99,13 +99,13 @@ echo "PASSED\n";
 // Test 4: Check Multi-level Commission Flow (Level 1 for EMP100001, Level 2 for Root EMP100000)
 echo "[TEST 4] Testing Multi-level Fixed Commission Distribution (Level 1 + Level 2)... ";
 $m1Wallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100001'")->fetch();
-// EMP100001 gets Level 1 matrix payout for Spillover Member 5: $4.50 (50% Customer = $2.25)
-assert((float)$m1Wallet['balance'] === 4.50);
-assert((float)$m1Wallet['user_wallet_50'] === 2.25);
+// EMP100001 gets Level 1 matrix payout for Spillover Member 5: $5.00 (50% Customer = $2.50)
+assert((float)$m1Wallet['balance'] === 5.00);
+assert((float)$m1Wallet['user_wallet_50'] === 2.50);
 
-// Root (EMP100000) gets: 4x $1.00 (Direct Referrals) + 3x $4.50 (Level 1 Matrix) + 1x $9.00 (Level 2 Matrix) + 1x $1.00 (Ref for M5) = $27.50 Total
+// Root (EMP100000) gets: 5x $1.00 (Direct Referrals) + 3x $5.00 (Level 1 Matrix) + 1x $10.00 (Level 2 Matrix) = $30.00 Total Gross
 $rootWallet2 = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
-assert((float)$rootWallet2['balance'] === 27.50);
+assert((float)$rootWallet2['balance'] === 30.00);
 echo "PASSED\n";
 
 // Test 5: KYC Approval & Payout Withdrawal Validation Rules
