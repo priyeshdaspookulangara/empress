@@ -4,14 +4,16 @@
 require_once __DIR__ . '/../config/db.php';
 
 // Level payout schedule in USD ($) (Level 1 to 6)
-// Converted from handwritten schedule ratio (500/1000/2000/3000/4000/5000)
+// Scaled to 90% of joining amount ($9.00 / 900 INR matrix pool allocation after 10% direct referrer commission)
+const DIRECT_REFERRAL_AMOUNT = 1.00; // 10% of $10.00 joining package (100 INR)
+
 const MATRIX_PAYOUTS = [
-    1 => 5.00,
-    2 => 10.00,
-    3 => 20.00,
-    4 => 30.00,
-    5 => 40.00,
-    6 => 50.00,
+    1 => 4.50,
+    2 => 9.00,
+    3 => 18.00,
+    4 => 27.00,
+    5 => 36.00,
+    6 => 45.00,
 ];
 
 // Matrix node capacity per level
@@ -108,14 +110,52 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
 }
 
 /**
- * Process Matrix Level Commissions and Helping Contributions for 6 Levels above $newMemberId
+ * Process 10% Direct Referral Commission & Matrix Level Commissions for 6 Levels above $newMemberId
  * Applies 50:50 Smart Wallet division (50% Customer Wallet, 50% Company -> 60% Burfee Cart / 40% Charity).
- * Helping contribution logic:
- * - Join: $5.00 (500 INR) matrix payout credited to direct parent (Level 1).
- * - When 3 direct joins complete: $10.00 (1000 INR) upgrade helping contribution passed to grandparent (Level 2).
- * - When 9 Level 2 members complete: $20.00 (2000 INR) upgrade helping contribution passed to grand-grandparent (Level 3).
  */
 function distributeMatrixCommissions($pdo, $newMemberId) {
+    // 1. Credit 10% Direct Referrer Income ($1.00 USD / 100 INR) to sponsor_id
+    $stmtSp = $pdo->prepare("SELECT sponsor_id FROM members WHERE member_id = ?");
+    $stmtSp->execute([$newMemberId]);
+    $sponsorId = $stmtSp->fetchColumn();
+
+    if ($sponsorId) {
+        $refAmount = DIRECT_REFERRAL_AMOUNT;
+        $userRef = round($refAmount * 0.50, 2);
+        $burfeeRef = round($refAmount * 0.30, 2);
+        $charityRef = round($refAmount * 0.20, 2);
+        $companyRef = round($refAmount * 0.50, 2);
+
+        // Ensure sponsor wallet exists
+        $stmtW = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
+        $stmtW->execute([$sponsorId]);
+        if (!$stmtW->fetch()) {
+            $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$sponsorId]);
+        }
+
+        // Update sponsor wallet
+        $upW = $pdo->prepare("
+            UPDATE wallets
+            SET balance = balance + ?,
+                user_wallet_50 = user_wallet_50 + ?,
+                burfee_cart_wallet = burfee_cart_wallet + ?,
+                charity_wallet = charity_wallet + ?,
+                user_wallet_60 = user_wallet_60 + ?,
+                company_wallet_40 = company_wallet_40 + ?
+            WHERE member_id = ?
+        ");
+        $upW->execute([$refAmount, $userRef, $burfeeRef, $charityRef, $userRef, $companyRef, $sponsorId]);
+
+        // Log Referral Transaction
+        $stmtTx = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES (?, 'Direct_Referral', ?, 'Main', 'Credit', ?)
+        ");
+        $descRef = "10% Direct Referrer Commission from new member {$newMemberId}. (50% Customer: \${$userRef}, Company 50%: \${$burfeeRef} Burfee Cart / \${$charityRef} Charity)";
+        $stmtTx->execute([$sponsorId, $refAmount, $descRef]);
+    }
+
+    // 2. Distribute 90% Matrix Pool Allocation across 6 levels
     $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
     $stmt->execute([$newMemberId]);
     $currentParentId = $stmt->fetchColumn();
@@ -729,6 +769,88 @@ function getUserDeposits($pdo, $userId) {
     $stmt = $pdo->prepare("SELECT * FROM deposits WHERE user_id = ? ORDER BY id DESC");
     $stmt->execute([$userId]);
     return $stmt->fetchAll();
+}
+
+/**
+ * Re-allocate Direct Referral Commission when a member's sponsor_id is updated by Admin/Super Admin
+ */
+function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $newSponsorId) {
+    $oldSponsorId = strtoupper(trim($oldSponsorId));
+    $newSponsorId = strtoupper(trim($newSponsorId));
+
+    if (empty($oldSponsorId) || empty($newSponsorId) || $oldSponsorId === $newSponsorId) {
+        return ['success' => true, 'message' => 'No sponsor change required.'];
+    }
+
+    $refAmount = DIRECT_REFERRAL_AMOUNT; // $1.00 USD (10% of $10.00)
+    $userRef = round($refAmount * 0.50, 2);
+    $burfeeRef = round($refAmount * 0.30, 2);
+    $charityRef = round($refAmount * 0.20, 2);
+    $companyRef = round($refAmount * 0.50, 2);
+
+    $pdo->beginTransaction();
+    try {
+        // 1. Debit Direct Referral Commission from Old Sponsor
+        $stmtWOld = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
+        $stmtWOld->execute([$oldSponsorId]);
+        if ($stmtWOld->fetch()) {
+            $stmtDeb = $pdo->prepare("
+                UPDATE wallets
+                SET balance = balance - ?,
+                    user_wallet_50 = user_wallet_50 - ?,
+                    burfee_cart_wallet = burfee_cart_wallet - ?,
+                    charity_wallet = charity_wallet - ?,
+                    user_wallet_60 = user_wallet_60 - ?,
+                    company_wallet_40 = company_wallet_40 - ?
+                WHERE member_id = ?
+            ");
+            $stmtDeb->execute([$refAmount, $userRef, $burfeeRef, $charityRef, $userRef, $companyRef, $oldSponsorId]);
+
+            // Log Debit Transaction
+            $stmtTx1 = $pdo->prepare("
+                INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+                VALUES (?, 'Admin_Adjustment', ?, 'Main', 'Debit', ?)
+            ");
+            $descDeb = "Direct Referrer Income (\${$refAmount}) transferred out to new sponsor {$newSponsorId} for member {$memberId}.";
+            $stmtTx1->execute([$oldSponsorId, $refAmount, $descDeb]);
+        }
+
+        // 2. Ensure New Sponsor Wallet Exists and Credit Direct Referral Commission
+        $stmtWNew = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
+        $stmtWNew->execute([$newSponsorId]);
+        if (!$stmtWNew->fetch()) {
+            $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$newSponsorId]);
+        }
+
+        $stmtCred = $pdo->prepare("
+            UPDATE wallets
+            SET balance = balance + ?,
+                user_wallet_50 = user_wallet_50 + ?,
+                burfee_cart_wallet = burfee_cart_wallet + ?,
+                charity_wallet = charity_wallet + ?,
+                user_wallet_60 = user_wallet_60 + ?,
+                company_wallet_40 = company_wallet_40 + ?
+            WHERE member_id = ?
+        ");
+        $stmtCred->execute([$refAmount, $userRef, $burfeeRef, $charityRef, $userRef, $companyRef, $newSponsorId]);
+
+        // Log Credit Transaction
+        $stmtTx2 = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES (?, 'Direct_Referral', ?, 'Main', 'Credit', ?)
+        ");
+        $descCred = "10% Direct Referrer Income (\${$refAmount}) re-allocated from old sponsor {$oldSponsorId} for member {$memberId}.";
+        $stmtTx2->execute([$newSponsorId, $refAmount, $descCred]);
+
+        $pdo->commit();
+        return [
+            'success' => true,
+            'message' => "Successfully transferred \${$refAmount} Direct Referrer Income from {$oldSponsorId} to new sponsor {$newSponsorId}."
+        ];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return ['success' => false, 'message' => 'Failed to re-allocate referrer income: ' . $e->getMessage()];
+    }
 }
 
 /**

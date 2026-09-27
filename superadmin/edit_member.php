@@ -64,6 +64,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($err)) {
             try {
+                // Fetch current sponsor_id before updating
+                $stmtCurSp = $pdo->prepare("SELECT sponsor_id FROM members WHERE member_id = ?");
+                $stmtCurSp->execute([$memberId]);
+                $oldSponsorId = $stmtCurSp->fetchColumn() ?: 'EMP100000';
+
                 $spVal = !empty($sponsor_id) ? $sponsor_id : NULL;
                 $parVal = !empty($placement_parent_id) ? $placement_parent_id : NULL;
 
@@ -84,7 +89,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $ifsc_code, $crypto_wallet_address, $wallet_network,
                     $memberId
                 ]);
-                $msg = "Member profile for {$memberId} successfully updated!";
+
+                // Check if sponsor_id changed and reallocate referrer income
+                $newSponsorId = $spVal ?: 'EMP100000';
+                if ($oldSponsorId !== $newSponsorId) {
+                    $realloc = reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $newSponsorId);
+                    $msg = "Member profile updated! " . $realloc['message'];
+                } else {
+                    $msg = "Member profile for {$memberId} successfully updated!";
+                }
             } catch (Exception $e) {
                 $err = "Failed to update member: " . $e->getMessage();
             }

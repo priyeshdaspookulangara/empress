@@ -49,12 +49,13 @@ assert($regRes1['success'] === true);
 $m1Id = $regRes1['member_id'];
 assert($m1Id === 'EMP100001');
 
-// Check Root Wallet received Level 1 Commission ($10: 50% Customer = $5.00, Company 50%: 60% Burfee = $3.00, 40% Charity = $2.00)
+// Check Root Wallet received 10% Direct Referrer ($1.00) + Level 1 Matrix Commission ($4.50) = $5.50 Total Gross
+// (50% Customer = $2.75, Company 50%: 60% Burfee = $1.65, 40% Charity = $1.10)
 $rootWallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
-assert((float)$rootWallet['balance'] === 10.00);
-assert((float)$rootWallet['user_wallet_50'] === 5.00);
-assert((float)$rootWallet['burfee_cart_wallet'] === 3.00);
-assert((float)$rootWallet['charity_wallet'] === 2.00);
+assert((float)$rootWallet['balance'] === 5.50);
+assert((float)$rootWallet['user_wallet_50'] === 2.75);
+assert((float)$rootWallet['burfee_cart_wallet'] === 1.65);
+assert((float)$rootWallet['charity_wallet'] === 1.10);
 echo "PASSED\n";
 
 // Test 3: BFS Auto-Spillover placement test (Filling Level 1 of Root with 3 members)
@@ -98,13 +99,13 @@ echo "PASSED\n";
 // Test 4: Check Multi-level Commission Flow (Level 1 for EMP100001, Level 2 for Root EMP100000)
 echo "[TEST 4] Testing Multi-level Fixed Commission Distribution (Level 1 + Level 2)... ";
 $m1Wallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100001'")->fetch();
-// EMP100001 should get Level 1 payout: $10 (50% Customer = 5.00)
-assert((float)$m1Wallet['balance'] === 10.00);
-assert((float)$m1Wallet['user_wallet_50'] === 5.00);
+// EMP100001 gets Level 1 matrix payout for Spillover Member 5: $4.50 (50% Customer = $2.25)
+assert((float)$m1Wallet['balance'] === 4.50);
+assert((float)$m1Wallet['user_wallet_50'] === 2.25);
 
-// Root (EMP100000) should get previous 3x10 = 30 + Level 2 payout 1x20 = 50 total
+// Root (EMP100000) gets: 4x $1.00 (Direct Referrals) + 3x $4.50 (Level 1 Matrix) + 1x $9.00 (Level 2 Matrix) + 1x $1.00 (Ref for M5) = $27.50 Total
 $rootWallet2 = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
-assert((float)$rootWallet2['balance'] === 50.00);
+assert((float)$rootWallet2['balance'] === 27.50);
 echo "PASSED\n";
 
 // Test 5: KYC Approval & Payout Withdrawal Validation Rules
@@ -138,6 +139,37 @@ assert(!empty($tokData['token']));
 $stmtTok = $pdo->prepare("SELECT * FROM api_tokens WHERE token = ?");
 $stmtTok->execute([$tokData['token']]);
 assert($stmtTok->fetch() !== false);
+echo "PASSED\n";
+
+// Test 8: Direct Referrer Re-allocation Test
+echo "[TEST 8] Testing Direct Referrer Income Re-allocation upon Sponsor Change... ";
+// Create Member 6 under Root (sponsor Root)
+$m6Epin = generateEpinCode();
+$pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Starter_1000', 'Unused')")->execute([$m6Epin]);
+$res6 = registerMember($pdo, [
+    'sponsor_id' => 'EMP100000',
+    'name' => "Sponsor Change Member 6",
+    'email' => "m6@example.com",
+    'phone' => "9000000006",
+    'password' => 'pass123',
+    'epin_code' => $m6Epin
+]);
+$m6Id = $res6['member_id'];
+
+// Initial: Root has received $1.00 direct referral for M6
+$rootBalBefore = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'EMP100000'")->fetchColumn();
+$m1BalBefore = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'EMP100001'")->fetchColumn();
+
+// Change M6 sponsor_id from EMP100000 to EMP100001
+$reallocRes = reallocateDirectReferralCommission($pdo, $m6Id, 'EMP100000', 'EMP100001');
+assert($reallocRes['success'] === true);
+
+$rootBalAfter = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'EMP100000'")->fetchColumn();
+$m1BalAfter = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'EMP100001'")->fetchColumn();
+
+// Root balance should decrease by $1.00 and EMP100001 balance should increase by $1.00
+assert(round($rootBalBefore - $rootBalAfter, 2) === 1.00);
+assert(round($m1BalAfter - $m1BalBefore, 2) === 1.00);
 echo "PASSED\n";
 
 // Test 7: Rebirths Engine Trigger Test (Level 3 completion => 10 Rebirths)
