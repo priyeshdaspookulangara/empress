@@ -42,6 +42,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $err = $appRes['message'];
         }
+    } elseif ($action === 'manual_reject' && $depositId > 0) {
+        $stmtR = $pdo->prepare("UPDATE deposits SET status = 'Rejected' WHERE id = ? AND status = 'Pending'");
+        $stmtR->execute([$depositId]);
+        if ($stmtR->rowCount() > 0) {
+            $msg = "Deposit #{$depositId} has been manually rejected.";
+        } else {
+            $err = "Unable to reject deposit #{$depositId} (or already processed).";
+        }
+    } elseif ($action === 'manual_create_deposit') {
+        $targetMemberId = trim($_POST['member_id'] ?? '');
+        $amount = (float)($_POST['amount'] ?? 0);
+        $txHash = trim($_POST['tx_hash'] ?? '');
+        $notes = trim($_POST['admin_notes'] ?? 'Manual Super Admin Direct Entry');
+
+        if (empty($targetMemberId) || $amount <= 0) {
+            $err = "Please enter a valid Member ID and positive amount.";
+        } else {
+            // Check member exists
+            $stmtM = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
+            $stmtM->execute([$targetMemberId]);
+            if (!$stmtM->fetch()) {
+                $err = "Member ID '{$targetMemberId}' does not exist.";
+            } else {
+                if (empty($txHash)) {
+                    $txHash = '0xMANUAL_' . strtoupper(bin2hex(random_bytes(16)));
+                }
+                $stmtIns = $pdo->prepare("INSERT INTO deposits (user_id, tx_hash, amount, network, status) VALUES (?, ?, ?, 'BEP20', 'Approved')");
+                $stmtIns->execute([$targetMemberId, $txHash, $amount]);
+                $newDepId = $pdo->lastInsertId();
+
+                // Credit User Wallet
+                $stmtW = $pdo->prepare("UPDATE wallets SET balance = balance + ?, user_wallet_60 = user_wallet_60 + ? WHERE member_id = ?");
+                $stmtW->execute([$amount, $amount, $targetMemberId]);
+
+                // Record transaction
+                $stmtTx = $pdo->prepare("INSERT INTO transactions (member_id, type, amount, wallet_type, status, description) VALUES (?, 'Admin_Adjustment', ?, 'User_Wallet', 'Credit', ?)");
+                $stmtTx->execute([$targetMemberId, $amount, "Manual Deposit Entry (#{$newDepId}): {$notes}"]);
+
+                $msg = "Successfully created and credited manual deposit of \${$amount} USDT for member {$targetMemberId}.";
+            }
+        }
     } elseif ($action === 'batch_verify_pending') {
         $stmtPend = $pdo->query("SELECT id, tx_hash, user_id FROM deposits WHERE status = 'Pending'");
         $pendingList = $stmtPend->fetchAll();
@@ -155,6 +196,37 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
+    <!-- Manual Deposit Direct Entry Console -->
+    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30">
+        <h2 class="text-sm font-bold text-neon-cyan uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-plus-circle text-neon-cyan"></i> Manual Direct Deposit Entry
+        </h2>
+        <form method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end text-xs">
+            <input type="hidden" name="action" value="manual_create_deposit">
+
+            <div>
+                <label class="block text-[11px] text-ice/70 font-semibold mb-1">Member ID <span class="text-red-400">*</span></label>
+                <input type="text" name="member_id" placeholder="e.g. EMP100001" required class="w-full bg-obsidian border border-neon-cyan/30 rounded-xl px-3 py-2 text-ice focus:outline-none focus:border-neon-cyan font-mono">
+            </div>
+
+            <div>
+                <label class="block text-[11px] text-ice/70 font-semibold mb-1">Amount ($ USD) <span class="text-red-400">*</span></label>
+                <input type="number" step="0.01" min="1" name="amount" placeholder="e.g. 10.00" required class="w-full bg-obsidian border border-neon-cyan/30 rounded-xl px-3 py-2 text-ice focus:outline-none focus:border-neon-cyan font-mono">
+            </div>
+
+            <div>
+                <label class="block text-[11px] text-ice/70 font-semibold mb-1">Transaction Hash / Notes (Optional)</label>
+                <input type="text" name="tx_hash" placeholder="0x... or leave blank for auto" class="w-full bg-obsidian border border-neon-cyan/30 rounded-xl px-3 py-2 text-ice focus:outline-none focus:border-neon-cyan font-mono">
+            </div>
+
+            <div>
+                <button type="submit" onclick="return confirm('Manually credit funds to this member wallet?');" class="w-full bg-neon-cyan hover:bg-cyan-300 text-obsidian py-2 rounded-xl font-extrabold text-xs shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wallet"></i> Credit Member Wallet
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Filters & Search -->
     <div class="glass-card p-4 rounded-2xl border border-neon-cyan/20 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
         <div class="flex gap-2">
@@ -212,7 +284,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border <?php
-                                        echo $dep['status'] === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : 'bg-amber-500/20 text-amber-400 border-amber-500/40';
+                                        echo $dep['status'] === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : ($dep['status'] === 'Rejected' ? 'bg-red-500/20 text-red-400 border-red-500/40' : 'bg-amber-500/20 text-amber-400 border-amber-500/40');
                                     ?>">
                                         <?php echo $dep['status']; ?>
                                     </span>
@@ -231,13 +303,23 @@ require_once __DIR__ . '/../includes/header.php';
                                             <form method="POST">
                                                 <input type="hidden" name="action" value="manual_approve">
                                                 <input type="hidden" name="deposit_id" value="<?php echo $dep['id']; ?>">
-                                                <button type="submit" onclick="return confirm('Manually approve and credit \${$dep['amount']} USDT to member {$dep['user_id']}?');" class="bg-neon-cyan/10 hover:bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 px-2.5 py-1.5 rounded-xl text-xs font-bold">
+                                                <button type="submit" onclick="return confirm('Manually approve and credit \$<?php echo number_format($dep['amount'], 2); ?> USDT to member <?php echo htmlspecialchars($dep['user_id']); ?>?');" class="bg-neon-cyan/10 hover:bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 px-2.5 py-1.5 rounded-xl text-xs font-bold">
                                                     Manual Approve
                                                 </button>
                                             </form>
+
+                                            <form method="POST">
+                                                <input type="hidden" name="action" value="manual_reject">
+                                                <input type="hidden" name="deposit_id" value="<?php echo $dep['id']; ?>">
+                                                <button type="submit" onclick="return confirm('Manually reject deposit #<?php echo $dep['id']; ?>?');" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-2.5 py-1.5 rounded-xl text-xs font-bold">
+                                                    Reject
+                                                </button>
+                                            </form>
                                         </div>
-                                    <?php else: ?>
+                                    <?php elseif ($dep['status'] === 'Approved'): ?>
                                         <span class="text-emerald-400 text-[11px] font-mono"><i class="fa-solid fa-check-double mr-1"></i>Credited to Wallet</span>
+                                    <?php else: ?>
+                                        <span class="text-red-400 text-[11px] font-mono"><i class="fa-solid fa-xmark mr-1"></i>Rejected</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
