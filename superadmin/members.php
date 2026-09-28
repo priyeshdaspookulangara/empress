@@ -54,6 +54,26 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
+    <!-- Set Common Password to All Members Form -->
+    <div class="glass-card p-5 rounded-2xl border border-neon-cyan/30 flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-900/60">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center text-neon-cyan text-lg">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-neon-cyan">Set Common Password to All Members</h3>
+                <p class="text-[11px] text-ice/70">Bulk update the login password across all registered customer member accounts.</p>
+            </div>
+        </div>
+
+        <form action="/superadmin/reset_passwords.php" method="POST" onsubmit="return confirm('Are you sure you want to set this new common password for ALL member accounts?');" class="flex gap-2 w-full md:w-auto">
+            <input type="text" name="common_password" required minlength="4" placeholder="Enter new common password" class="bg-obsidian/90 border border-neon-cyan/40 rounded-xl px-4 py-2 text-xs text-champagne focus:outline-none focus:border-neon-cyan w-64 font-mono">
+            <button type="submit" class="bg-neon-cyan/20 hover:bg-neon-cyan/30 text-neon-cyan border border-neon-cyan/50 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-sync"></i> Apply Password to All
+            </button>
+        </form>
+    </div>
+
     <?php if (isset($_GET['msg'])): ?>
         <div class="bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 p-4 rounded-xl text-xs">
             <?php echo htmlspecialchars($_GET['msg']); ?>
