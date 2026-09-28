@@ -204,7 +204,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody class="divide-y divide-neon-cyan/10 text-ice">
                     <?php foreach ($recentMembers as $m): ?>
                         <?php
-                        $waMsg = rawurlencode("Welcome to Empress Two Way 3.0! Your Member ID is {$m['member_id']}. Login at " . $_SERVER['HTTP_HOST'] . "/login.php");
+                        $cleanMName = str_replace(["\u{FFFD}", "\ufffd"], "", $m['name']);
+                        $waMsg = rawurlencode("Hello {$cleanMName}, Welcome to Empress 2 Way 4.0! Your Member ID is {$m['member_id']}. Login at " . $_SERVER['HTTP_HOST'] . "/login.php");
                         $waUrl = "https://wa.me/91" . preg_replace('/[^0-9]/', '', $m['phone']) . "?text=" . $waMsg;
                         ?>
                         <tr>

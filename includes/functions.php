@@ -1018,15 +1018,16 @@ function deleteMemberSafely($pdo, $memberIdToDelete) {
  * Returns array: ['clean_name' => string, 'is_rebirth' => bool, 'rebirth_label' => string]
  */
 function formatMemberName($name) {
-    if (preg_match('/^(.*?)\s*\((Rebirth\s*#[^)]+)\)$/i', trim($name), $matches)) {
+    $sanitized = str_replace(["\u{FFFD}", "\ufffd"], "", trim($name));
+    if (preg_match('/^(.*?)\s*\((Rebirth\s*#[^)]+)\)$/i', $sanitized, $matches)) {
         return [
-            'clean_name' => trim($matches[1]),
+            'clean_name' => str_replace(["\u{FFFD}", "\ufffd"], "", trim($matches[1])),
             'is_rebirth' => true,
-            'rebirth_label' => trim($matches[2])
+            'rebirth_label' => str_replace(["\u{FFFD}", "\ufffd"], "", trim($matches[2]))
         ];
     }
     return [
-        'clean_name' => trim($name),
+        'clean_name' => $sanitized,
         'is_rebirth' => false,
         'rebirth_label' => ''
     ];
