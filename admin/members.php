@@ -84,7 +84,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php else: ?>
                         <?php foreach ($members as $m): ?>
                             <?php
-                            $waMsg = rawurlencode("Hello {$m['name']}, Welcome to Empress Two Way 3.0! Your Member ID is {$m['member_id']}. Access your dashboard here: " . $_SERVER['HTTP_HOST'] . "/login.php");
+                            $cleanMName = str_replace(["\u{FFFD}", "\ufffd"], "", $m['name']);
+                            $waMsg = rawurlencode("Hello {$cleanMName}, Welcome to Empress 2 Way 4.0! Your Member ID is {$m['member_id']}. Access your dashboard here: " . $_SERVER['HTTP_HOST'] . "/login.php");
                             $waUrl = "https://wa.me/91" . preg_replace('/[^0-9]/', '', $m['phone']) . "?text=" . $waMsg;
                             ?>
                             <tr>
