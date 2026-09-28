@@ -34,6 +34,70 @@ const REBIRTH_REWARDS = [
     6 => 100
 ];
 
+// Master Matrix Level Specification with Helping Fund & Rebirth Cost Deductions
+const MATRIX_LEVEL_SPECS = [
+    1 => [
+        'capacity' => 3,
+        'gross_per_node' => 5.00,             // $5.00 (500 INR)
+        'helping_per_node' => 3.33333333333,  // Total $10.00 (1000 INR) / 3
+        'net_pool_per_node' => 1.66666666667, // $1.6667 (166.67 INR)
+        'user_wallet_per_node' => 0.83333333333, // $0.8333 (83.33 INR) => Total $2.50 (250 INR)
+        'burfee_cart_per_node' => 0.50,        // $0.50 (50 INR) => Total $1.50 (150 INR)
+        'charity_per_node' => 0.33333333333,    // $0.3333 (33.33 INR) => Total $1.00 (100 INR)
+        'rebirth_cost_per_node' => 0.00,
+    ],
+    2 => [
+        'capacity' => 9,
+        'gross_per_node' => 10.00,            // $10.00 (1000 INR)
+        'helping_per_node' => 2.22222222222,  // Total $20.00 (2000 INR) / 9
+        'net_pool_per_node' => 7.77777777778, // $7.7778 (777.78 INR)
+        'user_wallet_per_node' => 3.88888888889, // Total $35.00 (3500 INR) / 9
+        'burfee_cart_per_node' => 2.33333333333, // Total $21.00 (2100 INR) / 9
+        'charity_per_node' => 1.55555555556,    // Total $14.00 (1400 INR) / 9
+        'rebirth_cost_per_node' => 0.00,
+    ],
+    3 => [
+        'capacity' => 27,
+        'gross_per_node' => 20.00,            // $20.00 (2000 INR)
+        'helping_per_node' => 4.44444444444,  // Total $120.00 (12000 INR) / 27
+        'net_pool_per_node' => 15.55555555556, // Total $420.00 (42000 INR) / 27
+        'user_wallet_per_node' => 4.07407407407, // Total $110.00 (11000 INR) / 27
+        'burfee_cart_per_node' => 4.66666666667, // Total $126.00 (12600 INR) / 27
+        'charity_per_node' => 3.11111111111,    // Total $84.00 (8400 INR) / 27
+        'rebirth_cost_per_node' => 3.70370370370, // Total $100.00 (10000 INR) / 27
+    ],
+    4 => [
+        'capacity' => 81,
+        'gross_per_node' => 30.00,            // $30.00 (3000 INR)
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 30.00,
+        'user_wallet_per_node' => 12.53086419753, // Total $1015.00 (101500 INR) / 81
+        'burfee_cart_per_node' => 9.00,        // Total $729.00 (72900 INR) / 81
+        'charity_per_node' => 6.00,            // Total $486.00 (48600 INR) / 81
+        'rebirth_cost_per_node' => 2.46913580247, // Total $200.00 (20000 INR) / 81
+    ],
+    5 => [
+        'capacity' => 243,
+        'gross_per_node' => 40.00,            // $40.00 (4000 INR)
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 40.00,
+        'user_wallet_per_node' => 17.11934156379, // Total $4160.00 (416000 INR) / 243
+        'burfee_cart_per_node' => 12.00,       // Total $2916.00 (291600 INR) / 243
+        'charity_per_node' => 8.00,            // Total $1944.00 (194400 INR) / 243
+        'rebirth_cost_per_node' => 2.88065843621, // Total $700.00 (70000 INR) / 243
+    ],
+    6 => [
+        'capacity' => 729,
+        'gross_per_node' => 50.00,            // $50.00 (5000 INR)
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 50.00,
+        'user_wallet_per_node' => 23.62825788752, // Total $17225.00 (1722500 INR) / 729
+        'burfee_cart_per_node' => 15.00,       // Total $10935.00 (1093500 INR) / 729
+        'charity_per_node' => 10.00,           // Total $7290.00 (729000 INR) / 729
+        'rebirth_cost_per_node' => 1.37174211248, // Total $1000.00 (1000000 INR) / 729
+    ]
+];
+
 /**
  * Generate next unique Member ID (e.g., EMP100001)
  */
@@ -171,13 +235,13 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
     $level = 1;
 
     while ($currentParentId && $level <= 6) {
-        $amount = MATRIX_PAYOUTS[$level] ?? 0;
+        $spec = MATRIX_LEVEL_SPECS[$level] ?? null;
 
-        if ($amount > 0) {
-            $userAmount = round($amount * 0.50, 2);       // 50% Customer Wallet
-            $burfeeAmount = round($amount * 0.30, 2);     // 60% of Company 50% = 30% total
-            $charityAmount = round($amount * 0.20, 2);    // 40% of Company 50% = 20% total
-            $companyAmount = round($amount * 0.50, 2);    // Total Company Portion (30% Burfee + 20% Charity)
+        if ($spec) {
+            $userAmount = round($spec['user_wallet_per_node'], 4);
+            $burfeeAmount = round($spec['burfee_cart_per_node'], 4);
+            $charityAmount = round($spec['charity_per_node'], 4);
+            $grossAmount = round($spec['gross_per_node'], 2);
 
             // Ensure parent wallet row exists
             $stmtWallet = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
@@ -198,7 +262,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                     company_wallet_40 = company_wallet_40 + ?
                 WHERE member_id = ?
             ");
-            $updateWallet->execute([$amount, $userAmount, $burfeeAmount, $charityAmount, $userAmount, $companyAmount, $currentParentId]);
+            $updateWallet->execute([$grossAmount, $userAmount, $burfeeAmount, $charityAmount, $userAmount, $burfeeAmount + $charityAmount, $currentParentId]);
 
             // Log Transaction
             $logTx = $pdo->prepare("
@@ -206,8 +270,8 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                 VALUES (?, ?, ?, 'Main', 'Credit', ?)
             ");
             $txType = "Matrix_Income_L" . $level;
-            $desc = "Level {$level} Helping Contribution / Matrix Commission from member {$newMemberId}. (50% Customer: \${$userAmount}, Company 50%: \${$burfeeAmount} Burfee Cart / \${$charityAmount} Charity)";
-            $logTx->execute([$currentParentId, $txType, $amount, $desc]);
+            $desc = "Level {$level} Matrix Commission from member {$newMemberId}. (Gross: \${$grossAmount}, Net User Wallet: \${$userAmount}, Burfee Cart: \${$burfeeAmount}, Charity: \${$charityAmount})";
+            $logTx->execute([$currentParentId, $txType, $grossAmount, $desc]);
         }
 
         // Check for level completion rebirth triggers
@@ -324,6 +388,9 @@ function createRebirthPositions($pdo, $parentMemberId, $count, $completedLevel) 
         ");
         $desc = "Rebirth position {$rebirthMemberId} created automatically upon Level {$completedLevel} completion.";
         $stmtTx->execute([$parentMemberId, $desc]);
+
+        // Distribute Matrix Commissions across ancestors for newly created Rebirth position
+        distributeMatrixCommissions($pdo, $rebirthMemberId);
     }
 }
 
