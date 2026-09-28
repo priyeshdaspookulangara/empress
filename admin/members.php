@@ -48,6 +48,18 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php endif; ?>
             </form>
 
+            <a href="/admin/download_db.php" class="bg-neon-cyan/20 hover:bg-neon-cyan/30 text-neon-cyan border border-neon-cyan/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-neon-cyan/10">
+                <i class="fa-solid fa-download text-neon-cyan"></i> Backup SQL
+            </a>
+
+            <!-- Restore DB Form -->
+            <form action="/admin/restore_db.php" method="POST" enctype="multipart/form-data" onsubmit="return confirm('WARNING: Restoring a database backup dump will execute SQL statements and update current records. Continue?');" class="flex items-center gap-1">
+                <input type="file" name="backup_file" accept=".sql" required class="text-[11px] text-ice bg-obsidian/80 border border-gold/30 rounded-xl px-2 py-1.5 w-44">
+                <button type="submit" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-upload"></i> Restore SQL
+                </button>
+            </form>
+
             <a href="/admin/purge_members.php" onclick="return confirm('CRITICAL WARNING: Are you sure you want to PURGE ALL CUSTOMER MEMBERS and associated transaction/wallet calculations? Only Root EMP100000 and Admin accounts will remain.');" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-red-500/10">
                 <i class="fa-solid fa-triangle-exclamation text-red-400"></i> Clear All Members (Except Root)
             </a>
