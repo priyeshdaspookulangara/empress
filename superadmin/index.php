@@ -14,18 +14,10 @@ $pdo = getDBConnection();
 $totalMembers = $pdo->query("SELECT COUNT(*) FROM members")->fetchColumn();
 $activeMembers = $pdo->query("SELECT COUNT(*) FROM members WHERE status = 'Active'")->fetchColumn();
 
-// Total Company Inflow in USD ($)
-$totalInflow = 0;
-$usedEpins = $pdo->query("SELECT package_type FROM epins WHERE status = 'Used'")->fetchAll();
-foreach ($usedEpins as $ep) {
-    if ($ep['package_type'] === 'Empress_15000') {
-        $totalInflow += 150;
-    } elseif ($ep['package_type'] === 'Starter_5000') {
-        $totalInflow += 50;
-    } else {
-        $totalInflow += 10;
-    }
-}
+// Total Company Inflow in USD ($): $10 per active non-root, non-rebirth customer member + approved deposits
+$customerCount = $pdo->query("SELECT COUNT(*) FROM members WHERE member_id != 'EMP100000' AND used_epin NOT LIKE 'REBIRTH_%' AND name NOT LIKE '%Rebirth%' AND status = 'Active'")->fetchColumn();
+$approvedDeposits = (float)$pdo->query("SELECT COALESCE(SUM(amount), 0) FROM deposits WHERE status = 'Approved'")->fetchColumn();
+$totalInflow = ($customerCount * 10.00) + $approvedDeposits;
 
 // Pending KYC count
 $pendingKyc = $pdo->query("SELECT COUNT(*) FROM members WHERE kyc_status = 'Submitted'")->fetchColumn();

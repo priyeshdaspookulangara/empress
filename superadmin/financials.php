@@ -206,7 +206,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td class="p-3 font-mono font-bold text-amber-400">$<?php echo number_format($bc, 2); ?></td>
                                 <td class="p-3 font-mono font-bold text-blue-400">$<?php echo number_format($ch, 2); ?></td>
                                 <td class="p-3 font-mono text-[11px] text-ice/70">
-                                    $<?php echo number_format($b, 2); ?> × [50% ($<?php echo number_format($uw, 2); ?>) + 30% ($<?php echo number_format($bc, 2); ?>) + 20% ($<?php echo number_format($ch, 2); ?>)]
+                                    Customer Wallet: $<?php echo number_format($uw, 2); ?> | Burfee Cart: $<?php echo number_format($bc, 2); ?> | Charity: $<?php echo number_format($ch, 2); ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
