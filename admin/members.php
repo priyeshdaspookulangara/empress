@@ -38,14 +38,20 @@ require_once __DIR__ . '/../includes/header.php';
             <p class="text-xs text-champagne/70 mt-1">Search, inspect downline trees, send WhatsApp welcomes, or safely re-parent members</p>
         </div>
 
-        <!-- Search Bar -->
-        <form action="/admin/members.php" method="GET" class="flex gap-2 w-full md:w-auto">
-            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search ID, Name, Phone..." class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne focus:outline-none focus:border-gold w-64">
-            <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold">Search</button>
-            <?php if (!empty($search)): ?>
-                <a href="/admin/members.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset</a>
-            <?php endif; ?>
-        </form>
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <!-- Search Bar -->
+            <form action="/admin/members.php" method="GET" class="flex gap-2 w-full md:w-auto">
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search ID, Name, Phone..." class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne focus:outline-none focus:border-gold w-64">
+                <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold">Search</button>
+                <?php if (!empty($search)): ?>
+                    <a href="/admin/members.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset</a>
+                <?php endif; ?>
+            </form>
+
+            <a href="/admin/purge_members.php" onclick="return confirm('CRITICAL WARNING: Are you sure you want to PURGE ALL CUSTOMER MEMBERS and associated transaction/wallet calculations? Only Root EMP100000 and Admin accounts will remain.');" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-red-500/10">
+                <i class="fa-solid fa-triangle-exclamation text-red-400"></i> Clear All Members (Except Root)
+            </a>
+        </div>
     </div>
 
     <?php if (isset($_GET['msg'])): ?>
