@@ -228,32 +228,69 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
         $stmtTxDed->execute([$newMemberId, $refAmount, $descDed]);
     }
 
-    // 2. Distribute 6-Level Matrix Pool Commissions (Based on 1000 INR / $10.00 USD ratio)
+    // 2. Distribute Level 1 Matrix Pool Commission ($5.00) & Level 1 Helping Fund ($3.33)
+    // Ensures total cash distributed from a $10 join equals $1.00 (10% Referral) + $5.00 (L1 Matrix) + $3.33 (L1 Helping) = $9.33 ~ $10.00
     $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
     $stmt->execute([$newMemberId]);
-    $currentParentId = $stmt->fetchColumn();
+    $placementParentId = $stmt->fetchColumn();
 
-    $level = 1;
+    if ($placementParentId) {
+        $spec = MATRIX_LEVEL_SPECS[1];
+        $userAmount = round($spec['user_wallet_per_node'], 4); // $0.8333 (250 INR / 3)
+        $burfeeAmount = round($spec['burfee_cart_per_node'], 4); // $0.50 (150 INR / 3)
+        $charityAmount = round($spec['charity_per_node'], 4); // $0.3333 (100 INR / 3)
+        $grossAmount = round($spec['gross_per_node'], 2); // $5.00 (1500 INR / 3)
 
-    while ($currentParentId && $level <= 6) {
-        $spec = MATRIX_LEVEL_SPECS[$level] ?? null;
+        // Ensure parent wallet row exists
+        $stmtWallet = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
+        $stmtWallet->execute([$placementParentId]);
+        if (!$stmtWallet->fetch()) {
+            $insW = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)");
+            $insW->execute([$placementParentId]);
+        }
 
-        if ($spec) {
-            $userAmount = round($spec['user_wallet_per_node'], 4);
-            $burfeeAmount = round($spec['burfee_cart_per_node'], 4);
-            $charityAmount = round($spec['charity_per_node'], 4);
-            $grossAmount = round($spec['gross_per_node'], 2);
+        // Update placement parent wallet with Level 1 Matrix Income
+        $updateWallet = $pdo->prepare("
+            UPDATE wallets
+            SET balance = balance + ?,
+                user_wallet_50 = user_wallet_50 + ?,
+                burfee_cart_wallet = burfee_cart_wallet + ?,
+                charity_wallet = charity_wallet + ?,
+                user_wallet_60 = user_wallet_60 + ?,
+                company_wallet_40 = company_wallet_40 + ?
+            WHERE member_id = ?
+        ");
+        $updateWallet->execute([$grossAmount, $userAmount, $burfeeAmount, $charityAmount, $userAmount, $burfeeAmount + $charityAmount, $placementParentId]);
 
-            // Ensure parent wallet row exists
-            $stmtWallet = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
-            $stmtWallet->execute([$currentParentId]);
-            if (!$stmtWallet->fetch()) {
-                $insW = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)");
-                $insW->execute([$currentParentId]);
+        // Log Transaction
+        $logTx = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES (?, 'Matrix_Income_L1', ?, 'Main', 'Credit', ?)
+        ");
+        $desc = "Level 1 Matrix Commission from member {$newMemberId}. (Gross: \${$grossAmount}, Net User Wallet: \${$userAmount}, Burfee Cart: \${$burfeeAmount}, Charity: \${$charityAmount})";
+        $logTx->execute([$placementParentId, $grossAmount, $desc]);
+
+        // Credit Level 1 Helping Fund ($3.3333) portion to 2nd-level upline ancestor (parent of direct upline)
+        $helpingPerNode = round($spec['helping_per_node'], 4); // $3.3333 (1000 INR / 3)
+        if ($helpingPerNode > 0) {
+            $stmtAncest = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
+            $stmtAncest->execute([$placementParentId]);
+            $ancestorParent = $stmtAncest->fetchColumn();
+            $targetAncestorId = $ancestorParent ? $ancestorParent : 'EMP100000';
+
+            // Ensure ancestor wallet exists
+            $stmtWAnc = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
+            $stmtWAnc->execute([$targetAncestorId]);
+            if (!$stmtWAnc->fetch()) {
+                $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$targetAncestorId]);
             }
 
-            // Update parent wallet
-            $updateWallet = $pdo->prepare("
+            // Credit helping fund (split 50% User / 30% Burfee / 20% Charity to ancestor)
+            $ancUser = round($helpingPerNode * 0.50, 4);
+            $ancBurf = round($helpingPerNode * 0.30, 4);
+            $ancChar = round($helpingPerNode * 0.20, 4);
+
+            $upAncW = $pdo->prepare("
                 UPDATE wallets
                 SET balance = balance + ?,
                     user_wallet_50 = user_wallet_50 + ?,
@@ -263,75 +300,25 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                     company_wallet_40 = company_wallet_40 + ?
                 WHERE member_id = ?
             ");
-            $updateWallet->execute([$grossAmount, $userAmount, $burfeeAmount, $charityAmount, $userAmount, $burfeeAmount + $charityAmount, $currentParentId]);
+            $upAncW->execute([$helpingPerNode, $ancUser, $ancBurf, $ancChar, $ancUser, $ancBurf + $ancChar, $targetAncestorId]);
 
-            // Log Transaction
-            $logTx = $pdo->prepare("
+            $logHelpTx = $pdo->prepare("
                 INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
-                VALUES (?, ?, ?, 'Main', 'Credit', ?)
+                VALUES (?, 'Admin_Adjustment', ?, 'Main', 'Credit', ?)
             ");
-            $txType = "Matrix_Income_L" . $level;
-            $desc = "Level {$level} Matrix Commission from member {$newMemberId}. (Gross: \${$grossAmount}, Net User Wallet: \${$userAmount}, Burfee Cart: \${$burfeeAmount}, Charity: \${$charityAmount})";
-            $logTx->execute([$currentParentId, $txType, $grossAmount, $desc]);
-
-            // Credit Helping Fund portion to designated upline ancestor
-            // Level 1: parent of direct upline (ancestor level 2)
-            // Level 2: grandparent of direct upline (ancestor level 3)
-            // Level 3: great-grandparent of direct upline (ancestor level 4)
-            $helpingPerNode = round($spec['helping_per_node'], 4);
-            if ($helpingPerNode > 0) {
-                $targetAncestorId = $currentParentId;
-                // Move up 1 level relative to currentParentId
-                $stmtAncest = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
-                $stmtAncest->execute([$targetAncestorId]);
-                $ancestorParent = $stmtAncest->fetchColumn();
-                if ($ancestorParent) {
-                    $targetAncestorId = $ancestorParent;
-                } else {
-                    $targetAncestorId = 'EMP100000';
-                }
-
-                // Ensure ancestor wallet exists
-                $stmtWAnc = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
-                $stmtWAnc->execute([$targetAncestorId]);
-                if (!$stmtWAnc->fetch()) {
-                    $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$targetAncestorId]);
-                }
-
-                // Credit helping fund (split 50% User / 30% Burfee / 20% Charity to ancestor)
-                $ancUser = round($helpingPerNode * 0.50, 4);
-                $ancBurf = round($helpingPerNode * 0.30, 4);
-                $ancChar = round($helpingPerNode * 0.20, 4);
-
-                $upAncW = $pdo->prepare("
-                    UPDATE wallets
-                    SET balance = balance + ?,
-                        user_wallet_50 = user_wallet_50 + ?,
-                        burfee_cart_wallet = burfee_cart_wallet + ?,
-                        charity_wallet = charity_wallet + ?,
-                        user_wallet_60 = user_wallet_60 + ?,
-                        company_wallet_40 = company_wallet_40 + ?
-                    WHERE member_id = ?
-                ");
-                $upAncW->execute([$helpingPerNode, $ancUser, $ancBurf, $ancChar, $ancUser, $ancBurf + $ancChar, $targetAncestorId]);
-
-                $logHelpTx = $pdo->prepare("
-                    INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
-                    VALUES (?, 'Admin_Adjustment', ?, 'Main', 'Credit', ?)
-                ");
-                $descHelp = "Level {$level} Helping Fund Received from downline member {$newMemberId} via {$currentParentId}. (\${$helpingPerNode})";
-                $logHelpTx->execute([$targetAncestorId, $helpingPerNode, $descHelp]);
-            }
+            $descHelp = "Level 1 Helping Fund Received from downline member {$newMemberId} via {$placementParentId}. (\${$helpingPerNode})";
+            $logHelpTx->execute([$targetAncestorId, $helpingPerNode, $descHelp]);
         }
+    }
 
-        // Check for level completion rebirth triggers
+    // 3. Check level completion rebirth triggers across ancestors up the tree
+    $currentParentId = $placementParentId;
+    $level = 1;
+    while ($currentParentId && $level <= 6) {
         checkAndGrantLevelRebirths($pdo, $currentParentId, $level);
-
-        // Move to next parent up
         $stmtParent = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
         $stmtParent->execute([$currentParentId]);
         $currentParentId = $stmtParent->fetchColumn();
-
         $level++;
     }
 }
