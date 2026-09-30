@@ -3,160 +3,86 @@ $pageTitle = "Home - Empower Your Future";
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Section -->
-<section class="py-12 md:py-20 text-center relative overflow-hidden">
-    <div class="glass-card max-w-4xl mx-auto p-8 md:p-12 rounded-3xl relative z-10 border border-gold/30">
-        <div class="inline-block px-4 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-gold text-xs font-semibold tracking-wider uppercase mb-6">
-            <i class="fa-solid fa-gem mr-2"></i> Next Generation Direct Selling Engine
-        </div>
-
-        <h1 class="text-4xl md:text-6xl font-extrabold gold-gradient-text tracking-tight mb-4">
-            Empress Two Way 3.0
+<!-- Hero Section matching template layout -->
+<section class="hero text-center py-16 px-4">
+    <div class="content mx-auto my-auto max-w-2xl flex flex-col items-center">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+            Empress<br><span class="gold-gradient-text">Two Way 3.0</span>
         </h1>
-
-        <p class="text-xl md:text-2xl text-champagne font-light italic mb-8">
-            "Double Your Path, Empower Your Future."
+        <p class="text-sm md:text-base text-white/80 max-w-lg mb-8 leading-relaxed font-light">
+            Double Your Path, Empower Your Future. A single-phase direct selling platform with automated 3-matrix forced spillover, 50:50 smart wallet division, and guaranteed 6-level fixed node payouts.
         </p>
-
-        <p class="text-sm md:text-base text-champagne/80 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Experience the revolutionary single-phase automated direct selling ecosystem powered by an automated <span class="text-gold font-semibold">3-Matrix forced spillover engine</span>, <span class="text-gold font-semibold">50:50 Smart Wallet division</span> (50% Customer Wallet & 50% Company -> 60% Burfee Cart / 40% Charity), and <span class="text-gold font-semibold">6-level fixed matrix income potential of $98,490 USD</span>.
-        </p>
-
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <a href="/register.php" class="gold-button px-8 py-3.5 rounded-xl text-base w-full sm:w-auto shadow-lg shadow-gold/20 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-rocket"></i> Register Now
-            </a>
-            <a href="/business_plan.php" class="glass-card border border-gold/40 hover:bg-gold/10 text-gold px-8 py-3.5 rounded-xl text-base w-full sm:w-auto font-semibold transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-chart-pie"></i> View Business Plan
-            </a>
+        <div class="flex items-center gap-4">
+            <a class="pill cta gold-button" href="/register.php">Get Started</a>
+            <a class="pill" href="/business_plan.php">Business Plan</a>
         </div>
     </div>
 </section>
 
-<!-- Core Features Grid -->
-<section class="py-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="glass-card p-6 rounded-2xl border border-gold/20">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center text-2xl mb-4 border border-gold/30">
-            <i class="fa-solid fa-sitemap"></i>
+<!-- About Section matching template .sec .wrap .about -->
+<section class="sec" id="about">
+    <div class="glow g1"></div>
+    <div class="wrap about">
+        <div>
+            <h2>We shape financial independence into reality</h2>
+            <p class="lead">Empress Two Way 3.0 provides a single-phase direct selling structure engineered for team spillover and sustainable payout division.</p>
         </div>
-        <h3 class="text-lg font-bold text-champagne mb-2">Global BFS Auto-Spillover</h3>
-        <p class="text-xs text-champagne/70 leading-relaxed">
-            Strict left-to-right company-wide Breadth-First Search matrix spillover tree ensures guaranteed level progression and team completion up to 6 levels deep.
-        </p>
-    </div>
-
-    <div class="glass-card p-6 rounded-2xl border border-gold/20">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center text-2xl mb-4 border border-gold/30">
-            <i class="fa-solid fa-wallet"></i>
-        </div>
-        <h3 class="text-lg font-bold text-champagne mb-2">50:50 Smart Wallet Split</h3>
-        <p class="text-xs text-champagne/70 leading-relaxed">
-            Automated division credits 50% directly to Customer Withdrawal Wallet and 50% to Company (which splits 60% to Burfee Cart Wallet & 40% to Charity Wallet).
-        </p>
-    </div>
-
-    <div class="glass-card p-6 rounded-2xl border border-gold/20">
-        <div class="w-12 h-12 rounded-xl bg-gold/10 text-gold flex items-center justify-center text-2xl mb-4 border border-gold/30">
-            <i class="fa-solid fa-id-card-clip"></i>
-        </div>
-        <h3 class="text-lg font-bold text-champagne mb-2">Mandatory KYC & Instant Payouts</h3>
-        <p class="text-xs text-champagne/70 leading-relaxed">
-            Bank-grade security with strict KYC verification (USDT Crypto Wallet Address) protecting withdrawal requests above the $10 USD minimum threshold.
-        </p>
-    </div>
-</section>
-
-<!-- 6-Level Income Matrix Table Preview -->
-<section class="py-12">
-    <div class="text-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-extrabold gold-gradient-text">6-Level Fixed Matrix Compensation Schedule</h2>
-        <p class="text-xs md:text-sm text-champagne/70 mt-2">Earn fixed node commissions automatically as new members join your 3-matrix tree</p>
-    </div>
-
-    <div class="glass-card rounded-2xl overflow-hidden border border-gold/30">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm">
-                <thead>
-                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase text-xs">
-                        <th class="p-4">Matrix Level</th>
-                        <th class="p-4">Max Node Count</th>
-                        <th class="p-4">Income Per Node</th>
-                        <th class="p-4">Total Level Potential</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gold/10 text-champagne">
-                    <tr>
-                        <td class="p-4 font-bold text-gold">Level 1</td>
-                        <td class="p-4">3 Nodes</td>
-                        <td class="p-4">$10 USD</td>
-                        <td class="p-4 font-bold text-emerald-400">$30 USD</td>
-                    </tr>
-                    <tr>
-                        <td class="p-4 font-bold text-gold">Level 2</td>
-                        <td class="p-4">9 Nodes</td>
-                        <td class="p-4">$20 USD</td>
-                        <td class="p-4 font-bold text-emerald-400">$180 USD</td>
-                    </tr>
-                    <tr>
-                        <td class="p-4 font-bold text-gold">Level 3</td>
-                        <td class="p-4">27 Nodes</td>
-                        <td class="p-4">$40 USD</td>
-                        <td class="p-4 font-bold text-emerald-400">$1,080 USD (+ 10 Rebirths)</td>
-                    </tr>
-                    <tr>
-                        <td class="p-4 font-bold text-gold">Level 4</td>
-                        <td class="p-4">81 Nodes</td>
-                        <td class="p-4">$60 USD</td>
-                        <td class="p-4 font-bold text-emerald-400">$4,860 USD (+ 20 Rebirths)</td>
-                    </tr>
-                    <tr>
-                        <td class="p-4 font-bold text-gold">Level 5</td>
-                        <td class="p-4">243 Nodes</td>
-                        <td class="p-4">$80 USD</td>
-                        <td class="p-4 font-bold text-emerald-400">$19,440 USD (+ 70 Rebirths)</td>
-                    </tr>
-                    <tr>
-                        <td class="p-4 font-bold text-gold">Level 6</td>
-                        <td class="p-4">729 Nodes</td>
-                        <td class="p-4">$100 USD</td>
-                        <td class="p-4 font-bold text-emerald-400">$72,900 USD (+ 100 Rebirths)</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr class="bg-gold/20 text-gold font-bold text-base">
-                        <td class="p-4" colspan="3">Grand Total Matrix Earning Potential</td>
-                        <td class="p-4 text-emerald-300 text-lg">$98,490 USD</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
-</section>
-
-<!-- Package Options -->
-<section class="py-12">
-    <div class="text-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-extrabold gold-gradient-text">Single Activation Package</h2>
-        <p class="text-xs md:text-sm text-champagne/70 mt-2">Get your Starter 1000 ePIN code from your sponsor or company admin to activate instantly</p>
-    </div>
-
-    <div class="max-w-md mx-auto">
-        <!-- Starter 1000 Package -->
-        <div class="glass-card p-8 rounded-3xl border-2 border-gold text-center relative overflow-hidden flex flex-col justify-between shadow-xl shadow-gold/10">
-            <div>
-                <span class="text-xs font-semibold uppercase tracking-widest text-gold bg-gold/20 px-3 py-1 rounded-full border border-gold/40">Universal Package</span>
-                <h3 class="text-2xl font-extrabold text-champagne mt-4">Starter 1000</h3>
-                <div class="text-4xl font-extrabold text-gold my-4">$10 USD</div>
-                <ul class="text-xs text-champagne/80 space-y-3 mb-8 text-left max-w-xs mx-auto">
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Full 3-Matrix Auto-Spillover Tree Entry</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 6-Level Fixed Commission Eligibility</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> 50:50 Customer & Company Wallet Split</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-gold"></i> Max Potential $98,490 USD</li>
-                </ul>
+        <div>
+            <p>Our automated engine uses Breadth-First Search (BFS) auto-spillover placement starting from Root (EMP100000) to fill 3-child slots strictly left-to-right across the entire network.</p>
+            <div class="stats">
+                <div><b>3-Matrix</b><span>Forced Spillover</span></div>
+                <div><b>50:50</b><span>Smart Wallet Split</span></div>
+                <div><b>6 Levels</b><span>Income Schedule</span></div>
             </div>
-            <a href="/register.php" class="gold-button py-3.5 rounded-xl block font-bold">Activate Now for $10 USD</a>
         </div>
     </div>
 </section>
+
+<!-- Services / Features Section matching template .cards -->
+<section class="sec" id="service">
+    <div class="glow g2"></div>
+    <div class="wrap">
+        <h2>What we provide</h2>
+        <p class="lead">Everything you need to grow your network and track your earnings transparently.</p>
+        <div class="cards">
+            <div class="card">
+                <i></i>
+                <h3>Global BFS Auto-Spillover</h3>
+                <p>Strict left-to-right company-wide placement fills downline slots automatically, helping every team member succeed.</p>
+            </div>
+            <div class="card">
+                <i></i>
+                <h3>50:50 Smart Wallet Division</h3>
+                <p>Commissions split 50% to Customer Wallet (withdrawable) and 50% to Company portion (60% Burfee Cart & 40% Charity).</p>
+            </div>
+            <div class="card">
+                <i></i>
+                <h3>Automated Rebirth Engine</h3>
+                <p>Completing Levels 3, 4, 5, and 6 grants 10, 20, 70, and 100 rebirth positions to continually recycle earning power.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form Section matching template .contact -->
+<section class="sec contact" id="contact">
+    <div class="glow g3"></div>
+    <div class="wrap">
+        <h2>Let's build something together</h2>
+        <p class="lead">Have questions? Send us a message and our support team will reach out promptly.</p>
+        <div class="form">
+            <input id="em" type="email" placeholder="you@example.com" aria-label="Email address">
+            <button class="pill gold-button" id="send" type="button">Get in touch</button>
+        </div>
+        <div class="msg text-xs text-white/70 mt-4" id="msg" role="status"></div>
+    </div>
+</section>
+
+<script>
+document.getElementById('send')?.addEventListener('click', function(){
+    var v = document.getElementById('em').value.trim(), m = document.getElementById('msg');
+    m.textContent = /^\S+@\S+\.\S+$/.test(v) ? 'Thanks! We will be in touch soon.' : 'Enter a valid email address.';
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

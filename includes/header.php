@@ -43,15 +43,18 @@ if (session_status() === PHP_SESSION_NONE) {
             box-sizing: border-box;
             padding-top: env(safe-area-inset-top,0px);
             padding-bottom: env(safe-area-inset-bottom,0px);
+            --bg: #000;
             --fg: #fff;
-            --muted: rgba(255,255,255,.7);
-            --line: rgba(255,255,255,.2);
+            --muted: rgba(255,255,255,.75);
+            --line: rgba(255,255,255,.4);
             --card: rgba(255,255,255,.04);
             --orange: #e8604a;
             --pink: #c8306e;
             --purple: #8b2fa8;
             --blue: #2aa8e6;
         }
+        html { scroll-padding-top: env(safe-area-inset-top,0px); scroll-behavior: smooth; }
+        *, *::before, *::after { box-sizing: inherit; }
         body {
             margin: 0;
             background: #000;
@@ -59,53 +62,56 @@ if (session_status() === PHP_SESSION_NONE) {
             font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif;
             min-height: 100vh;
         }
-        .bg-glow {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            overflow: hidden;
-            background: #000;
-        }
-        .bg-glow i {
-            position: absolute;
-            filter: blur(110px);
-            border-radius: 50%;
-            opacity: .55;
-        }
-        .bg-glow i:nth-child(1) { width:45vw; height:45vh; right:-10vw; top:-12vh; background:var(--blue); }
-        .bg-glow i:nth-child(2) { width:35vw; height:40vh; right:22vw; top:-14vh; background:var(--purple); }
-        .bg-glow i:nth-child(3) { width:40vw; height:36vh; left:-14vw; bottom:-14vh; background:var(--orange); }
+        .blob { position: absolute; z-index: -1; filter: blur(70px); border-radius: 50%; pointer-events: none; }
+        .b-blue { width:48vw; height:62vh; right:12vw; top:-8vh; background:radial-gradient(closest-side,#2aa8e6 0%,#2a8fd8 45%,rgba(42,143,216,0) 100%); }
+        .b-purple { width:38vw; height:70vh; left:38vw; top:-4vh; background:radial-gradient(closest-side,#8b2fa8 0%,#7a2ea5 50%,rgba(122,46,165,0) 100%); }
+        .b-pink { width:44vw; height:60vh; left:14vw; top:24vh; background:radial-gradient(closest-side,#c8306e 0%,#b02d7a 55%,rgba(176,45,122,0) 100%); transform:rotate(-24deg); }
+        .b-orange { width:36vw; height:34vh; left:-4vw; bottom:-6vh; background:radial-gradient(closest-side,#e8604a 0%,#d9505a 55%,rgba(217,80,90,0) 100%); transform:rotate(-24deg); }
+        .b-shade { width:60vw; height:60vh; left:-14vw; top:-14vh; background:#000; filter:blur(50px); border-radius:50%; }
 
-        .glass-card, .card {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-        }
-        .glass-card:hover, .card:hover {
-            border-color: rgba(255, 255, 255, 0.4);
-        }
+        .glow { position:absolute; z-index:-1; filter:blur(90px); border-radius:50%; pointer-events:none; }
+        .g1 { width:40vw; height:40vh; right:-12vw; top:10%; background:radial-gradient(closest-side,rgba(42,168,230,.55),transparent); }
+        .g2 { width:40vw; height:40vh; left:-14vw; bottom:0; background:radial-gradient(closest-side,rgba(217,80,90,.5),transparent); }
+        .g3 { width:50vw; height:50vh; left:25vw; top:-10vh; background:radial-gradient(closest-side,rgba(139,47,168,.6),transparent); }
+
         .pill {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255,255,255,.4);
+            border: 1px solid var(--line);
             border-radius: 14px;
-            color: #fff;
+            color: var(--fg);
             text-decoration: none;
             font-weight: 600;
-            font-size: 13px;
-            padding: 0 20px;
-            height: 40px;
-            background: rgba(0,0,0,.2);
-            cursor: pointer;
+            font-size: 14px;
+            padding: 0 28px;
+            height: 44px;
+            background: rgba(0,0,0,.15);
             transition: background .2s, border-color .2s;
+            cursor: pointer;
         }
         .pill:hover, .pill:focus-visible {
             background: rgba(255,255,255,.12);
             border-color: #fff;
         }
+        .pill.logo { padding: 0 22px; font-weight: 700; letter-spacing: .02em; }
+        .pill.cta { align-self: center; height: 42px; padding: 0 26px; border-radius: 22px; font-size: 12px; min-width: 120px; }
+
+        .glass-card, .card {
+            border: 1px solid rgba(255,255,255,.22);
+            border-radius: 20px;
+            padding: 26px;
+            background: rgba(255,255,255,.03);
+            backdrop-filter: blur(6px);
+        }
+        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; }
+        .card i { display: block; width: 34px; height: 34px; border-radius: 50%; margin-bottom: 22px; }
+        .card:nth-child(1) i { background: linear-gradient(135deg, #e8604a, #c8306e); }
+        .card:nth-child(2) i { background: linear-gradient(135deg, #c8306e, #7a2ea5); }
+        .card:nth-child(3) i { background: linear-gradient(135deg, #7a2ea5, #2aa8e6); }
+
+        .sec { position: relative; isolation: isolate; overflow: hidden; padding: clamp(48px,8vh,96px) clamp(20px,6vw,88px); background: #000; }
+        .wrap { max-width: 1080px; margin: 0 auto; }
         .gold-gradient-text {
             background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 50%, #e5c175 100%);
             -webkit-background-clip: text;
@@ -120,7 +126,6 @@ if (session_status() === PHP_SESSION_NONE) {
         .gold-button:hover {
             background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 100%);
             box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
-            transform: translateY(-1px);
         }
         .up { color: #5fd7a0; }
         .down { color: #ff7b8a; }
@@ -131,84 +136,46 @@ if (session_status() === PHP_SESSION_NONE) {
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+        @media (max-width:720px) {
+            .cards { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar bg-black text-white">
 
-    <!-- Background Glow Blobs -->
-    <div class="bg-glow"><i></i><i></i><i></i></div>
+    <!-- Hero Background Blobs -->
+    <div class="blob b-blue"></div>
+    <div class="blob b-purple"></div>
+    <div class="blob b-pink"></div>
+    <div class="blob b-orange"></div>
+    <div class="blob b-shade"></div>
 
     <!-- Navigation Header -->
-    <nav class="glass-card sticky top-0 z-50 px-4 lg:px-8 py-3 mb-6">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="/index.php" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full border border-gold/40 flex items-center justify-center bg-obsidian text-gold shadow-lg shadow-gold/10">
-                    <i class="fa-solid font-bold text-xl">E3</i>
-                </div>
-                <div>
-                    <span class="text-xl font-extrabold gold-gradient-text tracking-wider uppercase">Empress Two Way</span>
-                    <span class="text-xs text-gold/70 block tracking-widest font-mono">VERSION 3.0</span>
-                </div>
-            </a>
+    <nav class="flex items-center justify-between px-6 md:px-16 py-6 sticky top-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10">
+        <a class="pill logo" href="/index.php">EMPRESS 3.0</a>
 
-            <!-- Navigation Links -->
-            <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
-                <a href="/index.php" class="hover:text-gold transition">Home</a>
-                <a href="/business_plan.php" class="hover:text-gold transition">Business Plan</a>
-                <a href="/faq.php" class="hover:text-gold transition">FAQ</a>
-                <?php if (isset($_SESSION['member_id'])): ?>
-                    <a href="/customer/dashboard.php" class="text-gold font-bold hover:underline flex items-center gap-1">
-                        <i class="fa-solid fa-gauge-high"></i> Dashboard
-                    </a>
-                    <a href="/logout.php" class="text-red-400 hover:text-red-300">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </a>
-                <?php elseif (isset($_SESSION['superadmin_id'])): ?>
-                    <a href="/superadmin/index.php" class="text-neon-cyan font-bold hover:underline flex items-center gap-1">
-                        <i class="fa-solid fa-crown"></i> Super Admin
-                    </a>
-                    <a href="/logout.php" class="text-red-400 hover:text-red-300">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </a>
-                <?php elseif (isset($_SESSION['admin_id'])): ?>
-                    <a href="/admin/index.php" class="text-gold font-bold hover:underline flex items-center gap-1">
-                        <i class="fa-solid fa-user-shield"></i> Admin Panel
-                    </a>
-                    <a href="/logout.php" class="text-red-400 hover:text-red-300">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </a>
-                <?php else: ?>
-                    <a href="/login.php" class="hover:text-gold transition">Member Login</a>
-                    <a href="/admin_login.php" class="text-gold/70 hover:text-gold transition">Admin</a>
-                    <a href="/superadmin_login.php" class="text-neon-cyan/80 hover:text-neon-cyan transition font-semibold">Super Admin</a>
-                    <a href="/register.php" class="gold-button px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus"></i> Join Now
-                    </a>
-                <?php endif; ?>
-            </div>
-
-            <!-- Mobile menu trigger -->
-            <button id="mobileMenuBtn" class="md:hidden text-gold text-2xl focus:outline-none">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+        <div class="hidden md:flex items-center gap-8 text-sm font-normal text-white/80">
+            <a href="/index.php#about" class="hover:text-white transition">About</a>
+            <a href="/index.php#service" class="hover:text-white transition">Services</a>
+            <a href="/business_plan.php" class="hover:text-white transition">Business Plan</a>
+            <a href="/faq.php" class="hover:text-white transition">FAQ</a>
+            <a href="/index.php#contact" class="hover:text-white transition">Contact</a>
         </div>
 
-        <!-- Mobile Menu Dropdown -->
-        <div id="mobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-gold/20 flex flex-col gap-3 text-sm">
-            <a href="/index.php" class="hover:text-gold py-1">Home</a>
-            <a href="/business_plan.php" class="hover:text-gold py-1">Business Plan</a>
-            <a href="/faq.php" class="hover:text-gold py-1">FAQ</a>
-            <a href="/terms.php" class="hover:text-gold py-1">Terms & Conditions</a>
+        <div class="flex items-center gap-3">
             <?php if (isset($_SESSION['member_id'])): ?>
-                <a href="/customer/dashboard.php" class="text-gold font-bold py-1">Customer Dashboard</a>
-                <a href="/logout.php" class="text-red-400 py-1">Logout</a>
+                <a class="pill" href="/customer/dashboard.php">Dashboard</a>
+                <a class="pill" href="/logout.php">Logout</a>
+            <?php elseif (isset($_SESSION['superadmin_id'])): ?>
+                <a class="pill text-neon-cyan" href="/superadmin/index.php">Super Admin</a>
+                <a class="pill" href="/logout.php">Logout</a>
             <?php elseif (isset($_SESSION['admin_id'])): ?>
-                <a href="/admin/index.php" class="text-gold font-bold py-1">Admin Panel</a>
-                <a href="/logout.php" class="text-red-400 py-1">Logout</a>
+                <a class="pill text-gold" href="/admin/index.php">Admin Panel</a>
+                <a class="pill" href="/logout.php">Logout</a>
             <?php else: ?>
-                <a href="/login.php" class="hover:text-gold py-1">Member Login</a>
-                <a href="/admin_login.php" class="text-gold/70 hover:text-gold py-1">Admin Portal</a>
-                <a href="/register.php" class="gold-button text-center py-2 rounded-lg font-bold">Join Now</a>
+                <a class="pill" href="/login.php">Log in</a>
+                <a class="pill cta gold-button" href="/register.php">Join Now</a>
             <?php endif; ?>
         </div>
     </nav>
