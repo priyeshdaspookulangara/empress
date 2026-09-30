@@ -9,6 +9,8 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - Empress Two Way 3.0' : 'Empress Two Way 3.0 - Direct Selling Ecosystem'; ?></title>
+    <!-- Google Font: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -21,8 +23,8 @@ if (session_status() === PHP_SESSION_NONE) {
                     colors: {
                         obsidian: '#0f1015',
                         navy: '#060b19',
-                        glass: 'rgba(22, 25, 35, 0.75)',
-                        glassBorder: 'rgba(197, 160, 89, 0.25)',
+                        glass: 'rgba(255, 255, 255, 0.04)',
+                        glassBorder: 'rgba(255, 255, 255, 0.2)',
                         gold: {
                             DEFAULT: '#c5a059',
                             400: '#d1b16d',
@@ -37,24 +39,72 @@ if (session_status() === PHP_SESSION_NONE) {
         }
     </script>
     <style>
+        :root {
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top,0px);
+            padding-bottom: env(safe-area-inset-bottom,0px);
+            --fg: #fff;
+            --muted: rgba(255,255,255,.7);
+            --line: rgba(255,255,255,.2);
+            --card: rgba(255,255,255,.04);
+            --orange: #e8604a;
+            --pink: #c8306e;
+            --purple: #8b2fa8;
+            --blue: #2aa8e6;
+        }
         body {
-            background-color: #0f1015;
-            color: #f3e5ab;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-image:
-                radial-gradient(circle at 15% 15%, rgba(197, 160, 89, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(197, 160, 89, 0.05) 0%, transparent 40%);
-            background-attachment: fixed;
+            margin: 0;
+            background: #000;
+            color: var(--fg);
+            font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
         }
-        .glass-card {
-            background: rgba(22, 25, 35, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(197, 160, 89, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: #000;
         }
-        .glass-card:hover {
-            border-color: rgba(197, 160, 89, 0.4);
+        .bg-glow i {
+            position: absolute;
+            filter: blur(110px);
+            border-radius: 50%;
+            opacity: .55;
+        }
+        .bg-glow i:nth-child(1) { width:45vw; height:45vh; right:-10vw; top:-12vh; background:var(--blue); }
+        .bg-glow i:nth-child(2) { width:35vw; height:40vh; right:22vw; top:-14vh; background:var(--purple); }
+        .bg-glow i:nth-child(3) { width:40vw; height:36vh; left:-14vw; bottom:-14vh; background:var(--orange); }
+
+        .glass-card, .card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+        .glass-card:hover, .card:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,.4);
+            border-radius: 14px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 0 20px;
+            height: 40px;
+            background: rgba(0,0,0,.2);
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+        }
+        .pill:hover, .pill:focus-visible {
+            background: rgba(255,255,255,.12);
+            border-color: #fff;
         }
         .gold-gradient-text {
             background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 50%, #e5c175 100%);
@@ -72,20 +122,21 @@ if (session_status() === PHP_SESSION_NONE) {
             box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
             transform: translateY(-1px);
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0f1015;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #c5a059;
-            border-radius: 3px;
-        }
+        .up { color: #5fd7a0; }
+        .down { color: #ff7b8a; }
+        .tag { display:inline-block; padding:3px 11px; border-radius:12px; border:1px solid var(--line); font-size:11px; }
+        .tag.new { border-color:var(--blue); color:var(--blue); }
+        .tag.done { border-color:#5fd7a0; color:#5fd7a0; }
+        .tag.wait { border-color:var(--orange); color:var(--orange); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <!-- Background Glow Blobs -->
+    <div class="bg-glow"><i></i><i></i><i></i></div>
 
     <!-- Navigation Header -->
     <nav class="glass-card sticky top-0 z-50 px-4 lg:px-8 py-3 mb-6">
