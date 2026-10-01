@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/header.php';
         <span class="text-xs uppercase font-mono tracking-widest text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full border border-emerald-500/30">Legal & Compliance Policy</span>
         <h1 class="text-3xl md:text-4xl font-extrabold gold-gradient-text mt-3">Terms & Conditions</h1>
         <p class="text-xs md:text-sm text-champagne/80 max-w-2xl mx-auto mt-2 leading-relaxed">
-            Please read these Terms & Conditions carefully. They govern all deposits, platform participation, 50:50 wallet allocations, and peer-to-peer (P2P) transfers on the Empress Two Way 3.0 Web3 platform.
+            Please read these Terms & Conditions carefully. They govern all deposits, platform participation, 50:50 wallet allocations, and peer-to-peer (P2P) transfers on the Empress Two Way 4.0 Web3 platform.
         </p>
         <div class="text-[11px] text-gold/60 font-mono mt-4">Last Updated: <?php echo date('F d, Y'); ?> • USDT (BEP-20) Standard</div>
     </div>
@@ -32,12 +32,12 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <p>
-                All account activations, package subscriptions, matrix commission credits, platform fund deposits, and withdrawal payouts within Empress Two Way 3.0 are conducted <strong>exclusively in Tether USD (USDT) utilizing the BNB Smart Chain (BEP-20) network</strong>.
+                All account activations, package subscriptions, matrix commission credits, platform fund deposits, and withdrawal payouts within Empress Two Way 4.0 are conducted <strong>exclusively in Tether USD (USDT) utilizing the BNB Smart Chain (BEP-20) network</strong>.
             </p>
 
             <div class="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 font-medium">
                 <i class="fa-solid fa-triangle-exclamation mr-1.5 text-red-400"></i>
-                <strong>User Network Responsibility Warning:</strong> Users are solely responsible for ensuring that all incoming and outgoing transfers use the <strong>BNB Smart Chain (BEP-20)</strong> network. Initiating transactions or sending assets via unapproved networks (including but not limited to Tron TRC-20, Ethereum ERC-20, Polygon, or Solana) or transferring to incorrect wallet addresses will result in <strong>permanent, unrecoverable loss of funds</strong>. Empress Two Way 3.0 assumes zero liability for user network mismatch errors.
+                <strong>User Network Responsibility Warning:</strong> Users are solely responsible for ensuring that all incoming and outgoing transfers use the <strong>BNB Smart Chain (BEP-20)</strong> network. Initiating transactions or sending assets via unapproved networks (including but not limited to Tron TRC-20, Ethereum ERC-20, Polygon, or Solana) or transferring to incorrect wallet addresses will result in <strong>permanent, unrecoverable loss of funds</strong>. Empress Two Way 4.0 assumes zero liability for user network mismatch errors.
             </div>
         </div>
 
@@ -99,7 +99,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <p>
-                By participating in Empress Two Way 3.0, you explicitly acknowledge and agree to the following blockchain ledger rules:
+                By participating in Empress Two Way 4.0, you explicitly acknowledge and agree to the following blockchain ledger rules:
             </p>
 
             <ul class="list-disc pl-5 space-y-2 text-champagne/80">

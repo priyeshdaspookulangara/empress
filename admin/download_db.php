@@ -15,7 +15,7 @@ header('Content-Disposition: attachment; filename="' . $filename . '"');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-echo "-- EMPRESS TWO WAY 3.0 DATABASE BACKUP DUMP\n";
+echo "-- EMPRESS TWO WAY 4.0 DATABASE BACKUP DUMP\n";
 echo "-- Generated on: " . date('Y-m-d H:i:s') . "\n";
 echo "-- Server: " . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\n\n";
 

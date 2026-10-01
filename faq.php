@@ -46,7 +46,7 @@ require_once __DIR__ . '/includes/header.php';
             </button>
             <div class="faq-answer hidden px-5 pb-5 pt-2 text-xs text-champagne/80 border-t border-gold/10 space-y-2">
                 <p>
-                    All deposits, transactions, and payouts on Empress Two Way 3.0 operate <strong>exclusively on Tether USD (USDT) via the BNB Smart Chain (BEP-20) network</strong>.
+                    All deposits, transactions, and payouts on Empress Two Way 4.0 operate <strong>exclusively on Tether USD (USDT) via the BNB Smart Chain (BEP-20) network</strong>.
                 </p>
                 <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 font-medium">
                     <i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i>

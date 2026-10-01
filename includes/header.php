@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($pageTitle) ? $pageTitle . ' - Empress Two Way 3.0' : 'Empress Two Way 3.0 - Direct Selling Ecosystem'; ?></title>
+    <title><?php echo isset($pageTitle) ? $pageTitle . ' - Empress Two Way 4.0' : 'Empress Two Way 4.0 - Direct Selling Ecosystem'; ?></title>
     <!-- Google Font: Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
@@ -153,7 +153,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <!-- Navigation Header -->
     <nav class="flex items-center justify-between px-6 md:px-16 py-6 sticky top-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10">
-        <a class="pill logo" href="/index.php">EMPRESS 3.0</a>
+        <a class="pill logo" href="/index.php">EMPRESS 4.0</a>
 
         <div class="hidden md:flex items-center gap-8 text-sm font-normal text-white/80">
             <a href="/index.php#about" class="hover:text-white transition">About</a>

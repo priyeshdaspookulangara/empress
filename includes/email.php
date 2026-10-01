@@ -10,13 +10,13 @@ function sendEmpressHtmlEmail($toEmail, $subject, $htmlContent) {
     }
 
     $fromEmail = 'info@empress2way.com';
-    $fromName = 'Empress Two Way 3.0';
+    $fromName = 'Empress Two Way 4.0';
 
     $headers  = "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
     $headers .= "From: {$fromName} <{$fromEmail}>\r\n";
     $headers .= "Reply-To: {$fromEmail}\r\n";
-    $headers .= "X-Mailer: Empress2Way3.0/PHP" . phpversion() . "\r\n";
+    $headers .= "X-Mailer: Empress2Way4.0/PHP" . phpversion() . "\r\n";
 
     // Standard HTML email wrapper template with Obsidian & Gold theme
     $wrappedHtml = '
@@ -40,14 +40,14 @@ function sendEmpressHtmlEmail($toEmail, $subject, $htmlContent) {
     <body>
         <div class="email-container">
             <div class="header">
-                <div class="logo-text">EMPRESS TWO WAY 3.0</div>
+                <div class="logo-text">EMPRESS TWO WAY 4.0</div>
                 <div class="tagline">Double Your Path, Empower Your Future</div>
             </div>
             <div class="content">
                 ' . $htmlContent . '
             </div>
             <div class="footer">
-                &copy; ' . date('Y') . ' Empress Two Way 3.0. All Rights Reserved.<br>
+                &copy; ' . date('Y') . ' Empress Two Way 4.0. All Rights Reserved.<br>
                 Official Support: <a href="mailto:info@empress2way.com" style="color: #c5a059;">info@empress2way.com</a>
             </div>
         </div>

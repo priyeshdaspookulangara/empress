@@ -688,10 +688,10 @@ function registerMember($pdo, $data) {
         $pdo->commit();
 
         // Trigger Welcome HTML Email
-        $welcomeSubject = "Welcome to Empress Two Way 3.0 - Position Activated (" . $memberId . ")";
+        $welcomeSubject = "Welcome to Empress Two Way 4.0 - Position Activated (" . $memberId . ")";
         $welcomeTpl = "
             <h2 style='color: #c5a059; margin-top:0;'>Congratulations, {{name}}!</h2>
-            <p>Your 3-Matrix position has been successfully activated in <strong>Empress Two Way 3.0</strong>.</p>
+            <p>Your 3-Matrix position has been successfully activated in <strong>Empress Two Way 4.0</strong>.</p>
             <div style='background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.3); padding: 15px; border-radius: 10px; margin: 20px 0;'>
                 <p style='margin: 5px 0;'><strong>Member ID:</strong> <span style='color: #c5a059;'>{{member_id}}</span></p>
                 <p style='margin: 5px 0;'><strong>Email:</strong> {{email}}</p>
@@ -797,10 +797,10 @@ function registerMemberWithoutEpin($pdo, $data) {
         $pdo->commit();
 
         // Trigger Welcome HTML Email for direct registration
-        $welcomeSubject = "Welcome to Empress Two Way 3.0 - Position Activated (" . $memberId . ")";
+        $welcomeSubject = "Welcome to Empress Two Way 4.0 - Position Activated (" . $memberId . ")";
         $welcomeTpl = "
             <h2 style='color: #c5a059; margin-top:0;'>Congratulations, {{name}}!</h2>
-            <p>Your 3-Matrix position has been successfully activated in <strong>Empress Two Way 3.0</strong>.</p>
+            <p>Your 3-Matrix position has been successfully activated in <strong>Empress Two Way 4.0</strong>.</p>
             <div style='background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.3); padding: 15px; border-radius: 10px; margin: 20px 0;'>
                 <p style='margin: 5px 0;'><strong>Member ID:</strong> <span style='color: #c5a059;'>{{member_id}}</span></p>
                 <p style='margin: 5px 0;'><strong>Email:</strong> {{email}}</p>

@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 <section class="hero text-center py-16 px-4">
     <div class="content mx-auto my-auto max-w-2xl flex flex-col items-center">
         <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-            Empress<br><span class="gold-gradient-text">Two Way 3.0</span>
+            Empress<br><span class="gold-gradient-text">Two Way 4.0</span>
         </h1>
         <p class="text-sm md:text-base text-white/80 max-w-lg mb-8 leading-relaxed font-light">
             Double Your Path, Empower Your Future. A single-phase direct selling platform with automated 3-matrix forced spillover, 50:50 smart wallet division, and guaranteed 6-level fixed node payouts.
@@ -25,7 +25,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="wrap about">
         <div>
             <h2>We shape financial independence into reality</h2>
-            <p class="lead">Empress Two Way 3.0 provides a single-phase direct selling structure engineered for team spillover and sustainable payout division.</p>
+            <p class="lead">Empress Two Way 4.0 provides a single-phase direct selling structure engineered for team spillover and sustainable payout division.</p>
         </div>
         <div>
             <p>Our automated engine uses Breadth-First Search (BFS) auto-spillover placement starting from Root (EMP100000) to fill 3-child slots strictly left-to-right across the entire network.</p>

@@ -46,7 +46,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div>
             <div class="flex items-center gap-2">
                 <span class="text-xs uppercase font-mono tracking-widest text-neon-cyan bg-neon-cyan/10 px-3 py-1 rounded-full border border-neon-cyan/30">Executive Dashboard</span>
-                <span class="text-xs text-ice/60">Empress Two Way 3.0</span>
+                <span class="text-xs text-ice/60">Empress Two Way 4.0</span>
             </div>
             <h1 class="text-3xl font-extrabold neon-gradient-text mt-2">Master Administration Console</h1>
         </div>
@@ -204,7 +204,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody class="divide-y divide-neon-cyan/10 text-ice">
                     <?php foreach ($recentMembers as $m): ?>
                         <?php
-                        $waMsg = rawurlencode("Welcome to Empress Two Way 3.0! Your Member ID is {$m['member_id']}. Login at " . $_SERVER['HTTP_HOST'] . "/login.php");
+                        $waMsg = rawurlencode("Welcome to Empress Two Way 4.0! Your Member ID is {$m['member_id']}. Login at " . $_SERVER['HTTP_HOST'] . "/login.php");
                         $waUrl = "https://wa.me/91" . preg_replace('/[^0-9]/', '', $m['phone']) . "?text=" . $waMsg;
                         ?>
                         <tr>

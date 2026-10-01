@@ -8,7 +8,7 @@
     <footer class="mt-16 bg-black border-t border-white/15 px-6 md:px-16 py-12">
         <div class="foot max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-xs text-white/70">
             <div>
-                <a class="pill logo text-white font-bold" href="/index.php">EMPRESS 3.0</a>
+                <a class="pill logo text-white font-bold" href="/index.php">EMPRESS 4.0</a>
                 <p class="mt-4 text-white/60 text-xs max-w-xs leading-relaxed">
                     Double Your Path, Empower Your Future. Single-phase 3-matrix direct selling platform.
                 </p>
@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="copy max-w-6xl mx-auto mt-8 pt-6 border-t border-white/10 flex justify-between items-center flex-wrap gap-4 text-xs text-white/50">
-            <span>&copy; <?php echo date('Y'); ?> Empress Two Way 3.0. All rights reserved.</span>
+            <span>&copy; <?php echo date('Y'); ?> Empress Two Way 4.0. All rights reserved.</span>
             <span>Official Support: <a href="mailto:info@empress2way.com" class="text-gold hover:underline">info@empress2way.com</a></span>
         </div>
     </footer>

@@ -7,7 +7,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
 echo "========================================\n";
-echo " EMPRESS TWO WAY 3.0 AUTOMATED SUITE   \n";
+echo " EMPRESS TWO WAY 4.0 AUTOMATED SUITE   \n";
 echo "========================================\n\n";
 
 $pdo = getDBConnection();

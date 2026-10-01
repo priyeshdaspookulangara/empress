@@ -47,7 +47,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div>
             <div class="flex items-center gap-2">
                 <span class="text-xs uppercase font-mono tracking-widest text-gold bg-gold/10 px-3 py-1 rounded-full border border-gold/30">Matrix Auto-Multiplier</span>
-                <span class="text-xs text-champagne/60">Empress Two Way 3.0</span>
+                <span class="text-xs text-champagne/60">Empress Two Way 4.0</span>
             </div>
             <h1 class="text-2xl font-extrabold gold-gradient-text mt-2">My Rebirth Positions</h1>
             <p class="text-xs text-champagne/70 mt-1">Track automated rebirth positions generated from level matrix completions</p>

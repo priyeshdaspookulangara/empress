@@ -126,7 +126,7 @@ require_once __DIR__ . '/../includes/header.php';
     <p style="margin: 5px 0;"><strong>Package:</strong> {{package_type}}</p>
 </div>
 
-<p>Double your path and empower your future with Empress Two Way 3.0!</p>
+<p>Double your path and empower your future with Empress Two Way 4.0!</p>
 <a href="{{site_url}}/login.php" class="btn">Login to Dashboard</a></textarea>
                     </div>
 
