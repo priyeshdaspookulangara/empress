@@ -22,6 +22,11 @@ if (!$member) {
     exit();
 }
 
+// Fetch Pending / Queued Rebirths for member
+$stmtQ = $pdo->prepare("SELECT * FROM queued_rebirths WHERE member_id = ? ORDER BY scheduled_at ASC");
+$stmtQ->execute([$memberId]);
+$queuedRebirths = $stmtQ->fetchAll();
+
 // Fetch Level Rebirth Rewards Earned
 $stmtRewards = $pdo->prepare("SELECT * FROM member_rebirths WHERE member_id = ? ORDER BY completed_level ASC");
 $stmtRewards->execute([$memberId]);
@@ -120,6 +125,47 @@ require_once __DIR__ . '/../includes/header.php';
             <span class="text-[10px] text-champagne/40">729 Nodes Completed</span>
         </div>
     </div>
+
+    <!-- Queued / Scheduled Rebirths Drip Queue -->
+    <?php if (!empty($queuedRebirths)): ?>
+    <div class="glass-card p-6 rounded-3xl border border-gold/30 bg-gold/5">
+        <h3 class="text-base font-bold text-gold mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-clock"></i> Scheduled Rebirth Drip Queue (<?php echo REBIRTH_INTERVAL_MINUTES; ?>-Minute Interval)
+        </h3>
+        <p class="text-xs text-champagne/70 mb-4">To preserve tree balance and stability, rebirth positions are drip-placed into the global 3-matrix with a <?php echo REBIRTH_INTERVAL_MINUTES; ?>-minute interval between placements.</p>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
+                        <th class="p-3">Level</th>
+                        <th class="p-3">Rebirth #</th>
+                        <th class="p-3">Scheduled Time</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3">Processed At</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gold/10 text-champagne">
+                    <?php foreach ($queuedRebirths as $qr): ?>
+                        <tr>
+                            <td class="p-3 font-bold text-gold">Level <?php echo $qr['completed_level']; ?></td>
+                            <td class="p-3 font-mono font-bold text-champagne">Rebirth #<?php echo $qr['rebirth_index']; ?></td>
+                            <td class="p-3 font-mono text-gold/90"><?php echo $qr['scheduled_at']; ?></td>
+                            <td class="p-3">
+                                <?php if ($qr['status'] === 'Processed'): ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Placed</span>
+                                <?php else: ?>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">Scheduled</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="p-3 font-mono text-champagne/50"><?php echo $qr['processed_at'] ?: 'Pending'; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Rebirth Level Completion Log Table -->
     <div class="glass-card p-6 rounded-3xl border border-gold/20">

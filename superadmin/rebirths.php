@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Super Admin Rebirth Positions Inspector";
+$pageTitle = "System Rebirth Positions Inspector";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -35,6 +35,10 @@ $rebirthNodes = $stmt->fetchAll();
 // Total rebirth count system-wide
 $totalRebirthsCount = count($rebirthNodes);
 
+// Fetch Queue items
+$stmtQ = $pdo->query("SELECT q.*, m.name as member_name FROM queued_rebirths q LEFT JOIN members m ON q.member_id = m.member_id ORDER BY q.id DESC LIMIT 50");
+$queueItems = $stmtQ->fetchAll();
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -42,11 +46,11 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <div class="flex items-center gap-2">
-                <span class="text-xs uppercase font-mono tracking-widest text-neon-cyan bg-neon-cyan/10 px-3 py-1 rounded-full border border-neon-cyan/30">Super Admin Audit</span>
+                <span class="text-xs uppercase font-mono tracking-widest text-neon-cyan bg-neon-cyan/10 px-3 py-1 rounded-full border border-neon-cyan/30">System Audit</span>
                 <span class="text-xs text-ice/60">Empress Two Way 3.0</span>
             </div>
             <h1 class="text-2xl font-extrabold neon-gradient-text mt-2">Rebirth Positions Inspector</h1>
-            <p class="text-xs text-ice/70 mt-1">Master audit of auto-created 3-matrix rebirth positions and 2nd generation sponsor assignments</p>
+            <p class="text-xs text-ice/70 mt-1">Audit auto-created 3-matrix rebirth positions and 2nd generation sponsor assignments</p>
         </div>
 
         <!-- Search Bar -->
@@ -57,6 +61,57 @@ require_once __DIR__ . '/../includes/header.php';
                 <a href="/superadmin/rebirths.php" class="glass-card border border-neon-cyan/30 hover:bg-neon-cyan/10 text-neon-cyan px-3 py-2 rounded-xl text-xs flex items-center">Reset</a>
             <?php endif; ?>
         </form>
+    </div>
+
+    <!-- Drip Queue Inspector Table -->
+    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-neon-cyan flex items-center gap-2">
+                <i class="fa-solid fa-clock"></i> Scheduled Rebirth Drip Queue (<?php echo REBIRTH_INTERVAL_MINUTES; ?> Min Gap)
+            </h3>
+            <span class="text-xs text-ice/60 font-mono">Top 50 Queue Items</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
+                        <th class="p-3">Member ID</th>
+                        <th class="p-3">Member Name</th>
+                        <th class="p-3">Level</th>
+                        <th class="p-3">Rebirth Index</th>
+                        <th class="p-3">Scheduled Time</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3">Processed At</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neon-cyan/10 text-ice">
+                    <?php if (empty($queueItems)): ?>
+                        <tr>
+                            <td colspan="7" class="p-4 text-center text-ice/50">No queued rebirth items.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($queueItems as $qi): ?>
+                            <tr>
+                                <td class="p-3 font-mono font-bold text-neon-cyan"><?php echo htmlspecialchars($qi['member_id']); ?></td>
+                                <td class="p-3 text-ice font-semibold"><?php echo htmlspecialchars($qi['member_name'] ?: 'Unknown'); ?></td>
+                                <td class="p-3 font-bold text-gold">Level <?php echo $qi['completed_level']; ?></td>
+                                <td class="p-3 font-mono font-bold text-emerald-400">#<?php echo $qi['rebirth_index']; ?></td>
+                                <td class="p-3 font-mono text-neon-cyan/90"><?php echo $qi['scheduled_at']; ?></td>
+                                <td class="p-3">
+                                    <?php if ($qi['status'] === 'Processed'): ?>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Processed</span>
+                                    <?php else: ?>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">Pending</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="p-3 font-mono text-ice/50"><?php echo $qi['processed_at'] ?: 'Pending'; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Summary Banner -->

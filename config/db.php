@@ -159,6 +159,17 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             created_at $timestamp
         )",
 
+        "CREATE TABLE IF NOT EXISTS queued_rebirths (
+            id $autoInc,
+            member_id VARCHAR(20) NOT NULL,
+            completed_level INT NOT NULL,
+            rebirth_index INT NOT NULL,
+            scheduled_at DATETIME NOT NULL,
+            status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+            processed_at DATETIME NULL DEFAULT NULL,
+            created_at $timestamp
+        )",
+
         "CREATE TABLE IF NOT EXISTS deposits (
             id $autoInc,
             user_id VARCHAR(50) NOT NULL,

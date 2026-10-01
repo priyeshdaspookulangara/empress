@@ -119,6 +119,18 @@ CREATE TABLE IF NOT EXISTS member_rebirths (
     INDEX idx_rebirth_member (member_id)
 );
 
+CREATE TABLE IF NOT EXISTS queued_rebirths (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    member_id VARCHAR(20) NOT NULL,
+    completed_level INT NOT NULL,
+    rebirth_index INT NOT NULL,
+    scheduled_at DATETIME NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+    processed_at DATETIME NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_scheduled (scheduled_at, status)
+);
+
 -- Seed System Root Node (Burfee Cart)
 INSERT INTO admins (username, password, role) VALUES ('admin', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'admin') ON DUPLICATE KEY UPDATE id=id;
 INSERT INTO admins (username, password, role) VALUES ('superadmin', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'superadmin') ON DUPLICATE KEY UPDATE id=id;
