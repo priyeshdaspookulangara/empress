@@ -394,15 +394,46 @@ function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel
 }
 
 /**
- * Process due rebirth positions from the queue
+ * Process due rebirth positions from the queue with round-robin member interleaving
+ * (Ensures alternative rebirth placements across members to prevent consecutive rebirths from a single person)
  */
 function processScheduledRebirthQueue($pdo) {
     $now = date('Y-m-d H:i:s');
-    $stmt = $pdo->prepare("SELECT * FROM queued_rebirths WHERE status = 'Pending' AND scheduled_at <= ? ORDER BY scheduled_at ASC");
+    $stmt = $pdo->prepare("SELECT * FROM queued_rebirths WHERE status = 'Pending' AND scheduled_at <= ? ORDER BY scheduled_at ASC, id ASC");
     $stmt->execute([$now]);
     $dueRebirths = $stmt->fetchAll();
 
+    if (empty($dueRebirths)) {
+        return;
+    }
+
+    // Group due rebirths by member_id
+    $byMember = [];
     foreach ($dueRebirths as $q) {
+        $mId = $q['member_id'];
+        if (!isset($byMember[$mId])) {
+            $byMember[$mId] = [];
+        }
+        $byMember[$mId][] = $q;
+    }
+
+    // Interleave rebirths across members in round-robin sequence
+    $interleavedQueue = [];
+    $hasMore = true;
+    while ($hasMore) {
+        $hasMore = false;
+        foreach ($byMember as $mId => &$queueList) {
+            if (!empty($queueList)) {
+                $interleavedQueue[] = array_shift($queueList);
+                if (!empty($queueList)) {
+                    $hasMore = true;
+                }
+            }
+        }
+    }
+
+    // Execute placement in round-robin interleaved order
+    foreach ($interleavedQueue as $q) {
         $qId = $q['id'];
         $parentMemberId = $q['member_id'];
         $completedLevel = $q['completed_level'];
