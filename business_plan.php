@@ -42,7 +42,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <div class="bg-gold/10 p-3 rounded-xl border border-gold/30 flex justify-between items-center text-xs">
                     <span class="font-bold text-gold">Company 50% Portion</span>
-                    <span class="text-champagne font-bold">60% Burfee Cart ($A \times 30\%$) / 40% Charity ($A \times 20\%$)</span>
+                    <span class="text-champagne font-bold">60% Burfee Cart (30% of total) / 40% Charity (20% of total)</span>
                 </div>
             </div>
         </div>
@@ -71,80 +71,80 @@ require_once __DIR__ . '/includes/header.php';
                     <tr>
                         <td class="p-3 font-bold text-gold">Level 1</td>
                         <td class="p-3">3 Nodes</td>
-                        <td class="p-3">₹1,500 ($15.00)</td>
-                        <td class="p-3 text-amber-400">₹1,000 ($10.00)</td>
-                        <td class="p-3">₹500 ($5.00)</td>
-                        <td class="p-3">₹0 ($0.00)</td>
-                        <td class="p-3 font-bold text-emerald-400">₹250 ($2.50)</td>
-                        <td class="p-3">₹150 ($1.50)</td>
-                        <td class="p-3">₹100 ($1.00)</td>
+                        <td class="p-3">$15.00</td>
+                        <td class="p-3 text-amber-400">$10.00</td>
+                        <td class="p-3">$5.00</td>
+                        <td class="p-3">$0.00</td>
+                        <td class="p-3 font-bold text-emerald-400">$2.50</td>
+                        <td class="p-3">$1.50</td>
+                        <td class="p-3">$1.00</td>
                     </tr>
                     <tr>
                         <td class="p-3 font-bold text-gold">Level 2</td>
                         <td class="p-3">9 Nodes</td>
-                        <td class="p-3">₹9,000 ($90.00)</td>
-                        <td class="p-3 text-amber-400">₹2,000 ($20.00)</td>
-                        <td class="p-3">₹7,000 ($70.00)</td>
-                        <td class="p-3">₹0 ($0.00)</td>
-                        <td class="p-3 font-bold text-emerald-400">₹3,500 ($35.00)</td>
-                        <td class="p-3">₹2,100 ($21.00)</td>
-                        <td class="p-3">₹1,400 ($14.00)</td>
+                        <td class="p-3">$90.00</td>
+                        <td class="p-3 text-amber-400">$20.00</td>
+                        <td class="p-3">$70.00</td>
+                        <td class="p-3">$0.00</td>
+                        <td class="p-3 font-bold text-emerald-400">$35.00</td>
+                        <td class="p-3">$21.00</td>
+                        <td class="p-3">$14.00</td>
                     </tr>
                     <tr>
                         <td class="p-3 font-bold text-gold">Level 3</td>
                         <td class="p-3">27 Nodes</td>
-                        <td class="p-3">₹54,000 ($540.00)</td>
-                        <td class="p-3 text-amber-400">₹12,000 ($120.00)</td>
-                        <td class="p-3">₹42,000 ($420.00)</td>
-                        <td class="p-3 text-purple-400">₹10,000 ($100.00 - 10 Rebirths)</td>
-                        <td class="p-3 font-bold text-emerald-400">₹11,000 ($110.00)</td>
-                        <td class="p-3">₹12,600 ($126.00)</td>
-                        <td class="p-3">₹8,400 ($84.00)</td>
+                        <td class="p-3">$540.00</td>
+                        <td class="p-3 text-amber-400">$120.00</td>
+                        <td class="p-3">$420.00</td>
+                        <td class="p-3 text-purple-400">$100.00 (10 Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400">$110.00</td>
+                        <td class="p-3">$126.00</td>
+                        <td class="p-3">$84.00</td>
                     </tr>
                     <tr>
                         <td class="p-3 font-bold text-gold">Level 4</td>
                         <td class="p-3">81 Nodes</td>
-                        <td class="p-3">₹2,43,000 ($2,430.00)</td>
-                        <td class="p-3 text-amber-400">₹0 ($0.00)</td>
-                        <td class="p-3">₹2,43,000 ($2,430.00)</td>
-                        <td class="p-3 text-purple-400">₹20,000 ($200.00 - 20 Rebirths)</td>
-                        <td class="p-3 font-bold text-emerald-400">₹1,01,500 ($1,015.00)</td>
-                        <td class="p-3">₹72,900 ($729.00)</td>
-                        <td class="p-3">₹48,600 ($486.00)</td>
+                        <td class="p-3">$2,430.00</td>
+                        <td class="p-3 text-amber-400">$0.00</td>
+                        <td class="p-3">$2,430.00</td>
+                        <td class="p-3 text-purple-400">$200.00 (20 Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400">$1,015.00</td>
+                        <td class="p-3">$729.00</td>
+                        <td class="p-3">$486.00</td>
                     </tr>
                     <tr>
                         <td class="p-3 font-bold text-gold">Level 5</td>
                         <td class="p-3">243 Nodes</td>
-                        <td class="p-3">₹9,72,000 ($9,720.00)</td>
-                        <td class="p-3 text-amber-400">₹0 ($0.00)</td>
-                        <td class="p-3">₹9,72,000 ($9,720.00)</td>
-                        <td class="p-3 text-purple-400">₹70,000 ($700.00 - 70 Rebirths)</td>
-                        <td class="p-3 font-bold text-emerald-400">₹4,16,000 ($4,160.00)</td>
-                        <td class="p-3">₹2,91,600 ($2,916.00)</td>
-                        <td class="p-3">₹1,94,400 ($1,944.00)</td>
+                        <td class="p-3">$9,720.00</td>
+                        <td class="p-3 text-amber-400">$0.00</td>
+                        <td class="p-3">$9,720.00</td>
+                        <td class="p-3 text-purple-400">$700.00 (70 Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400">$4,160.00</td>
+                        <td class="p-3">$2,916.00</td>
+                        <td class="p-3">$1,944.00</td>
                     </tr>
                     <tr>
                         <td class="p-3 font-bold text-gold">Level 6</td>
                         <td class="p-3">729 Nodes</td>
-                        <td class="p-3">₹36,45,000 ($36,450.00)</td>
-                        <td class="p-3 text-amber-400">₹0 ($0.00)</td>
-                        <td class="p-3">₹36,45,000 ($36,450.00)</td>
-                        <td class="p-3 text-purple-400">₹1,00,000 ($1,000.00 - 100 Rebirths)</td>
-                        <td class="p-3 font-bold text-emerald-400">₹17,22,500 ($17,225.00)</td>
-                        <td class="p-3">₹10,93,500 ($10,935.00)</td>
-                        <td class="p-3">₹7,29,000 ($7,290.00)</td>
+                        <td class="p-3">$36,450.00</td>
+                        <td class="p-3 text-amber-400">$0.00</td>
+                        <td class="p-3">$36,450.00</td>
+                        <td class="p-3 text-purple-400">$1,000.00 (100 Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400">$17,225.00</td>
+                        <td class="p-3">$10,935.00</td>
+                        <td class="p-3">$7,290.00</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr class="bg-gold/20 text-gold font-bold">
                         <td class="p-3" colspan="2">Total Potential (1,092 Nodes)</td>
-                        <td class="p-3">₹49,24,500 ($49,245.00)</td>
-                        <td class="p-3 text-amber-300">₹15,000 ($150.00)</td>
-                        <td class="p-3">₹49,09,500 ($49,095.00)</td>
-                        <td class="p-3 text-purple-300">₹2,00,000 ($2,000.00 - 200 Rebirths)</td>
-                        <td class="p-3 text-emerald-300">₹22,54,750 ($22,547.50)</td>
-                        <td class="p-3 text-champagne">₹14,72,850 ($14,728.50)</td>
-                        <td class="p-3 text-champagne">₹9,81,900 ($9,819.00)</td>
+                        <td class="p-3">$49,245.00</td>
+                        <td class="p-3 text-amber-300">$150.00</td>
+                        <td class="p-3">$49,095.00</td>
+                        <td class="p-3 text-purple-300">$2,000.00 (200 Rebirths)</td>
+                        <td class="p-3 text-emerald-300">$22,547.50</td>
+                        <td class="p-3 text-champagne">$14,728.50</td>
+                        <td class="p-3 text-champagne">$9,819.00</td>
                     </tr>
                 </tfoot>
             </table>

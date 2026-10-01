@@ -5,8 +5,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/email.php';
 
 // Level payout schedule in USD ($) (Level 1 to 6)
-// Based on 1000 INR ($10.00 USD) joining package ratio (500/1000/2000/3000/4000/5000 INR)
-const DIRECT_REFERRAL_AMOUNT = 1.00; // 10% of $10.00 joining package (100 INR)
+const DIRECT_REFERRAL_AMOUNT = 1.00; // 10% of $10.00 joining package
 
 const MATRIX_PAYOUTS = [
     1 => 5.00,
@@ -42,63 +41,63 @@ const REBIRTH_INTERVAL_MINUTES = 15;
 const MATRIX_LEVEL_SPECS = [
     1 => [
         'capacity' => 3,
-        'gross_per_node' => 5.00,             // $5.00 (500 INR)
-        'helping_per_node' => 3.33333333333,  // Total $10.00 (1000 INR) / 3
-        'net_pool_per_node' => 1.66666666667, // $1.6667 (166.67 INR)
-        'user_wallet_per_node' => 0.83333333333, // $0.8333 (83.33 INR) => Total $2.50 (250 INR)
-        'burfee_cart_per_node' => 0.50,        // $0.50 (50 INR) => Total $1.50 (150 INR)
-        'charity_per_node' => 0.33333333333,    // $0.3333 (33.33 INR) => Total $1.00 (100 INR)
+        'gross_per_node' => 5.00,             // $5.00
+        'helping_per_node' => 3.33333333333,  // Total $10.00 / 3
+        'net_pool_per_node' => 1.66666666667, // $1.6667
+        'user_wallet_per_node' => 0.83333333333, // Total $2.50 / 3
+        'burfee_cart_per_node' => 0.50,        // Total $1.50 / 3
+        'charity_per_node' => 0.33333333333,    // Total $1.00 / 3
         'rebirth_cost_per_node' => 0.00,
     ],
     2 => [
         'capacity' => 9,
-        'gross_per_node' => 10.00,            // $10.00 (1000 INR)
-        'helping_per_node' => 2.22222222222,  // Total $20.00 (2000 INR) / 9
-        'net_pool_per_node' => 7.77777777778, // $7.7778 (777.78 INR)
-        'user_wallet_per_node' => 3.88888888889, // Total $35.00 (3500 INR) / 9
-        'burfee_cart_per_node' => 2.33333333333, // Total $21.00 (2100 INR) / 9
-        'charity_per_node' => 1.55555555556,    // Total $14.00 (1400 INR) / 9
+        'gross_per_node' => 10.00,            // $10.00
+        'helping_per_node' => 2.22222222222,  // Total $20.00 / 9
+        'net_pool_per_node' => 7.77777777778, // $7.7778
+        'user_wallet_per_node' => 3.88888888889, // Total $35.00 / 9
+        'burfee_cart_per_node' => 2.33333333333, // Total $21.00 / 9
+        'charity_per_node' => 1.55555555556,    // Total $14.00 / 9
         'rebirth_cost_per_node' => 0.00,
     ],
     3 => [
         'capacity' => 27,
-        'gross_per_node' => 20.00,            // $20.00 (2000 INR)
-        'helping_per_node' => 4.44444444444,  // Total $120.00 (12000 INR) / 27
-        'net_pool_per_node' => 15.55555555556, // Total $420.00 (42000 INR) / 27
-        'user_wallet_per_node' => 4.07407407407, // Total $110.00 (11000 INR) / 27
-        'burfee_cart_per_node' => 4.66666666667, // Total $126.00 (12600 INR) / 27
-        'charity_per_node' => 3.11111111111,    // Total $84.00 (8400 INR) / 27
-        'rebirth_cost_per_node' => 3.70370370370, // Total $100.00 (10000 INR) / 27
+        'gross_per_node' => 20.00,            // $20.00
+        'helping_per_node' => 4.44444444444,  // Total $120.00 / 27
+        'net_pool_per_node' => 15.55555555556, // Total $420.00 / 27
+        'user_wallet_per_node' => 4.07407407407, // Total $110.00 / 27
+        'burfee_cart_per_node' => 4.66666666667, // Total $126.00 / 27
+        'charity_per_node' => 3.11111111111,    // Total $84.00 / 27
+        'rebirth_cost_per_node' => 3.70370370370, // Total $100.00 / 27
     ],
     4 => [
         'capacity' => 81,
-        'gross_per_node' => 30.00,            // $30.00 (3000 INR)
+        'gross_per_node' => 30.00,            // $30.00
         'helping_per_node' => 0.00,
         'net_pool_per_node' => 30.00,
-        'user_wallet_per_node' => 12.53086419753, // Total $1015.00 (101500 INR) / 81
-        'burfee_cart_per_node' => 9.00,        // Total $729.00 (72900 INR) / 81
-        'charity_per_node' => 6.00,            // Total $486.00 (48600 INR) / 81
-        'rebirth_cost_per_node' => 2.46913580247, // Total $200.00 (20000 INR) / 81
+        'user_wallet_per_node' => 12.53086419753, // Total $1015.00 / 81
+        'burfee_cart_per_node' => 9.00,        // Total $729.00 / 81
+        'charity_per_node' => 6.00,            // Total $486.00 / 81
+        'rebirth_cost_per_node' => 2.46913580247, // Total $200.00 / 81
     ],
     5 => [
         'capacity' => 243,
-        'gross_per_node' => 40.00,            // $40.00 (4000 INR)
+        'gross_per_node' => 40.00,            // $40.00
         'helping_per_node' => 0.00,
         'net_pool_per_node' => 40.00,
-        'user_wallet_per_node' => 17.11934156379, // Total $4160.00 (416000 INR) / 243
-        'burfee_cart_per_node' => 12.00,       // Total $2916.00 (291600 INR) / 243
-        'charity_per_node' => 8.00,            // Total $1944.00 (194400 INR) / 243
-        'rebirth_cost_per_node' => 2.88065843621, // Total $700.00 (70000 INR) / 243
+        'user_wallet_per_node' => 17.11934156379, // Total $4160.00 / 243
+        'burfee_cart_per_node' => 12.00,       // Total $2916.00 / 243
+        'charity_per_node' => 8.00,            // Total $1944.00 / 243
+        'rebirth_cost_per_node' => 2.88065843621, // Total $700.00 / 243
     ],
     6 => [
         'capacity' => 729,
-        'gross_per_node' => 50.00,            // $50.00 (5000 INR)
+        'gross_per_node' => 50.00,            // $50.00
         'helping_per_node' => 0.00,
         'net_pool_per_node' => 50.00,
-        'user_wallet_per_node' => 23.62825788752, // Total $17225.00 (1722500 INR) / 729
-        'burfee_cart_per_node' => 15.00,       // Total $10935.00 (1093500 INR) / 729
-        'charity_per_node' => 10.00,           // Total $7290.00 (729000 INR) / 729
-        'rebirth_cost_per_node' => 1.37174211248, // Total $1000.00 (1000000 INR) / 729
+        'user_wallet_per_node' => 23.62825788752, // Total $17225.00 / 729
+        'burfee_cart_per_node' => 15.00,       // Total $10935.00 / 729
+        'charity_per_node' => 10.00,           // Total $7290.00 / 729
+        'rebirth_cost_per_node' => 1.37174211248, // Total $1000.00 / 729
     ]
 ];
 
@@ -182,7 +181,7 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
  * Applies 50:50 Smart Wallet division (50% Customer Wallet, 50% Company -> 60% Burfee Cart / 40% Charity).
  */
 function distributeMatrixCommissions($pdo, $newMemberId) {
-    // 1. Credit 10% Direct Referrer Income ($1.00 USD / 100 INR) to sponsor_id
+    // 1. Credit 10% Direct Referrer Income ($1.00 USD) to sponsor_id
     $stmtSp = $pdo->prepare("SELECT sponsor_id FROM members WHERE member_id = ?");
     $stmtSp->execute([$newMemberId]);
     $sponsorId = $stmtSp->fetchColumn();
@@ -227,7 +226,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
             INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
             VALUES (?, 'Admin_Adjustment', ?, 'Main', 'Debit', ?)
         ");
-        $descDed = "10% Direct Referrer Income Deduction (-\${$refAmount} / -100 INR) set aside from $10.00 joining package for sponsor {$sponsorId}.";
+        $descDed = "10% Direct Referrer Income Deduction (-\${$refAmount}) set aside from $10.00 joining package for sponsor {$sponsorId}.";
         $stmtTxDed->execute([$newMemberId, $refAmount, $descDed]);
     }
 
@@ -239,10 +238,10 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
 
     if ($placementParentId) {
         $spec = MATRIX_LEVEL_SPECS[1];
-        $userAmount = round($spec['user_wallet_per_node'], 4); // $0.8333 (250 INR / 3)
-        $burfeeAmount = round($spec['burfee_cart_per_node'], 4); // $0.50 (150 INR / 3)
-        $charityAmount = round($spec['charity_per_node'], 4); // $0.3333 (100 INR / 3)
-        $grossAmount = round($spec['gross_per_node'], 2); // $5.00 (1500 INR / 3)
+        $userAmount = round($spec['user_wallet_per_node'], 4); // $0.8333 ($2.50 / 3)
+        $burfeeAmount = round($spec['burfee_cart_per_node'], 4); // $0.50 ($1.50 / 3)
+        $charityAmount = round($spec['charity_per_node'], 4); // $0.3333 ($1.00 / 3)
+        $grossAmount = round($spec['gross_per_node'], 2); // $5.00 ($15.00 / 3)
 
         // Ensure parent wallet row exists
         $stmtWallet = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
@@ -274,7 +273,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
         $logTx->execute([$placementParentId, $grossAmount, $desc]);
 
         // Credit Level 1 Helping Fund ($3.3333) portion to 2nd-level upline ancestor (parent of direct upline)
-        $helpingPerNode = round($spec['helping_per_node'], 4); // $3.3333 (1000 INR / 3)
+        $helpingPerNode = round($spec['helping_per_node'], 4); // $3.3333 ($10.00 / 3)
         if ($helpingPerNode > 0) {
             $stmtAncest = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
             $stmtAncest->execute([$placementParentId]);
