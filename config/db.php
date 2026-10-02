@@ -274,7 +274,7 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             '9544707955',
             $rootPass,
             'SYSTEM_ROOT_EPIN',
-            'Starter_1000',
+            'Royal_Starter',
             'Active',
             'Approved',
             'Door No.: 15/273, First Floor, Chankarayithara Building, Muzris Nagar, Pattanam Jn.',

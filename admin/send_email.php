@@ -172,7 +172,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="p-2.5 rounded bg-obsidian/80 border border-gold/20 flex justify-between">
                         <span class="text-gold">{{package_type}}</span>
-                        <span class="text-champagne/60 font-sans">Starter_1000</span>
+                        <span class="text-champagne/60 font-sans">Royal_Starter</span>
                     </div>
                     <div class="p-2.5 rounded bg-obsidian/80 border border-gold/20 flex justify-between">
                         <span class="text-gold">{{site_url}}</span>

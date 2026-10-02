@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = trim($_POST['phone'] ?? '');
     $status = $_POST['status'] ?? 'Active';
     $kyc_status = $_POST['kyc_status'] ?? 'Pending';
-    $package_type = $_POST['package_type'] ?? 'Starter_1000';
+    $package_type = $_POST['package_type'] ?? 'Royal_Starter';
     $sponsor_id = strtoupper(trim($_POST['sponsor_id'] ?? ''));
     $placement_parent_id = strtoupper(trim($_POST['placement_parent_id'] ?? ''));
     $address_line = trim($_POST['address_line'] ?? '');
@@ -185,7 +185,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div>
                     <label class="block font-semibold text-gold mb-1">Package Type</label>
                     <select name="package_type" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold">
-                        <option value="Starter_1000" <?php echo $m['package_type'] === 'Starter_1000' ? 'selected' : ''; ?>>Starter 1000 ($10 USD)</option>
+                        <option value="Royal_Starter" <?php echo $m['package_type'] === 'Royal_Starter' ? 'selected' : ''; ?>>Royal Starter ($10 USD)</option>
                         <option value="Starter_5000" <?php echo $m['package_type'] === 'Starter_5000' ? 'selected' : ''; ?>>Starter 5000 ($50 USD)</option>
                         <option value="Empress_15000" <?php echo $m['package_type'] === 'Empress_15000' ? 'selected' : ''; ?>>Empress 15000 ($150 USD)</option>
                     </select>

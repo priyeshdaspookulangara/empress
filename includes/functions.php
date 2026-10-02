@@ -765,7 +765,7 @@ function registerMemberWithoutEpin($pdo, $data) {
     $phone = !empty($data['phone']) ? trim($data['phone']) : ('9' . str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT));
     $rawPassword = !empty($data['password']) ? $data['password'] : '123456';
     $password = password_hash($rawPassword, PASSWORD_BCRYPT);
-    $packageType = !empty($data['package_type']) ? trim($data['package_type']) : 'Starter_1000';
+    $packageType = !empty($data['package_type']) ? trim($data['package_type']) : 'Royal_Starter';
     $epinCode = !empty($data['used_epin']) ? trim($data['used_epin']) : ('ADMIN_SQL_IMPORT_' . strtoupper(bin2hex(random_bytes(3))));
 
     // Check sponsor exists
