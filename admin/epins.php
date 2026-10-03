@@ -15,12 +15,12 @@ $err = '';
 
 // Handle ePIN Batch Generation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate'])) {
-    $packageType = $_POST['package_type'] ?? 'Starter_1000';
+    $packageType = $_POST['package_type'] ?? 'Royal_Starter';
     $quantity = (int)($_POST['quantity'] ?? 1);
     $quantity = max(1, min(100, $quantity));
 
-    if (!in_array($packageType, ['Starter_1000', 'Starter_5000', 'Empress_15000'])) {
-        $packageType = 'Starter_1000';
+    if (!in_array($packageType, ['Royal_Starter', 'Royal_Starter', 'Empress_15000'])) {
+        $packageType = 'Royal_Starter';
     }
 
     $pdo->beginTransaction();
@@ -83,8 +83,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div>
                     <label class="block text-xs font-semibold text-gold mb-1">Package Type *</label>
                     <select name="package_type" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-3 text-xs text-champagne focus:outline-none focus:border-gold">
-                        <option value="Starter_1000" selected>Starter 1000 ($10 USD)</option>
-                        <option value="Starter_5000">Starter 5000 ($50 USD)</option>
+                        <option value="Royal_Starter" selected>Royal Starter ($10 USD)</option>
                         <option value="Empress_15000">Empress 15000 ($150 USD)</option>
                     </select>
                 </div>

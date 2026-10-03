@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS epins (
     id INT AUTO_INCREMENT PRIMARY KEY,
     epin_code VARCHAR(50) NOT NULL UNIQUE,
-    package_type VARCHAR(20) NOT NULL DEFAULT 'Starter_1000',
+    package_type VARCHAR(20) NOT NULL DEFAULT 'Royal_Starter',
     status VARCHAR(20) NOT NULL DEFAULT 'Unused',
     generated_by_admin_id INT DEFAULT NULL,
     used_by_member_id VARCHAR(50) DEFAULT NULL,
@@ -136,7 +136,7 @@ INSERT INTO admins (username, password, role) VALUES ('admin', '$2y$10$eE3u/03O5
 INSERT INTO admins (username, password, role) VALUES ('superadmin', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'superadmin') ON DUPLICATE KEY UPDATE id=id;
 
 INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status, address_line, city, state, pincode, pan_number, bep20_address)
-VALUES ('EMP100000', NULL, NULL, NULL, 'Burfee Cart', 'support@burfeecart.com', '9544707955', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'SYSTEM_ROOT_EPIN', 'Starter_1000', 'Active', 'Approved', 'Door No.: 15/273, First Floor, Chankarayithara Building, Muzris Nagar, Pattanam Jn.', 'N. Paravur', 'Kerala', '683513', 'HIJKL5678M', '0x6789012345abcdef6789012345abcdef67890123')
+VALUES ('EMP100000', NULL, NULL, NULL, 'Burfee Cart', 'support@burfeecart.com', '9544707955', '$2y$10$eE3u/03O5xKzT8Q0oO3x3e/7sV5O3k/3O5xKzT8Q0oO3x3e', 'SYSTEM_ROOT_EPIN', 'Royal_Starter', 'Active', 'Approved', 'Door No.: 15/273, First Floor, Chankarayithara Building, Muzris Nagar, Pattanam Jn.', 'N. Paravur', 'Kerala', '683513', 'HIJKL5678M', '0x6789012345abcdef6789012345abcdef67890123')
 ON DUPLICATE KEY UPDATE name='Burfee Cart', email='support@burfeecart.com', phone='9544707955';
 
 INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40)

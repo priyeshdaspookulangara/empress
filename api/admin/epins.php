@@ -6,12 +6,12 @@ $tokenRow = authenticateApiUser($pdo, 'admin');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = getJsonInput();
-    $packageType = $input['package_type'] ?? 'Starter_1000';
+    $packageType = $input['package_type'] ?? 'Royal_Starter';
     $quantity = (int)($input['quantity'] ?? 1);
     $quantity = max(1, min(100, $quantity));
 
-    if (!in_array($packageType, ['Starter_1000', 'Starter_5000', 'Empress_15000'])) {
-        $packageType = 'Starter_1000';
+    if (!in_array($packageType, ['Royal_Starter', 'Royal_Starter', 'Empress_15000'])) {
+        $packageType = 'Royal_Starter';
     }
 
     $pdo->beginTransaction();

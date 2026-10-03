@@ -125,34 +125,10 @@ function generateEpinCode($prefix = 'EMP') {
 }
 
 /**
- * Check if ancestorId is an ancestor of candidateId (or candidateId itself)
- */
-function isMemberAncestorOf($pdo, $ancestorId, $candidateId) {
-    if (empty($ancestorId) || empty($candidateId)) return false;
-    if ($ancestorId === $candidateId) return true;
-
-    $current = $candidateId;
-    $visited = [];
-    $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
-
-    while (!empty($current) && $current !== 'EMP100000' && !isset($visited[$current])) {
-        $visited[$current] = true;
-        $stmt->execute([$current]);
-        $parent = $stmt->fetchColumn();
-        if ($parent === $ancestorId) {
-            return true;
-        }
-        $current = $parent;
-    }
-    return false;
-}
-
-/**
  * Global BFS Auto-Spillover Matrix Placement Algorithm
- * Supports optional $excludeOwnerId to prevent self-placement of rebirth nodes inside an owner's own matrix tree.
  * Returns ['placement_parent_id' => string, 'matrix_position' => int]
  */
-function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000', $excludeOwnerId = null) {
+function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
     // Verify start member exists
     $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
     $stmt->execute([$startMemberId]);
@@ -172,14 +148,8 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000', $excludeOwne
 
         $takenPositions = array_column($children, 'matrix_position');
 
-        // Prevent self-placement: Check if $currentParent is inside $excludeOwnerId's downline tree or IS $excludeOwnerId
-        $isExcluded = false;
-        if ($excludeOwnerId !== null && $excludeOwnerId !== 'EMP100000') {
-            $isExcluded = isMemberAncestorOf($pdo, $excludeOwnerId, $currentParent);
-        }
-
-        // Check if there is space (max 3 children) and parent is not excluded
-        if (!$isExcluded && count($children) < 3) {
+        // Check if there is space (max 3 children)
+        if (count($children) < 3) {
             for ($pos = 1; $pos <= 3; $pos++) {
                 if (!in_array($pos, $takenPositions)) {
                     return [
@@ -190,7 +160,7 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000', $excludeOwne
             }
         }
 
-        // If currentParent is full or excluded, push children into queue in order 1, 2, 3
+        // If currentParent is full, push children into queue in order 1, 2, 3
         usort($children, function($a, $b) {
             return $a['matrix_position'] <=> $b['matrix_position'];
         });
@@ -492,7 +462,7 @@ function executeSingleRebirthPlacement($pdo, $parentMemberId, $rebirthIndex, $co
     $sponsorId = $isRebirthNode ? 'EMP100000' : $parentMemberId;
     $cleanBaseName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $parent['name']));
 
-    $placement = findBFSMatrixPlacement($pdo, 'EMP100000', $parentMemberId);
+    $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
     $placementParentId = $placement['placement_parent_id'];
     $matrixPos = $placement['matrix_position'];
 
@@ -765,7 +735,7 @@ function registerMemberWithoutEpin($pdo, $data) {
     $phone = !empty($data['phone']) ? trim($data['phone']) : ('9' . str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT));
     $rawPassword = !empty($data['password']) ? $data['password'] : '123456';
     $password = password_hash($rawPassword, PASSWORD_BCRYPT);
-    $packageType = !empty($data['package_type']) ? trim($data['package_type']) : 'Starter_1000';
+    $packageType = !empty($data['package_type']) ? trim($data['package_type']) : 'Royal_Starter';
     $epinCode = !empty($data['used_epin']) ? trim($data['used_epin']) : ('ADMIN_SQL_IMPORT_' . strtoupper(bin2hex(random_bytes(3))));
 
     // Check sponsor exists
