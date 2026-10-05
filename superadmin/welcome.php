@@ -45,10 +45,10 @@ if (!$targetMember && !empty($members)) {
 
 // Preset Motivational Quotes
 $motivationalQuotes = [
-    "1" => "Success is not final, failure is not fatal: it is the courage to continue that counts. Your journey to financial freedom starts today! 💎🔥",
-    "2" => "The future belongs to those who believe in the beauty of their dreams. Double your path and build your empire! 🚀✨",
-    "3" => "Small daily steps lead to massive lifetime achievements. Welcome to a platform built for your ultimate empowerment! 🌟🏆",
-    "4" => "Opportunities don't happen, you create them. Together with Empress Two Way 4.0, your growth knows no boundaries! 💎👑"
+    "1" => "Success is not final, failure is not fatal: it is the courage to continue that counts. Your journey to financial freedom starts today!",
+    "2" => "The future belongs to those who believe in the beauty of their dreams. Double your path and build your empire!",
+    "3" => "Small daily steps lead to massive lifetime achievements. Welcome to a platform built for your ultimate empowerment!",
+    "4" => "Opportunities don't happen, you create them. Together with Empress Two Way 4.0, your growth knows no boundaries!"
 ];
 
 $selectedQuoteKey = $_GET['quote_key'] ?? '1';
@@ -92,13 +92,13 @@ require_once __DIR__ . '/../includes/header.php';
         $loginUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
         $cleanTargetName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $targetMember['name']));
 
-        $waText = "🌟 *WELCOME TO EMPRESS TWO WAY 4.0!* 🌟\n\n" .
+        $waText = "*WELCOME TO EMPRESS TWO WAY 4.0!*\n\n" .
                   "Dear *{$cleanTargetName}*,\n" .
-                  "Congratulations and a warm welcome to the Empress Two Way 4.0 family! 🚀✨\n\n" .
-                  "▫️ *Activation Package:* {$pkgName}\n" .
-                  "▫️ *Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'EMP100000') . "\n" .
-                  "▫️ *Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
-                  "🔑 *MEMBER PORTAL LOGIN:*\n{$loginUrl}\n\n" .
+                  "Congratulations and a warm welcome to the Empress Two Way 4.0 family!\n\n" .
+                  "*Activation Package:* {$pkgName}\n" .
+                  "*Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'EMP100000') . "\n" .
+                  "*Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
+                  "*MEMBER PORTAL LOGIN:*\n{$loginUrl}\n\n" .
                   "_" . $customQuote . "_\n\n" .
                   "Empress Two Way 4.0 Management Team";
 
@@ -208,13 +208,13 @@ require_once __DIR__ . '/../includes/header.php';
                             $lUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
                             $cleanMName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $m['name']));
 
-                            $mText = "🌟 *WELCOME TO EMPRESS TWO WAY 4.0!* 🌟\n\n" .
+                            $mText = "*WELCOME TO EMPRESS TWO WAY 4.0!*\n\n" .
                                       "Dear *{$cleanMName}*,\n" .
-                                      "Congratulations and welcome aboard! 🚀✨\n\n" .
-                                      "▫️ *Activation Package:* {$pkgN}\n" .
-                                      "▫️ *Sponsor ID:* " . ($m['sponsor_id'] ?: 'EMP100000') . "\n" .
-                                      "▫️ *Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
-                                      "🔑 *MEMBER PORTAL LOGIN:*\n{$lUrl}\n\n" .
+                                      "Congratulations and welcome aboard!\n\n" .
+                                      "*Activation Package:* {$pkgN}\n" .
+                                      "*Sponsor ID:* " . ($m['sponsor_id'] ?: 'EMP100000') . "\n" .
+                                      "*Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
+                                      "*MEMBER PORTAL LOGIN:*\n{$lUrl}\n\n" .
                                       "_" . $customQuote . "_\n\n" .
                                       "Empress Two Way 4.0 Management Team";
 
