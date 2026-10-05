@@ -102,19 +102,22 @@ const MATRIX_LEVEL_SPECS = [
 ];
 
 /**
- * Generate next unique Member ID (e.g., EMP100001)
+ * Generate random unique non-sequential Member ID (e.g., EMP784920)
+ * Prevents members from inferring tree placement or join sequence from sequential IDs
  */
 function generateMemberID($pdo) {
-    $stmt = $pdo->query("SELECT member_id FROM members WHERE member_id LIKE 'EMP%' AND member_id != 'EMP100000' ORDER BY id DESC LIMIT 1");
-    $lastId = $stmt->fetchColumn();
+    do {
+        // Generate random 6-digit number between 100001 and 999999
+        $randomNum = random_int(100001, 999999);
+        $candidateId = 'EMP' . $randomNum;
 
-    if (!$lastId) {
-        return 'EMP100001';
-    }
+        // Ensure uniqueness and avoid colliding with Root EMP100000 or existing members
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE member_id = ?");
+        $stmt->execute([$candidateId]);
+        $exists = ($stmt->fetchColumn() > 0);
+    } while ($exists);
 
-    $num = (int)substr($lastId, 3);
-    $nextNum = max(100001, $num + 1);
-    return 'EMP' . $nextNum;
+    return $candidateId;
 }
 
 /**
