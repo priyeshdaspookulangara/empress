@@ -329,7 +329,24 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
 }
 
 /**
+ * Verification mechanism to check if a member has completed Level 3 (27 downline nodes at depth 3)
+ */
+function hasMemberCompletedLevel3($pdo, $memberId) {
+    $currentLevelMembers = [$memberId];
+    for ($l = 1; $l <= 3; $l++) {
+        if (empty($currentLevelMembers)) return false;
+        $inClause = implode(',', array_fill(0, count($currentLevelMembers), '?'));
+        $stmt = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id IN ($inClause)");
+        $stmt->execute($currentLevelMembers);
+        $currentLevelMembers = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+    return count($currentLevelMembers) >= MATRIX_LEVEL_CAPACITY[3];
+}
+
+/**
  * Check level completion and grant automated Rebirths:
+ * Explicit checking mechanism guarantees NO rebirths occur before Level 3 completion (27 nodes)
  * Level 3 Completion => 10 Rebirths
  * Level 4 Completion => 20 Rebirths
  * Level 5 Completion => 70 Rebirths
@@ -337,6 +354,11 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
  */
 function checkAndGrantLevelRebirths($pdo, $memberId, $level) {
     if (!isset(REBIRTH_REWARDS[$level])) {
+        return;
+    }
+
+    // STRICT CHECK: Ensure level is at least Level 3 and member has achieved Level 3 completion
+    if ($level < 3 || !hasMemberCompletedLevel3($pdo, $memberId)) {
         return;
     }
 
