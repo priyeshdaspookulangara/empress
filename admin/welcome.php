@@ -86,25 +86,21 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         $pkgName = str_replace('_', ' ', $targetMember['package_type']);
+        if ($pkgName === 'Starter 1000' || $pkgName === 'Starter_1000') {
+            $pkgName = 'Royal Starter';
+        }
         $loginUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
         $cleanTargetName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $targetMember['name']));
 
         $waText = "🌟 *WELCOME TO EMPRESS TWO WAY 4.0!* 🌟\n\n" .
                   "Dear *{$cleanTargetName}*,\n" .
                   "Congratulations and a warm welcome to the Empress Two Way 4.0 family! 🚀✨\n\n" .
-                  "📋 *YOUR ACCOUNT CREDENTIALS & DETAILS:*\n" .
-                  "▫️ *Member ID:* {$targetMember['member_id']}\n" .
-                  "▫️ *Full Name:* {$cleanTargetName}\n" .
-                  "▫️ *Mobile:* {$targetMember['phone']}\n" .
-                  "▫️ *Email:* {$targetMember['email']}\n" .
                   "▫️ *Activation Package:* {$pkgName}\n" .
                   "▫️ *Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'EMP100000') . "\n" .
                   "▫️ *Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
                   "🔑 *MEMBER PORTAL LOGIN:*\n{$loginUrl}\n\n" .
-                  "💡 *MOTIVATIONAL THOUGHT FOR YOU:*\n" .
                   "_" . $customQuote . "_\n\n" .
-                  "Empress Two Way 4.0 Management Team\n" .
-                  "Tagline: _Double Your Path, Empower Your Future._";
+                  "Empress Two Way 4.0 Management Team";
 
         $waUrl = "https://wa.me/" . $cleanPhone . "?text=" . rawurlencode($waText);
         ?>
@@ -206,23 +202,20 @@ require_once __DIR__ . '/../includes/header.php';
                             if (strlen($cleanP) === 10) $cleanP = '91' . $cleanP;
 
                             $pkgN = str_replace('_', ' ', $m['package_type']);
+                            if ($pkgN === 'Starter 1000' || $pkgN === 'Starter_1000') {
+                                $pkgN = 'Royal Starter';
+                            }
                             $lUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
                             $cleanMName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $m['name']));
 
                             $mText = "🌟 *WELCOME TO EMPRESS TWO WAY 4.0!* 🌟\n\n" .
                                       "Dear *{$cleanMName}*,\n" .
                                       "Congratulations and welcome aboard! 🚀✨\n\n" .
-                                      "📋 *YOUR ACCOUNT DETAILS:*\n" .
-                                      "▫️ *Member ID:* {$m['member_id']}\n" .
-                                      "▫️ *Full Name:* {$cleanMName}\n" .
-                                      "▫️ *Mobile:* {$m['phone']}\n" .
-                                      "▫️ *Email:* {$m['email']}\n" .
-                                      "▫️ *Package:* {$pkgN}\n" .
+                                      "▫️ *Activation Package:* {$pkgN}\n" .
                                       "▫️ *Sponsor ID:* " . ($m['sponsor_id'] ?: 'EMP100000') . "\n" .
-                                      "▫️ *Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . "\n\n" .
-                                      "🔑 *Portal Login:* {$lUrl}\n\n" .
-                                      "💡 *MOTIVATIONAL THOUGHT:*\n" .
-                                      "_\"" . $customQuote . "\"_\n\n" .
+                                      "▫️ *Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
+                                      "🔑 *MEMBER PORTAL LOGIN:*\n{$lUrl}\n\n" .
+                                      "_" . $customQuote . "_\n\n" .
                                       "Empress Two Way 4.0 Management Team";
 
                             $mUrl = "https://wa.me/" . $cleanP . "?text=" . rawurlencode($mText);

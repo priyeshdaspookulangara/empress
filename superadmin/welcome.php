@@ -29,7 +29,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $members = $stmt->fetchAll();
 
-// Get target member for preview generator
+// Get target member for preview generator (default to newest member or selected)
 $targetMember = null;
 if (!empty($selectedMemberId)) {
     foreach ($members as $m) {
@@ -59,20 +59,20 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="space-y-6">
     <!-- Header Banner -->
-    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div class="glass-card p-6 rounded-3xl border border-gold/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-extrabold neon-gradient-text flex items-center gap-3">
-                <i class="fa-brands fa-whatsapp text-emerald-400"></i> Super Admin New Member WhatsApp Portal
+            <h1 class="text-2xl font-extrabold gold-gradient-text flex items-center gap-3">
+                <i class="fa-brands fa-whatsapp text-emerald-400"></i> New Member WhatsApp Welcome Portal
             </h1>
-            <p class="text-xs text-ice/70 mt-1">Generate beautifully formatted WhatsApp credentials, motivational quotes, and portal access links for new members</p>
+            <p class="text-xs text-champagne/70 mt-1">Generate beautifully formatted WhatsApp credentials, motivational quotes, and portal access links for new members</p>
         </div>
 
         <!-- Search Bar -->
         <form action="/superadmin/welcome.php" method="GET" class="flex gap-2 w-full md:w-auto">
-            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search Member ID, Name, Phone..." class="bg-obsidian/80 border border-neon-cyan/30 rounded-xl px-4 py-2 text-xs text-ice focus:outline-none focus:border-neon-cyan w-64">
-            <button type="submit" class="bg-neon-cyan/20 hover:bg-neon-cyan/30 text-neon-cyan border border-neon-cyan/40 px-4 py-2 rounded-xl text-xs font-bold">Search</button>
+            <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search Member ID, Name, Phone..." class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne focus:outline-none focus:border-gold w-64">
+            <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold">Search</button>
             <?php if (!empty($search)): ?>
-                <a href="/superadmin/welcome.php" class="glass-card border border-neon-cyan/30 hover:bg-neon-cyan/10 text-neon-cyan px-3 py-2 rounded-xl text-xs flex items-center">Reset</a>
+                <a href="/superadmin/welcome.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset</a>
             <?php endif; ?>
         </form>
     </div>
@@ -86,25 +86,21 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         $pkgName = str_replace('_', ' ', $targetMember['package_type']);
+        if ($pkgName === 'Starter 1000' || $pkgName === 'Starter_1000') {
+            $pkgName = 'Royal Starter';
+        }
         $loginUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
         $cleanTargetName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $targetMember['name']));
 
         $waText = "🌟 *WELCOME TO EMPRESS TWO WAY 4.0!* 🌟\n\n" .
                   "Dear *{$cleanTargetName}*,\n" .
                   "Congratulations and a warm welcome to the Empress Two Way 4.0 family! 🚀✨\n\n" .
-                  "📋 *YOUR ACCOUNT CREDENTIALS & DETAILS:*\n" .
-                  "▫️ *Member ID:* {$targetMember['member_id']}\n" .
-                  "▫️ *Full Name:* {$cleanTargetName}\n" .
-                  "▫️ *Mobile:* {$targetMember['phone']}\n" .
-                  "▫️ *Email:* {$targetMember['email']}\n" .
                   "▫️ *Activation Package:* {$pkgName}\n" .
                   "▫️ *Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'EMP100000') . "\n" .
                   "▫️ *Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
                   "🔑 *MEMBER PORTAL LOGIN:*\n{$loginUrl}\n\n" .
-                  "💡 *MOTIVATIONAL THOUGHT FOR YOU:*\n" .
                   "_" . $customQuote . "_\n\n" .
-                  "Empress Two Way 4.0 Management Team\n" .
-                  "Tagline: _Double Your Path, Empower Your Future._";
+                  "Empress Two Way 4.0 Management Team";
 
         $waUrl = "https://wa.me/" . $cleanPhone . "?text=" . rawurlencode($waText);
         ?>
@@ -122,8 +118,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endif; ?>
 
                     <div>
-                        <label class="block font-semibold text-neon-cyan mb-1">Select Member to Greet</label>
-                        <select name="member_id" onchange="this.form.submit()" class="w-full bg-obsidian border border-neon-cyan/30 rounded-xl px-3 py-2 text-ice focus:outline-none focus:border-neon-cyan font-mono">
+                        <label class="block font-semibold text-gold mb-1">Select Member to Greet</label>
+                        <select name="member_id" onchange="this.form.submit()" class="w-full bg-obsidian border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold font-mono">
                             <?php foreach ($members as $m): ?>
                                 <?php $nf = formatMemberName($m['name']); ?>
                                 <option value="<?php echo $m['member_id']; ?>" <?php echo $m['member_id'] === $targetMember['member_id'] ? 'selected' : ''; ?>>
@@ -134,8 +130,8 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
 
                     <div>
-                        <label class="block font-semibold text-neon-cyan mb-1">Select Motivational Quote</label>
-                        <select name="quote_key" onchange="this.form.submit()" class="w-full bg-obsidian border border-neon-cyan/30 rounded-xl px-3 py-2 text-ice focus:outline-none focus:border-neon-cyan">
+                        <label class="block font-semibold text-gold mb-1">Select Motivational Quote</label>
+                        <select name="quote_key" onchange="this.form.submit()" class="w-full bg-obsidian border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold">
                             <?php foreach ($motivationalQuotes as $k => $q): ?>
                                 <option value="<?php echo $k; ?>" <?php echo $k == $selectedQuoteKey ? 'selected' : ''; ?>>
                                     Quote #<?php echo $k; ?>: <?php echo htmlspecialchars(substr($q, 0, 60)) . '...'; ?>
@@ -145,8 +141,8 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
 
                     <div>
-                        <label class="block font-semibold text-neon-cyan mb-1">Customize Quote / Personal Message</label>
-                        <textarea name="custom_quote" rows="3" onblur="this.form.submit()" class="w-full bg-obsidian border border-neon-cyan/30 rounded-xl p-3 text-ice focus:outline-none focus:border-neon-cyan text-xs"><?php echo htmlspecialchars($customQuote); ?></textarea>
+                        <label class="block font-semibold text-gold mb-1">Customize Quote / Personal Message</label>
+                        <textarea name="custom_quote" rows="3" onblur="this.form.submit()" class="w-full bg-obsidian border border-gold/30 rounded-xl p-3 text-champagne focus:outline-none focus:border-gold text-xs"><?php echo htmlspecialchars($customQuote); ?></textarea>
                     </div>
 
                     <div class="pt-2">
@@ -159,8 +155,8 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Right Live Preview Bubble -->
             <div class="space-y-2">
-                <div class="flex items-center justify-between text-xs font-bold text-ice border-b border-neon-cyan/20 pb-2">
-                    <span class="flex items-center gap-2 text-neon-cyan"><i class="fa-solid fa-mobile-screen"></i> WhatsApp Live Formatting Preview</span>
+                <div class="flex items-center justify-between text-xs font-bold text-champagne border-b border-gold/20 pb-2">
+                    <span class="flex items-center gap-2 text-gold"><i class="fa-solid fa-mobile-screen"></i> WhatsApp Live Formatting Preview</span>
                     <span class="text-emerald-400 font-mono"><i class="fa-solid fa-circle text-[8px]"></i> Ready to Send</span>
                 </div>
 
@@ -177,15 +173,15 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 
     <!-- All Registered Members Directory -->
-    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/20 space-y-4">
-        <h3 class="text-base font-bold text-neon-cyan border-b border-neon-cyan/20 pb-2 flex items-center gap-2">
+    <div class="glass-card p-6 rounded-3xl border border-gold/20 space-y-4">
+        <h3 class="text-base font-bold text-gold border-b border-gold/20 pb-2 flex items-center gap-2">
             <i class="fa-solid fa-users"></i> Member Directory - One-Click WhatsApp Greet
         </h3>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
+                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
                         <th class="p-3">Member ID</th>
                         <th class="p-3">Member Details</th>
                         <th class="p-3">Sponsor / Parent</th>
@@ -194,10 +190,10 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3 text-right">Greet Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-neon-cyan/10 text-ice">
+                <tbody class="divide-y divide-gold/10 text-champagne">
                     <?php if (empty($members)): ?>
                         <tr>
-                            <td colspan="6" class="p-4 text-center text-ice/50">No registered members found in directory.</td>
+                            <td colspan="6" class="p-4 text-center text-champagne/50">No registered members found in directory.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($members as $m): ?>
@@ -206,54 +202,51 @@ require_once __DIR__ . '/../includes/header.php';
                             if (strlen($cleanP) === 10) $cleanP = '91' . $cleanP;
 
                             $pkgN = str_replace('_', ' ', $m['package_type']);
+                            if ($pkgN === 'Starter 1000' || $pkgN === 'Starter_1000') {
+                                $pkgN = 'Royal Starter';
+                            }
                             $lUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
                             $cleanMName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $m['name']));
 
                             $mText = "🌟 *WELCOME TO EMPRESS TWO WAY 4.0!* 🌟\n\n" .
                                       "Dear *{$cleanMName}*,\n" .
                                       "Congratulations and welcome aboard! 🚀✨\n\n" .
-                                      "📋 *YOUR ACCOUNT DETAILS:*\n" .
-                                      "▫️ *Member ID:* {$m['member_id']}\n" .
-                                      "▫️ *Full Name:* {$cleanMName}\n" .
-                                      "▫️ *Mobile:* {$m['phone']}\n" .
-                                      "▫️ *Email:* {$m['email']}\n" .
-                                      "▫️ *Package:* {$pkgN}\n" .
+                                      "▫️ *Activation Package:* {$pkgN}\n" .
                                       "▫️ *Sponsor ID:* " . ($m['sponsor_id'] ?: 'EMP100000') . "\n" .
-                                      "▫️ *Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . "\n\n" .
-                                      "🔑 *Portal Login:* {$lUrl}\n\n" .
-                                      "💡 *MOTIVATIONAL THOUGHT:*\n" .
-                                      "_\"" . $customQuote . "\"_\n\n" .
+                                      "▫️ *Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
+                                      "🔑 *MEMBER PORTAL LOGIN:*\n{$lUrl}\n\n" .
+                                      "_" . $customQuote . "_\n\n" .
                                       "Empress Two Way 4.0 Management Team";
 
                             $mUrl = "https://wa.me/" . $cleanP . "?text=" . rawurlencode($mText);
                             $isSelected = $targetMember && $targetMember['member_id'] === $m['member_id'];
                             ?>
                             <?php $nameFmt = formatMemberName($m['name']); ?>
-                            <tr class="<?php echo $isSelected ? 'bg-neon-cyan/10 border-l-4 border-neon-cyan' : 'hover:bg-neon-cyan/5'; ?> transition">
-                                <td class="p-3 font-mono text-neon-cyan font-bold text-sm">
+                            <tr class="<?php echo $isSelected ? 'bg-gold/10 border-l-4 border-gold' : 'hover:bg-gold/5'; ?> transition">
+                                <td class="p-3 font-mono text-gold font-bold text-sm">
                                     <?php echo htmlspecialchars($m['member_id']); ?>
                                 </td>
                                 <td class="p-3">
                                     <div class="flex items-center gap-1.5 flex-wrap">
-                                        <span class="font-bold text-ice block text-sm"><?php echo htmlspecialchars($nameFmt['clean_name']); ?></span>
+                                        <span class="font-bold text-champagne block text-sm"><?php echo htmlspecialchars($nameFmt['clean_name']); ?></span>
                                         <?php if ($nameFmt['is_rebirth']): ?>
                                             <span class="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold">
                                                 <i class="fa-solid fa-rotate-right text-[8px] mr-1"></i><?php echo htmlspecialchars($nameFmt['rebirth_label']); ?>
                                             </span>
                                         <?php endif; ?>
                                     </div>
-                                    <span class="text-ice/60 block text-[11px]"><?php echo htmlspecialchars($m['email']); ?></span>
-                                    <span class="font-mono text-neon-cyan/80 text-[11px]"><i class="fa-solid fa-phone text-[9px] mr-1"></i><?php echo htmlspecialchars($m['phone']); ?></span>
+                                    <span class="text-champagne/60 block text-[11px]"><?php echo htmlspecialchars($m['email']); ?></span>
+                                    <span class="font-mono text-gold/80 text-[11px]"><i class="fa-solid fa-phone text-[9px] mr-1"></i><?php echo htmlspecialchars($m['phone']); ?></span>
                                 </td>
-                                <td class="p-3 font-mono text-ice/80">
-                                    <div>Sp: <span class="text-neon-cyan font-semibold"><?php echo htmlspecialchars($m['sponsor_id'] ?: 'ROOT'); ?></span></div>
+                                <td class="p-3 font-mono text-champagne/80">
+                                    <div>Sp: <span class="text-gold font-semibold"><?php echo htmlspecialchars($m['sponsor_id'] ?: 'ROOT'); ?></span></div>
                                     <div>Par: <span class="text-emerald-400 font-semibold"><?php echo htmlspecialchars($m['placement_parent_id'] ?: 'ROOT'); ?></span> (Pos <?php echo $m['matrix_position'] ?: '1'; ?>)</div>
                                 </td>
-                                <td class="p-3 font-semibold text-neon-cyan"><?php echo $pkgN; ?></td>
-                                <td class="p-3 font-mono text-ice/50"><?php echo $m['created_at']; ?></td>
+                                <td class="p-3 font-semibold text-gold"><?php echo $pkgN; ?></td>
+                                <td class="p-3 font-mono text-champagne/50"><?php echo $m['created_at']; ?></td>
                                 <td class="p-3 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="/superadmin/welcome.php?member_id=<?php echo $m['member_id']; ?>" class="bg-neon-cyan/10 hover:bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1" title="Customize Message">
+                                        <a href="/superadmin/welcome.php?member_id=<?php echo $m['member_id']; ?>" class="bg-gold/10 hover:bg-gold/20 text-gold border border-gold/30 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1" title="Customize Message">
                                             <i class="fa-solid fa-sliders"></i> Customize
                                         </a>
 
