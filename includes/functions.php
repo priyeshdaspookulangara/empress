@@ -397,13 +397,13 @@ function checkAndGrantLevelRebirths($pdo, $memberId, $level) {
 /**
  * Schedule rebirth positions in the queue table with configurable time gaps (drip placement)
  */
-function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel, $immediateAll = false) {
+function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel) {
     $intervalSecs = REBIRTH_INTERVAL_MINUTES * 60;
     $now = time();
 
     for ($i = 1; $i <= $count; $i++) {
         // 1st rebirth placed immediately; subsequent rebirths spaced out by intervalSecs
-        $scheduledTimestamp = $immediateAll ? $now : ($now + (($i - 1) * $intervalSecs));
+        $scheduledTimestamp = $now + (($i - 1) * $intervalSecs);
         $scheduledAt = date('Y-m-d H:i:s', $scheduledTimestamp);
 
         $stmtQ = $pdo->prepare("
@@ -414,22 +414,17 @@ function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel
     }
 
     // Process immediately due rebirths in queue
-    processScheduledRebirthQueue($pdo, $immediateAll);
+    processScheduledRebirthQueue($pdo);
 }
 
 /**
  * Process due rebirth positions from the queue with round-robin member interleaving
  * (Ensures alternative rebirth placements across members to prevent consecutive rebirths from a single person)
  */
-function processScheduledRebirthQueue($pdo, $processAllPending = false) {
-    if ($processAllPending) {
-        $stmt = $pdo->prepare("SELECT * FROM queued_rebirths WHERE status = 'Pending' ORDER BY id ASC");
-        $stmt->execute();
-    } else {
-        $now = date('Y-m-d H:i:s');
-        $stmt = $pdo->prepare("SELECT * FROM queued_rebirths WHERE status = 'Pending' AND scheduled_at <= ? ORDER BY scheduled_at ASC, id ASC");
-        $stmt->execute([$now]);
-    }
+function processScheduledRebirthQueue($pdo) {
+    $now = date('Y-m-d H:i:s');
+    $stmt = $pdo->prepare("SELECT * FROM queued_rebirths WHERE status = 'Pending' AND scheduled_at <= ? ORDER BY scheduled_at ASC, id ASC");
+    $stmt->execute([$now]);
     $dueRebirths = $stmt->fetchAll();
 
     if (empty($dueRebirths)) {
@@ -561,7 +556,7 @@ function executeSingleRebirthPlacement($pdo, $parentMemberId, $rebirthIndex, $co
  * Backward compatibility wrapper function
  */
 function createRebirthPositions($pdo, $parentMemberId, $count, $completedLevel) {
-    scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel, true);
+    scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel);
 }
 
 /**

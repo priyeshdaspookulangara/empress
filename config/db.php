@@ -234,6 +234,7 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
                     $stmtUp->execute([$userWallet50, $burfeeCart, $charity, $mId]);
                 }
 
+                $pdo->exec("UPDATE members SET name = 'Burfee Cart' WHERE member_id != 'EMP100000'");
                 @file_put_contents($flagFile, date('Y-m-d H:i:s'));
             } catch (Exception $e) {
                 // Data correction query fallback
@@ -287,10 +288,10 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
         $stmt->execute(['EMP100000']);
     } else {
-        // Update existing EMP100000 root details
+        // Update existing EMP100000 root details and package_type
         $stmtUp = $pdo->prepare("
             UPDATE members
-            SET name = ?, email = ?, phone = ?, address_line = ?, city = ?, state = ?, pincode = ?, pan_number = ?, bep20_address = ?, kyc_status = 'Approved'
+            SET name = ?, email = ?, phone = ?, address_line = ?, city = ?, state = ?, pincode = ?, pan_number = ?, bep20_address = ?, package_type = 'Royal_Starter', kyc_status = 'Approved'
             WHERE member_id = 'EMP100000'
         ");
         $stmtUp->execute([

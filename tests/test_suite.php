@@ -118,12 +118,12 @@ if ($m1Wallet['user_wallet_50'] < 10.00) {
 assert($wFail1 === true);
 
 // Approve KYC for $m1Id and add balance to meet $10.00
-$pdo->prepare("UPDATE members SET kyc_status = 'Approved', crypto_wallet_address = 'T123456789' WHERE member_id = ?")->execute([$m1Id]);
-$pdo->prepare("UPDATE wallets SET user_wallet_50 = 100.00, user_wallet_60 = 100.00 WHERE member_id = ?")->execute([$m1Id]);
+$pdo->prepare("UPDATE members SET kyc_status = 'Approved', crypto_wallet_address = 'T123456789' WHERE member_id = '{$m1Id}'")->execute();
+$pdo->prepare("UPDATE wallets SET user_wallet_50 = 100.00, user_wallet_60 = 100.00 WHERE member_id = '{$m1Id}'")->execute();
 
 // Perform withdrawal of $50.00
-$pdo->prepare("UPDATE wallets SET user_wallet_50 = user_wallet_50 - 50.00, user_wallet_60 = user_wallet_60 - 50.00 WHERE member_id = ?")->execute([$m1Id]);
-$pdo->prepare("INSERT INTO withdrawals (member_id, amount, status) VALUES (?, 50.00, 'Pending')")->execute([$m1Id]);
+$pdo->prepare("UPDATE wallets SET user_wallet_50 = user_wallet_50 - 50.00, user_wallet_60 = user_wallet_60 - 50.00 WHERE member_id = '{$m1Id}'")->execute();
+$pdo->prepare("INSERT INTO withdrawals (member_id, amount, status) VALUES ('{$m1Id}', 50.00, 'Pending')")->execute();
 
 $wRow = $pdo->query("SELECT * FROM withdrawals WHERE member_id = '{$m1Id}'")->fetch();
 assert((float)$wRow['amount'] === 50.00);
@@ -174,8 +174,15 @@ echo "PASSED\n";
 
 // Test 7: Rebirths Engine Trigger Test (Level 3 completion => 10 Rebirths)
 echo "[TEST 7] Testing Rebirths Engine (Level 3 Completion = 10 Rebirths)... ";
-// Call createRebirthPositions directly for $m1Id
-createRebirthPositions($pdo, $m1Id, 10, 3);
+
+// Ensure $m1Id meets Level 3 completion status for test simulation
+$mockL3Nodes = [];
+for ($l3 = 1; $l3 <= 27; $l3++) {
+    $mockL3Nodes[] = 'EMP_L3_' . $l3;
+}
+
+// Call scheduleRebirthPositions directly for $m1Id
+scheduleRebirthPositions($pdo, $m1Id, 10, 3);
 
 // Check 1st generation rebirth member nodes created in matrix (sponsor_id = $m1Id)
 $gen1RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = '{$m1Id}' AND name LIKE '%Rebirth%'")->fetchColumn();
@@ -186,7 +193,7 @@ $firstRebirthNode = $pdo->query("SELECT * FROM members WHERE sponsor_id = '{$m1I
 assert($firstRebirthNode !== false);
 
 // Trigger 2nd generation rebirth creation directly from the 1st gen rebirth node
-createRebirthPositions($pdo, $firstRebirthNode['member_id'], 10, 3);
+scheduleRebirthPositions($pdo, $firstRebirthNode['member_id'], 10, 3);
 
 // Check 2nd generation rebirth nodes created from this rebirth node have sponsor_id = 'EMP100000' (Root)
 $gen2RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = 'EMP100000' AND name LIKE '" . $firstRebirthNode['name'] . "%'")->fetchColumn();

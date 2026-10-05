@@ -15,23 +15,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $state = trim($input['state'] ?? '');
     $panNumber = strtoupper(trim($input['pan_number'] ?? ''));
     $aadhaarNumber = trim($input['aadhaar_number'] ?? '');
-    $cryptoWallet = trim($input['crypto_wallet_address'] ?? $input['bep20_address'] ?? '');
-    $walletNetwork = trim($input['wallet_network'] ?? 'USDT (BEP20)');
+    $cryptoWallet = trim($input['crypto_wallet_address'] ?? '');
+    $walletNetwork = trim($input['wallet_network'] ?? 'USDT (TRC20)');
 
     if (empty($addressLine) || empty($city) || empty($state) || empty($pincode) || empty($cryptoWallet)) {
-        sendJsonResponse(['success' => false, 'message' => 'Address fields and crypto wallet address (BEP-20) are required.'], 400);
+        sendJsonResponse(['success' => false, 'message' => 'Address fields and crypto_wallet_address are required.'], 400);
     }
 
     $stmt = $pdo->prepare("
         UPDATE members
         SET address_line = ?, place = ?, city = ?, pincode = ?, state = ?,
-            pan_number = ?, aadhaar_number = ?, crypto_wallet_address = ?, bep20_address = ?,
+            pan_number = ?, aadhaar_number = ?, crypto_wallet_address = ?,
             wallet_network = ?, kyc_status = 'Submitted'
         WHERE member_id = ?
     ");
     $stmt->execute([
         $addressLine, $place, $city, $pincode, $state,
-        $panNumber, $aadhaarNumber, $cryptoWallet, $cryptoWallet,
+        $panNumber, $aadhaarNumber, $cryptoWallet,
         $walletNetwork, $memberId
     ]);
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // GET request: Fetch full profile
 $stmt = $pdo->prepare("
     SELECT member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, package_type, status,
-           address_line, place, city, pincode, state, pan_number, aadhaar_number, bank_name, bank_account_number, ifsc_code, crypto_wallet_address, bep20_address, qr_code_url, wallet_network, kyc_status, created_at
+           address_line, place, city, pincode, state, pan_number, aadhaar_number, bank_name, bank_account_number, ifsc_code, crypto_wallet_address, wallet_network, kyc_status, created_at
     FROM members WHERE member_id = ?
 ");
 $stmt->execute([$memberId]);
