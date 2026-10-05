@@ -147,6 +147,22 @@ require_once __DIR__ . '/../includes/header.php';
         </a>
     </div>
 
+    <!-- Download Native Mobile Application Banner -->
+    <div class="glass-card p-5 rounded-2xl border border-purple-500/40 bg-purple-950/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-300 flex items-center justify-center text-2xl">
+                <i class="fa-brands fa-android text-emerald-400"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-white text-base">Empress 2Way 4.0 Android App</h3>
+                <p class="text-xs text-purple-200/70 mt-0.5">Access your downline tree, wallet payouts, and rebirth engine directly on your smartphone.</p>
+            </div>
+        </div>
+        <a href="/EmpressTwoWay4.0.apk" download class="pill bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-download"></i> Download App (.APK)
+        </a>
+    </div>
+
     <!-- Quick Quick Links Section -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <a href="/customer/deposit.php" class="glass-card p-6 rounded-2xl border border-emerald-500/30 hover:border-emerald-500/60 flex items-center justify-between group transition">

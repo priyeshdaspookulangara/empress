@@ -12,9 +12,12 @@ require_once __DIR__ . '/includes/header.php';
         <p class="text-sm md:text-base text-white/80 max-w-lg mb-8 leading-relaxed font-light">
             Double Your Path, Empower Your Future. A single-phase direct selling platform with automated 3-matrix forced spillover, 50:50 smart wallet division, and guaranteed 6-level fixed node payouts.
         </p>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center justify-center gap-4">
             <a class="pill cta gold-button" href="/register.php">Get Started</a>
             <a class="pill" href="/business_plan.php">Business Plan</a>
+            <a class="pill bg-purple-600/30 border border-purple-500/50 hover:bg-purple-600/50 text-white flex items-center gap-2" href="/EmpressTwoWay4.0.apk" download>
+                <i class="fa-brands fa-android text-emerald-400 text-lg"></i> Download Mobile App (.APK)
+            </a>
         </div>
     </div>
 </section>
