@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
 
 public class ApiClient {
 
-    // Default API Base URL (Change to actual server host in production, e.g. http://10.0.2.2:8000 for Android emulator)
-    public static String BASE_URL = "http://10.0.2.2:8000/api/";
+    // Live Server Production API Base URL
+    public static String BASE_URL = "https://empress2way.com/api/";
 
     private static final ExecutorService executor = Executors.newFixedThreadPool(4);
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
