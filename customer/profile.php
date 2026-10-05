@@ -102,7 +102,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
 
         <!-- Read-Only Basic Info -->
-        <div class="bg-navy/60 p-5 rounded-2xl border border-neon-cyan/20 mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="bg-navy/60 p-5 rounded-2xl border border-neon-cyan/20 mb-8 grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
             <div>
                 <span class="text-neon-cyan/70 block uppercase font-mono text-[10px]">Member ID</span>
                 <span class="text-ice font-bold font-mono text-sm"><?php echo htmlspecialchars($member['member_id']); ?></span>
@@ -115,6 +115,10 @@ require_once __DIR__ . '/../includes/header.php';
                 <span class="text-neon-cyan/70 block uppercase font-mono text-[10px]">Email & Phone</span>
                 <span class="text-ice block"><?php echo htmlspecialchars($member['email']); ?></span>
                 <span class="text-ice/70 block font-mono"><?php echo htmlspecialchars($member['phone']); ?></span>
+            </div>
+            <div>
+                <span class="text-neon-cyan/70 block uppercase font-mono text-[10px]">Default Password</span>
+                <span class="text-emerald-400 font-bold font-mono text-sm">passWord123#</span>
             </div>
             <div>
                 <span class="text-neon-cyan/70 block uppercase font-mono text-[10px]">Activated Package</span>

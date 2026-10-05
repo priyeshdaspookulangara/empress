@@ -96,6 +96,8 @@ require_once __DIR__ . '/../includes/header.php';
                   "Dear *{$cleanTargetName}*,\n" .
                   "Congratulations and a warm welcome to the Empress Two Way 4.0 family!\n\n" .
                   "*Activation Package:* {$pkgName}\n" .
+                  "*Member ID:* {$targetMember['member_id']}\n" .
+                  "*Default Password:* passWord123#\n" .
                   "*Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'EMP100000') . "\n" .
                   "*Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
                   "*MEMBER PORTAL LOGIN:*\n{$loginUrl}\n\n" .
@@ -212,6 +214,8 @@ require_once __DIR__ . '/../includes/header.php';
                                       "Dear *{$cleanMName}*,\n" .
                                       "Congratulations and welcome aboard!\n\n" .
                                       "*Activation Package:* {$pkgN}\n" .
+                                      "*Member ID:* {$m['member_id']}\n" .
+                                      "*Default Password:* passWord123#\n" .
                                       "*Sponsor ID:* " . ($m['sponsor_id'] ?: 'EMP100000') . "\n" .
                                       "*Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
                                       "*MEMBER PORTAL LOGIN:*\n{$lUrl}\n\n" .
