@@ -1,2 +1,9 @@
 php_server.log
 empress3.sqlite
+.gradle/
+build/
+android/.gradle/
+android/build/
+android/app/build/
+!EmpressTwoWay4.0.apk
+!uploads/apk/EmpressTwoWay4.0.apk

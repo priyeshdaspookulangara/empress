@@ -234,7 +234,6 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
                     $stmtUp->execute([$userWallet50, $burfeeCart, $charity, $mId]);
                 }
 
-                $pdo->exec("UPDATE members SET name = 'Burfee Cart' WHERE member_id != 'EMP100000'");
                 @file_put_contents($flagFile, date('Y-m-d H:i:s'));
             } catch (Exception $e) {
                 // Data correction query fallback
