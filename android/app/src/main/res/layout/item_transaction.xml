@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="2025-01-01 10:00"
-            android:textColor="@color/gold_primary"
+            android:textColor="@color/purple_light"
             android:textSize="10sp" />
     </LinearLayout>
 

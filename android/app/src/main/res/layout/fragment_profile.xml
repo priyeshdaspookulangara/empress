@@ -37,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="KYC Status: Pending"
-                    android:textColor="@color/gold_primary"
+                    android:textColor="@color/purple_light"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -206,7 +206,7 @@
                     android:background="@drawable/bg_button"
                     android:text="Update Profile &amp; KYC Details"
                     android:textAllCaps="false"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 

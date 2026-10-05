@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="EMPRESS TWO WAY 4.0"
-            android:textColor="@color/gold_primary"
+            android:textColor="@color/purple_light"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -177,7 +177,7 @@
                 android:background="@drawable/bg_button"
                 android:text="@string/register"
                 android:textAllCaps="false"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -190,7 +190,7 @@
             android:layout_marginTop="20dp"
             android:padding="8dp"
             android:text="@string/already_have_an_account"
-            android:textColor="@color/gold_primary"
+            android:textColor="@color/purple_light"
             android:textSize="14sp"
             android:textStyle="bold" />
 

@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="EMPRESS TWO WAY 4.0"
-                android:textColor="@color/gold_primary"
+                android:textColor="@color/purple_light"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -45,7 +45,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/logout"
             android:src="@drawable/ic_logout"
-            app:tint="@color/gold_primary" />
+            app:tint="@color/purple_light" />
 
     </RelativeLayout>
 

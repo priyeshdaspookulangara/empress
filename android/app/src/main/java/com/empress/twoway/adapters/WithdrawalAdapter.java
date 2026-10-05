@@ -39,7 +39,7 @@ public class WithdrawalAdapter extends RecyclerView.Adapter<WithdrawalAdapter.Vi
         } else if ("Rejected".equalsIgnoreCase(w.getStatus())) {
             holder.tvStatus.setTextColor(holder.itemView.getContext().getColor(R.color.accent_red));
         } else {
-            holder.tvStatus.setTextColor(holder.itemView.getContext().getColor(R.color.gold_primary));
+            holder.tvStatus.setTextColor(holder.itemView.getContext().getColor(R.color.purple_light));
         }
     }
 

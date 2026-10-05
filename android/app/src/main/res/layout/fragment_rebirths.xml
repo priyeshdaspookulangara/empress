@@ -27,7 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Automated Rebirth Engine"
-                    android:textColor="@color/gold_primary"
+                    android:textColor="@color/purple_light"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Active Rebirth Member Nodes"
-                android:textColor="@color/gold_primary"
+                android:textColor="@color/purple_light"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

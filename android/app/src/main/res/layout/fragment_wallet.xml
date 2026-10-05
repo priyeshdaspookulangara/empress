@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="KYC Status: Pending (Required for withdrawals)"
-                    android:textColor="@color/gold_primary"
+                    android:textColor="@color/purple_light"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -104,7 +104,7 @@
                     android:background="@drawable/bg_button"
                     android:text="Submit Withdrawal Request"
                     android:textAllCaps="false"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Withdrawal Request History"
-                android:textColor="@color/gold_primary"
+                android:textColor="@color/purple_light"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -133,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="All Wallet Transactions"
-                android:textColor="@color/gold_primary"
+                android:textColor="@color/purple_light"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
