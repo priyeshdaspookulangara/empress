@@ -1,7 +1,7 @@
 <?php
 /**
  * Cron Worker Script: Process Scheduled Rebirths
- * Empress Two Way 4.0 Platform
+ * Reyon Global Impact Platform
  *
  * Runs background check for pending queued rebirths whose scheduled_at time has arrived.
  * Can be run via CLI cron (e.g., `* * * * * php /path/to/cron/process_rebirths.php`)

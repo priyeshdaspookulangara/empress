@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Super Admin Login - Empress Two Way 4.0";
+$pageTitle = "Super Admin Login - Reyon Global Impact";
 require_once __DIR__ . '/config/db.php';
 
 if (isset($_SESSION['superadmin_id'])) {

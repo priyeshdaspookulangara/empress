@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Member Login - Empress Two Way 4.0";
+$pageTitle = "Member Login - Reyon Global Impact";
 require_once __DIR__ . '/config/db.php';
 
 if (isset($_SESSION['member_id'])) {

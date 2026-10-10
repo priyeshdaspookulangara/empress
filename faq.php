@@ -46,7 +46,7 @@ require_once __DIR__ . '/includes/header.php';
             </button>
             <div class="faq-answer hidden px-5 pb-5 pt-2 text-xs text-champagne/80 border-t border-gold/10 space-y-2">
                 <p>
-                    All deposits, transactions, and payouts on Empress Two Way 4.0 operate <strong>exclusively on Tether USD (USDT) via the BNB Smart Chain (BEP-20) network</strong>.
+                    All deposits, transactions, and payouts on Reyon Global Impact operate <strong>exclusively on Tether USD (USDT) via the BNB Smart Chain (BEP-20) network</strong>.
                 </p>
                 <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 font-medium">
                     <i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i>
@@ -134,7 +134,7 @@ require_once __DIR__ . '/includes/header.php';
                 <ul class="list-disc pl-5 space-y-1 text-champagne/90">
                     <li><strong class="text-emerald-400">50% Customer Wallet:</strong> Directly eligible for payout withdrawal upon KYC approval.</li>
                     <li><strong class="text-gold">30% Burfee Cart Wallet:</strong> Utility and product reserve for ePIN activations.</li>
-                    <li><strong class="text-champagne">20% Empress Charity Fund:</strong> Dedicated allocation for global charity causes.</li>
+                    <li><strong class="text-champagne">20% Reyon Charity Fund:</strong> Dedicated allocation for global charity causes.</li>
                 </ul>
             </div>
         </div>

@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $sentCount++;
                 }
             }
-            $msg = "HTML Email successfully dispatched to {$sentCount} recipient(s) from info@empress2way.com!";
+            $msg = "HTML Email successfully dispatched to {$sentCount} recipient(s) from support@reyonglobal.com!";
         }
     }
 }
@@ -65,7 +65,7 @@ require_once __DIR__ . '/../includes/header.php';
             <h1 class="text-2xl font-extrabold neon-gradient-text flex items-center gap-2">
                 <i class="fa-solid fa-paper-plane"></i> HTML Email Dispatcher Console
             </h1>
-            <p class="text-xs text-ice/70 mt-1">Send custom formatted HTML emails to network members from <code class="text-gold font-mono">info@empress2way.com</code> with dynamic <code class="text-neon-cyan font-mono">{{tags}}</code>.</p>
+            <p class="text-xs text-ice/70 mt-1">Send custom formatted HTML emails to network members from <code class="text-gold font-mono">support@reyonglobal.com</code> with dynamic <code class="text-neon-cyan font-mono">{{tags}}</code>.</p>
         </div>
     </div>
 
@@ -126,7 +126,7 @@ require_once __DIR__ . '/../includes/header.php';
     <p style="margin: 5px 0;"><strong>Package:</strong> {{package_type}}</p>
 </div>
 
-<p>Double your path and empower your future with Empress Two Way 4.0!</p>
+<p>Double your path and empower your future with Reyon Global Impact!</p>
 <a href="{{site_url}}/login.php" class="btn">Login to Dashboard</a></textarea>
                     </div>
 

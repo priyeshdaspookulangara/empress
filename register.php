@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Member Registration - Empress Two Way 4.0";
+$pageTitle = "Member Registration - Reyon Global Impact";
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
 
@@ -45,7 +45,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="glass-card p-8 rounded-3xl border border-gold/30 shadow-2xl">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-extrabold gold-gradient-text">Member Registration</h1>
-            <p class="text-xs text-champagne/70 mt-2">Join Empress Two Way 4.0 via Global BFS Auto-Spillover Matrix</p>
+            <p class="text-xs text-champagne/70 mt-2">Join Reyon Global Impact via Global BFS Auto-Spillover Matrix</p>
         </div>
 
         <?php if (!empty($error)): ?>

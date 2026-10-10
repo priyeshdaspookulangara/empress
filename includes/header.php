@@ -8,9 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($pageTitle) ? $pageTitle . ' - Empress Two Way 4.0' : 'Empress Two Way 4.0 - Direct Selling Ecosystem'; ?></title>
-    <!-- Google Font: Outfit -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title><?php echo isset($pageTitle) ? $pageTitle . ' - Reyon Global Impact' : 'Reyon Global Impact - Web & Mobile Direct Selling Platform'; ?></title>
+    <!-- Google Fonts: Outfit & Cinzel -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -20,15 +20,22 @@ if (session_status() === PHP_SESSION_NONE) {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Outfit', 'sans-serif'],
+                    },
                     colors: {
-                        obsidian: '#0f1015',
-                        navy: '#060b19',
-                        glass: 'rgba(255, 255, 255, 0.04)',
-                        glassBorder: 'rgba(255, 255, 255, 0.2)',
+                        obsidian: '#090a0f',
+                        navy: '#05070f',
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                        glassBorder: 'rgba(197, 160, 89, 0.25)',
                         gold: {
                             DEFAULT: '#c5a059',
-                            400: '#d1b16d',
+                            300: '#edd8a4',
+                            400: '#d4b062',
+                            500: '#c5a059',
                             600: '#a38140',
+                            700: '#80632c',
                         },
                         champagne: '#f3e5ab',
                         'neon-cyan': '#00f3ff',
@@ -43,124 +50,124 @@ if (session_status() === PHP_SESSION_NONE) {
             box-sizing: border-box;
             padding-top: env(safe-area-inset-top,0px);
             padding-bottom: env(safe-area-inset-bottom,0px);
-            --bg: #000;
-            --fg: #fff;
+            --bg: #07080c;
+            --fg: #ffffff;
             --muted: rgba(255,255,255,.75);
-            --line: rgba(255,255,255,.4);
-            --card: rgba(255,255,255,.04);
-            --orange: #e8604a;
-            --pink: #c8306e;
-            --purple: #8b2fa8;
-            --blue: #2aa8e6;
+            --line: rgba(197, 160, 89, 0.3);
+            --card: rgba(15, 16, 21, 0.7);
         }
         html { scroll-padding-top: env(safe-area-inset-top,0px); scroll-behavior: smooth; }
         *, *::before, *::after { box-sizing: inherit; }
         body {
             margin: 0;
-            background: #000;
+            background: #07080c;
             color: var(--fg);
             font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif;
             min-height: 100vh;
         }
-        .blob { position: absolute; z-index: -1; filter: blur(70px); border-radius: 50%; pointer-events: none; }
-        .b-blue { width:48vw; height:62vh; right:12vw; top:-8vh; background:radial-gradient(closest-side,#2aa8e6 0%,#2a8fd8 45%,rgba(42,143,216,0) 100%); }
-        .b-purple { width:38vw; height:70vh; left:38vw; top:-4vh; background:radial-gradient(closest-side,#8b2fa8 0%,#7a2ea5 50%,rgba(122,46,165,0) 100%); }
-        .b-pink { width:44vw; height:60vh; left:14vw; top:24vh; background:radial-gradient(closest-side,#c8306e 0%,#b02d7a 55%,rgba(176,45,122,0) 100%); transform:rotate(-24deg); }
-        .b-orange { width:36vw; height:34vh; left:-4vw; bottom:-6vh; background:radial-gradient(closest-side,#e8604a 0%,#d9505a 55%,rgba(217,80,90,0) 100%); transform:rotate(-24deg); }
-        .b-shade { width:60vw; height:60vh; left:-14vw; top:-14vh; background:#000; filter:blur(50px); border-radius:50%; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
 
-        .glow { position:absolute; z-index:-1; filter:blur(90px); border-radius:50%; pointer-events:none; }
-        .g1 { width:40vw; height:40vh; right:-12vw; top:10%; background:radial-gradient(closest-side,rgba(42,168,230,.55),transparent); }
-        .g2 { width:40vw; height:40vh; left:-14vw; bottom:0; background:radial-gradient(closest-side,rgba(217,80,90,.5),transparent); }
-        .g3 { width:50vw; height:50vh; left:25vw; top:-10vh; background:radial-gradient(closest-side,rgba(139,47,168,.6),transparent); }
+        .blob { position: absolute; z-index: -1; filter: blur(90px); border-radius: 50%; pointer-events: none; opacity: 0.25; }
+        .b-gold { width:45vw; height:55vh; right:10vw; top:-5vh; background:radial-gradient(closest-side, #c5a059 0%, #80632c 60%, transparent 100%); }
+        .b-purple { width:35vw; height:65vh; left:35vw; top:-4vh; background:radial-gradient(closest-side, #6b21a8 0%, #3b0764 60%, transparent 100%); }
+        .b-shade { width:70vw; height:70vh; left:-10vw; top:-10vh; background:#07080c; filter:blur(60px); border-radius:50%; }
 
         .pill {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             border: 1px solid var(--line);
-            border-radius: 14px;
+            border-radius: 9999px;
             color: var(--fg);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
             font-size: 14px;
-            padding: 0 28px;
-            height: 44px;
-            background: rgba(0,0,0,.15);
-            transition: background .2s, border-color .2s;
+            padding: 0 24px;
+            height: 42px;
+            background: rgba(15,16,21,.6);
+            transition: all .25s ease;
             cursor: pointer;
         }
         .pill:hover, .pill:focus-visible {
-            background: rgba(255,255,255,.12);
-            border-color: #fff;
+            background: rgba(197,160,89,.15);
+            border-color: #c5a059;
+            color: #f3e5ab;
         }
-        .pill.logo { padding: 0 22px; font-weight: 700; letter-spacing: .02em; }
-        .pill.cta { align-self: center; height: 42px; padding: 0 26px; border-radius: 22px; font-size: 12px; min-width: 120px; }
+        .pill.logo {
+            padding: 0 20px;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: .08em;
+            border-color: rgba(197, 160, 89, 0.4);
+            color: #d4b062;
+            background: rgba(197, 160, 89, 0.08);
+        }
+        .pill.logo:hover {
+            color: #f3e5ab;
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.3);
+        }
+        .pill.cta {
+            align-self: center;
+            height: 42px;
+            padding: 0 26px;
+            border-radius: 9999px;
+            font-size: 13px;
+            min-width: 120px;
+        }
 
         .glass-card, .card {
-            border: 1px solid rgba(255,255,255,.22);
-            border-radius: 20px;
+            border: 1px solid rgba(197, 160, 89, 0.22);
+            border-radius: 24px;
             padding: 26px;
-            background: rgba(255,255,255,.03);
-            backdrop-filter: blur(6px);
+            background: rgba(15, 17, 23, 0.75);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
         }
-        .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; }
-        .card i { display: block; width: 34px; height: 34px; border-radius: 50%; margin-bottom: 22px; }
-        .card:nth-child(1) i { background: linear-gradient(135deg, #e8604a, #c8306e); }
-        .card:nth-child(2) i { background: linear-gradient(135deg, #c8306e, #7a2ea5); }
-        .card:nth-child(3) i { background: linear-gradient(135deg, #7a2ea5, #2aa8e6); }
 
-        .sec { position: relative; isolation: isolate; overflow: hidden; padding: clamp(48px,8vh,96px) clamp(20px,6vw,88px); background: #000; }
+        .sec { position: relative; isolation: isolate; overflow: hidden; padding: clamp(48px,8vh,96px) clamp(20px,6vw,88px); background: #07080c; }
         .wrap { max-width: 1080px; margin: 0 auto; }
         .gold-gradient-text {
-            background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 50%, #e5c175 100%);
+            background: linear-gradient(135deg, #f3e5ab 0%, #d4b062 50%, #a38140 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .gold-button {
-            background: linear-gradient(135deg, #c5a059 0%, #a38140 100%);
-            color: #0f1015;
+            background: linear-gradient(135deg, #d4b062 0%, #c5a059 50%, #a38140 100%);
+            color: #07080c;
             font-weight: 700;
             transition: all 0.3s ease;
+            border: 1px solid rgba(243, 229, 171, 0.4);
         }
         .gold-button:hover {
-            background: linear-gradient(135deg, #f3e5ab 0%, #c5a059 100%);
-            box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+            background: linear-gradient(135deg, #f3e5ab 0%, #d4b062 100%);
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.4);
+            transform: translateY(-1px);
         }
-        .up { color: #5fd7a0; }
-        .down { color: #ff7b8a; }
-        .tag { display:inline-block; padding:3px 11px; border-radius:12px; border:1px solid var(--line); font-size:11px; }
-        .tag.new { border-color:var(--blue); color:var(--blue); }
-        .tag.done { border-color:#5fd7a0; color:#5fd7a0; }
-        .tag.wait { border-color:var(--orange); color:var(--orange); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
-
-        @media (max-width:720px) {
-            .cards { grid-template-columns: 1fr; }
-        }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #07080c; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.3); border-radius: 3px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar bg-black text-white">
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar bg-[#07080c] text-white">
 
-    <!-- Hero Background Blobs -->
-    <div class="blob b-blue"></div>
+    <!-- Hero Background Ambient Glows -->
+    <div class="blob b-gold"></div>
     <div class="blob b-purple"></div>
-    <div class="blob b-pink"></div>
-    <div class="blob b-orange"></div>
     <div class="blob b-shade"></div>
 
     <!-- Navigation Header -->
-    <nav class="flex items-center justify-between px-6 md:px-16 py-6 sticky top-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10">
-        <a class="pill logo" href="/index.php">EMPRESS 4.0</a>
+    <nav class="flex items-center justify-between px-6 md:px-16 py-5 sticky top-0 z-50 bg-[#07080c]/80 backdrop-blur-md border-b border-gold/20">
+        <a class="pill logo flex items-center gap-2.5" href="/index.php">
+            <span class="w-6 h-6 rounded-full bg-gradient-to-tr from-gold-600 to-champagne flex items-center justify-center text-[#07080c] text-xs font-black">R</span>
+            <span class="font-cinzel tracking-wider text-gold font-bold">REYON GLOBAL IMPACT</span>
+        </a>
 
-        <div class="hidden md:flex items-center gap-8 text-sm font-normal text-white/80">
-            <a href="/index.php#about" class="hover:text-white transition">About</a>
-            <a href="/index.php#service" class="hover:text-white transition">Services</a>
-            <a href="/business_plan.php" class="hover:text-white transition">Business Plan</a>
-            <a href="/faq.php" class="hover:text-white transition">FAQ</a>
-            <a href="/index.php#contact" class="hover:text-white transition">Contact</a>
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
+            <a href="/index.php#about" class="hover:text-gold transition">About</a>
+            <a href="/index.php#service" class="hover:text-gold transition">Services</a>
+            <a href="/business_plan.php" class="hover:text-gold transition">Business Plan</a>
+            <a href="/faq.php" class="hover:text-gold transition">FAQ</a>
+            <a href="/index.php#contact" class="hover:text-gold transition">Contact</a>
         </div>
 
         <div class="flex items-center gap-3">
@@ -180,21 +187,15 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </nav>
 
-    <script>
-        document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
-        });
-    </script>
-
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-4">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-6">
         <?php if (isset($_SESSION['member_id']) || isset($_SESSION['superadmin_id']) || isset($_SESSION['admin_id'])): ?>
             <div class="flex flex-col md:flex-row gap-6 items-start">
-                <!-- Left Sidebar (<aside>) Navigation Layout -->
+                <!-- Left Sidebar Navigation Layout -->
                 <aside class="w-full md:w-64 glass-card p-5 rounded-3xl border border-gold/30 shrink-0 space-y-6">
                     <?php if (isset($_SESSION['member_id'])): ?>
                         <div class="pb-4 border-b border-gold/20">
                             <span class="text-[10px] uppercase tracking-widest text-gold font-mono block">Member Portal</span>
-                            <span class="font-extrabold text-champagne text-sm block truncate mt-0.5"><?php echo htmlspecialchars($_SESSION['member_name'] ?? $_SESSION['member_id']); ?></span>
+                            <span class="font-bold text-champagne text-sm block truncate mt-0.5"><?php echo htmlspecialchars($_SESSION['member_name'] ?? $_SESSION['member_id']); ?></span>
                             <span class="text-[11px] font-mono text-emerald-400 font-bold"><?php echo htmlspecialchars($_SESSION['member_id']); ?></span>
                         </div>
 
@@ -279,7 +280,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     <?php elseif (isset($_SESSION['admin_id'])): ?>
                         <div class="pb-4 border-b border-gold/20">
                             <span class="text-[10px] uppercase tracking-widest text-gold font-mono block">Admin Portal</span>
-                            <span class="font-extrabold text-champagne text-sm block mt-0.5"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator'); ?></span>
+                            <span class="font-bold text-champagne text-sm block mt-0.5"><?php echo htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator'); ?></span>
                         </div>
 
                         <nav class="space-y-1.5 text-xs font-semibold">

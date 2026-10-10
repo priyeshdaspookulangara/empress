@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/header.php';
 <div class="max-w-5xl mx-auto space-y-10">
     <!-- Header Banner -->
     <div class="glass-card p-8 md:p-12 rounded-3xl border border-gold/30 text-center">
-        <h1 class="text-3xl md:text-5xl font-extrabold gold-gradient-text">Empress Two Way 4.0 Business Model</h1>
+        <h1 class="text-3xl md:text-5xl font-extrabold gold-gradient-text">Reyon Global Impact Business Model</h1>
         <p class="text-champagne/80 text-sm md:text-base mt-3 max-w-2xl mx-auto">
             A revolutionary, single-phase direct selling platform with automated 3-matrix forced spillover, 50:50 smart wallet allocation (50% Customer Wallet / 50% Company Portion: 60% Burfee Cart & 40% Charity), and guaranteed 6-level payout potential.
         </p>
@@ -155,7 +155,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="glass-card p-6 rounded-2xl border border-gold/20 text-center">
         <h4 class="text-lg font-bold text-gold mb-2">Company Revenue Retention & Charity Split</h4>
         <p class="text-xs text-champagne/80 max-w-xl mx-auto">
-            Out of company retains/inflow (50%), 20% goes directly to Empress Foundation Charity Initiatives and 30% is retained by the company for operational expansion and platform maintenance.
+            Out of company retains/inflow (50%), 20% goes directly to Reyon Foundation Charity Initiatives and 30% is retained by the company for operational expansion and platform maintenance.
         </p>
     </div>
 

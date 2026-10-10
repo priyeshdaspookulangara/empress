@@ -27,7 +27,7 @@ assert($admin !== false && $admin['role'] === 'admin');
 $stmtRoot = $pdo->prepare("SELECT * FROM members WHERE member_id = 'EMP100000'");
 $stmtRoot->execute();
 $root = $stmtRoot->fetch();
-assert($root !== false && $root['name'] === 'Empress Root');
+assert($root !== false && $root['name'] === 'Reyon Root');
 echo "PASSED\n";
 
 // Test 2: ePIN Generation & Member Registration

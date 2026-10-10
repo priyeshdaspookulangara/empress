@@ -47,7 +47,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div>
             <div class="flex items-center gap-2">
                 <span class="text-xs uppercase font-mono tracking-widest text-neon-cyan bg-neon-cyan/10 px-3 py-1 rounded-full border border-neon-cyan/30">System Audit</span>
-                <span class="text-xs text-ice/60">Empress Two Way 4.0</span>
+                <span class="text-xs text-ice/60">Reyon Global Impact</span>
             </div>
             <h1 class="text-2xl font-extrabold neon-gradient-text mt-2">Rebirth Positions Inspector</h1>
             <p class="text-xs text-ice/70 mt-1">Audit auto-created 3-matrix rebirth positions and 2nd generation sponsor assignments</p>

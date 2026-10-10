@@ -712,10 +712,10 @@ function registerMember($pdo, $data) {
         $pdo->commit();
 
         // Trigger Welcome HTML Email
-        $welcomeSubject = "Welcome to Empress Two Way 4.0 - Position Activated (" . $memberId . ")";
+        $welcomeSubject = "Welcome to Reyon Global Impact - Position Activated (" . $memberId . ")";
         $welcomeTpl = "
             <h2 style='color: #c5a059; margin-top:0;'>Congratulations, {{name}}!</h2>
-            <p>Your 3-Matrix position has been successfully activated in <strong>Empress Two Way 4.0</strong>.</p>
+            <p>Your 3-Matrix position has been successfully activated in <strong>Reyon Global Impact</strong>.</p>
             <div style='background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.3); padding: 15px; border-radius: 10px; margin: 20px 0;'>
                 <p style='margin: 5px 0;'><strong>Member ID:</strong> <span style='color: #c5a059;'>{{member_id}}</span></p>
                 <p style='margin: 5px 0;'><strong>Email:</strong> {{email}}</p>
@@ -756,7 +756,7 @@ function registerMember($pdo, $data) {
 function registerMemberWithoutEpin($pdo, $data) {
     $sponsorId = !empty($data['sponsor_id']) ? trim($data['sponsor_id']) : 'EMP100000';
     $name = !empty($data['name']) ? trim($data['name']) : 'Burfee Cart';
-    $email = !empty($data['email']) ? trim($data['email']) : ('member_' . time() . '_' . rand(100,999) . '@empress2way.com');
+    $email = !empty($data['email']) ? trim($data['email']) : ('member_' . time() . '_' . rand(100,999) . '@reyonglobal.com');
     $phone = !empty($data['phone']) ? trim($data['phone']) : ('9' . str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT));
     $rawPassword = !empty($data['password']) ? $data['password'] : '123456';
     $password = password_hash($rawPassword, PASSWORD_BCRYPT);
@@ -821,10 +821,10 @@ function registerMemberWithoutEpin($pdo, $data) {
         $pdo->commit();
 
         // Trigger Welcome HTML Email for direct registration
-        $welcomeSubject = "Welcome to Empress Two Way 4.0 - Position Activated (" . $memberId . ")";
+        $welcomeSubject = "Welcome to Reyon Global Impact - Position Activated (" . $memberId . ")";
         $welcomeTpl = "
             <h2 style='color: #c5a059; margin-top:0;'>Congratulations, {{name}}!</h2>
-            <p>Your 3-Matrix position has been successfully activated in <strong>Empress Two Way 4.0</strong>.</p>
+            <p>Your 3-Matrix position has been successfully activated in <strong>Reyon Global Impact</strong>.</p>
             <div style='background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.3); padding: 15px; border-radius: 10px; margin: 20px 0;'>
                 <p style='margin: 5px 0;'><strong>Member ID:</strong> <span style='color: #c5a059;'>{{member_id}}</span></p>
                 <p style='margin: 5px 0;'><strong>Email:</strong> {{email}}</p>

@@ -80,7 +80,7 @@ require_once __DIR__ . '/../includes/header.php';
         </a>
 
         <a href="?filter=charity" class="glass-card p-6 rounded-3xl border transition block group <?php echo $filter === 'charity' ? 'border-blue-400 bg-blue-500/10 ring-2 ring-blue-500/50' : 'border-blue-500/40 bg-blue-500/5 hover:border-blue-400'; ?>">
-            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider group-hover:underline">Empress Charity Fund (20%)</span>
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider group-hover:underline">Reyon Charity Fund (20%)</span>
             <div class="text-3xl font-extrabold text-blue-400 mt-2">$<?php echo number_format($charityShare, 2); ?> USD</div>
             <p class="text-[11px] text-ice/50 mt-1">40% of Company 50% allocation (Click to verify)</p>
         </a>
@@ -164,7 +164,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <?php echo match($filter) {
                             'user_wallet' => 'Customer Wallet (50%)',
                             'burfee_cart' => 'Burfee Cart Wallet (30%)',
-                            'charity' => 'Empress Charity Fund (20%)',
+                            'charity' => 'Reyon Charity Fund (20%)',
                             default => 'Total Commission Distributed'
                         }; ?>
                     </span>
