@@ -4,7 +4,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/email.php';
 
-// Level payout schedule in USD ($) (Level 1 to 6)
+// Level payout schedule in USD ($) (Level 1 to 7)
 const DIRECT_REFERRAL_AMOUNT = 1.00; // 10% of $10.00 joining package
 
 const MATRIX_PAYOUTS = [
@@ -14,24 +14,28 @@ const MATRIX_PAYOUTS = [
     4 => 30.00,
     5 => 40.00,
     6 => 50.00,
+    7 => 60.00
 ];
 
-// Matrix node capacity per level
+// Matrix node capacity per level (3^level)
 const MATRIX_LEVEL_CAPACITY = [
     1 => 3,
     2 => 9,
     3 => 27,
     4 => 81,
     5 => 243,
-    6 => 729
+    6 => 729,
+    7 => 2187
 ];
 
 // Rebirth Rewards per Level Completion Schedule
+// Level 7: 50% of total gross amount ($131,220 * 0.50 = $65,610 -> 6,561 Rebirths @ $10 package)
 const REBIRTH_REWARDS = [
     3 => 10,
     4 => 20,
     5 => 70,
-    6 => 100
+    6 => 100,
+    7 => 6561
 ];
 
 // Configurable Rebirth Drip Time Interval (Minutes between consecutive rebirth placements for the same member)
@@ -98,6 +102,16 @@ const MATRIX_LEVEL_SPECS = [
         'burfee_cart_per_node' => 15.00,       // Total $10935.00 / 729
         'charity_per_node' => 10.00,           // Total $7290.00 / 729
         'rebirth_cost_per_node' => 1.37174211248, // Total $1000.00 / 729
+    ],
+    7 => [
+        'capacity' => 2187,                    // 729 * 3
+        'gross_per_node' => 60.00,            // $60.00 ($131,220 total gross)
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 30.00,          // 50% goes for Rebirths ($30.00 per node)
+        'user_wallet_per_node' => 15.00,       // $15.00 per node (50% of remaining $30 = $32,805 total)
+        'burfee_cart_per_node' => 9.00,        // $9.00 per node (30% of remaining $30 = $19,683 total)
+        'charity_per_node' => 6.00,            // $6.00 per node (20% of remaining $30 = $13,122 total)
+        'rebirth_cost_per_node' => 30.00,      // 50% ($30.00 per node = $65,610 total)
     ]
 ];
 
@@ -180,7 +194,7 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
 }
 
 /**
- * Process 10% Direct Referral Commission & Matrix Level Commissions for 6 Levels above $newMemberId
+ * Process 10% Direct Referral Commission & Matrix Level Commissions for up to 7 Levels above $newMemberId
  * Applies 50:50 Smart Wallet division (50% Customer Wallet, 50% Company -> 60% Burfee Cart / 40% Charity).
  */
 function distributeMatrixCommissions($pdo, $newMemberId) {
@@ -234,17 +248,16 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
     }
 
     // 2. Distribute Level 1 Matrix Pool Commission ($5.00) & Level 1 Helping Fund ($3.33)
-    // Ensures total cash distributed from a $10 join equals $1.00 (10% Referral) + $5.00 (L1 Matrix) + $3.33 (L1 Helping) = $9.33 ~ $10.00
     $stmt = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
     $stmt->execute([$newMemberId]);
     $placementParentId = $stmt->fetchColumn();
 
     if ($placementParentId) {
         $spec = MATRIX_LEVEL_SPECS[1];
-        $userAmount = round($spec['user_wallet_per_node'], 4); // $0.8333 ($2.50 / 3)
-        $burfeeAmount = round($spec['burfee_cart_per_node'], 4); // $0.50 ($1.50 / 3)
-        $charityAmount = round($spec['charity_per_node'], 4); // $0.3333 ($1.00 / 3)
-        $grossAmount = round($spec['gross_per_node'], 2); // $5.00 ($15.00 / 3)
+        $userAmount = round($spec['user_wallet_per_node'], 4); // $0.8333
+        $burfeeAmount = round($spec['burfee_cart_per_node'], 4); // $0.50
+        $charityAmount = round($spec['charity_per_node'], 4); // $0.3333
+        $grossAmount = round($spec['gross_per_node'], 2); // $5.00
 
         // Ensure parent wallet row exists
         $stmtWallet = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
@@ -275,8 +288,8 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
         $desc = "Level 1 Matrix Commission from member {$newMemberId}. (Gross: \${$grossAmount}, Net User Wallet: \${$userAmount}, Burfee Cart: \${$burfeeAmount}, Charity: \${$charityAmount})";
         $logTx->execute([$placementParentId, $grossAmount, $desc]);
 
-        // Credit Level 1 Helping Fund ($3.3333) portion to 2nd-level upline ancestor (parent of direct upline)
-        $helpingPerNode = round($spec['helping_per_node'], 4); // $3.3333 ($10.00 / 3)
+        // Credit Level 1 Helping Fund ($3.3333) portion to 2nd-level upline ancestor
+        $helpingPerNode = round($spec['helping_per_node'], 4);
         if ($helpingPerNode > 0) {
             $stmtAncest = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
             $stmtAncest->execute([$placementParentId]);
@@ -290,7 +303,6 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                 $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$targetAncestorId]);
             }
 
-            // Credit helping fund (split 50% User / 30% Burfee / 20% Charity to ancestor)
             $ancUser = round($helpingPerNode * 0.50, 4);
             $ancBurf = round($helpingPerNode * 0.30, 4);
             $ancChar = round($helpingPerNode * 0.20, 4);
@@ -316,10 +328,10 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
         }
     }
 
-    // 3. Check level completion rebirth triggers across ancestors up the tree
+    // 3. Check level completion rebirth triggers across ancestors up the tree (7 Levels)
     $currentParentId = $placementParentId;
     $level = 1;
-    while ($currentParentId && $level <= 6) {
+    while ($currentParentId && $level <= 7) {
         checkAndGrantLevelRebirths($pdo, $currentParentId, $level);
         $stmtParent = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
         $stmtParent->execute([$currentParentId]);
@@ -346,11 +358,11 @@ function hasMemberCompletedLevel3($pdo, $memberId) {
 
 /**
  * Check level completion and grant automated Rebirths:
- * Explicit checking mechanism guarantees NO rebirths occur before Level 3 completion (27 nodes)
  * Level 3 Completion => 10 Rebirths
  * Level 4 Completion => 20 Rebirths
  * Level 5 Completion => 70 Rebirths
  * Level 6 Completion => 100 Rebirths
+ * Level 7 Completion => 6,561 Rebirths (50% of gross amount used for rebirths)
  */
 function checkAndGrantLevelRebirths($pdo, $memberId, $level) {
     if (!isset(REBIRTH_REWARDS[$level])) {
@@ -402,7 +414,6 @@ function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel
     $now = time();
 
     for ($i = 1; $i <= $count; $i++) {
-        // 1st rebirth placed immediately; subsequent rebirths spaced out by intervalSecs
         $scheduledTimestamp = $now + (($i - 1) * $intervalSecs);
         $scheduledAt = date('Y-m-d H:i:s', $scheduledTimestamp);
 
@@ -419,7 +430,6 @@ function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel
 
 /**
  * Process due rebirth positions from the queue with round-robin member interleaving
- * (Ensures alternative rebirth placements across members to prevent consecutive rebirths from a single person)
  */
 function processScheduledRebirthQueue($pdo) {
     $now = date('Y-m-d H:i:s');
@@ -750,8 +760,7 @@ function registerMember($pdo, $data) {
 }
 
 /**
- * Register a new member WITHOUT requiring an ePIN code (for Admin SQL Import & direct registration).
- * Triggers full BFS Matrix placement, wallet initialization, 50:50 commission distribution, and rebirth checks.
+ * Register a new member WITHOUT requiring an ePIN code
  */
 function registerMemberWithoutEpin($pdo, $data) {
     $sponsorId = !empty($data['sponsor_id']) ? trim($data['sponsor_id']) : 'EMP100000';
@@ -820,7 +829,7 @@ function registerMemberWithoutEpin($pdo, $data) {
 
         $pdo->commit();
 
-        // Trigger Welcome HTML Email for direct registration
+        // Trigger Welcome HTML Email
         $welcomeSubject = "Welcome to Reyon Global Impact - Position Activated (" . $memberId . ")";
         $welcomeTpl = "
             <h2 style='color: #c5a059; margin-top:0;'>Congratulations, {{name}}!</h2>
@@ -896,13 +905,17 @@ function getMemberMatrixTree($pdo, $memberId) {
 }
 
 /**
- * Get 6-Level Downline List for a Member
+ * Get Downline List for a Member up to 7 Levels
  */
 function getMemberDownline6Levels($pdo, $memberId) {
+    return getMemberDownline7Levels($pdo, $memberId);
+}
+
+function getMemberDownline7Levels($pdo, $memberId) {
     $downline = [];
     $currentLevelMembers = [$memberId];
 
-    for ($level = 1; $level <= 6; $level++) {
+    for ($level = 1; $level <= 7; $level++) {
         if (empty($currentLevelMembers)) break;
 
         $inClause = implode(',', array_fill(0, count($currentLevelMembers), '?'));
@@ -931,22 +944,20 @@ function getMemberDownline6Levels($pdo, $memberId) {
 }
 
 /**
- * Update P2P Wallet Settings (BEP-20 Address & Receiving QR Code Image)
+ * Update P2P Wallet Settings
  */
 function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null) {
     $bep20Address = trim($bep20Address);
 
-    // Validate BEP-20 Address (42-character Ethereum/BSC standard address format starting with 0x)
     if (!empty($bep20Address) && !preg_match('/^0x[a-fA-F0-9]{40}$/', $bep20Address)) {
         return [
             'success' => false,
-            'message' => 'Invalid BEP-20 Wallet Address. Address must be a valid 42-character hex string starting with "0x" (e.g., 0x9811cCf1E9dcc6451357D9f983E6E9bA615920B5).'
+            'message' => 'Invalid BEP-20 Wallet Address. Address must be a valid 42-character hex string starting with "0x".'
         ];
     }
 
     $qrCodeUrl = null;
 
-    // Handle File Upload if provided
     if ($fileArr && isset($fileArr['tmp_name']) && is_uploaded_file($fileArr['tmp_name'])) {
         $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
         $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -957,7 +968,6 @@ function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null
 
         $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-        // Validate Extension & MIME
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $fileTmp);
         finfo_close($finfo);
@@ -965,11 +975,11 @@ function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null
         if (!in_array($ext, $allowedExts) || !in_array($mimeType, $allowedMimes)) {
             return [
                 'success' => false,
-                'message' => 'Invalid file format. Only JPG, JPEG, PNG, and WEBP image files are allowed for personal QR code.'
+                'message' => 'Invalid file format. Only JPG, JPEG, PNG, and WEBP image files are allowed.'
             ];
         }
 
-        if ($fileSize > 5 * 1024 * 1024) { // 5MB limit
+        if ($fileSize > 5 * 1024 * 1024) {
             return [
                 'success' => false,
                 'message' => 'File size exceeds 5MB maximum limit.'
@@ -1031,7 +1041,6 @@ function submitFundDeposit($pdo, $userId, $txHash, $amount, $network = 'BEP-20')
         return ['success' => false, 'message' => 'Invalid Transaction Hash format. Must start with "0x" followed by valid hexadecimal character string.'];
     }
 
-    // Check if Tx Hash already submitted
     $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM deposits WHERE tx_hash = ?");
     $stmtCheck->execute([$txHash]);
     if ($stmtCheck->fetchColumn() > 0) {
@@ -1064,7 +1073,7 @@ function getUserDeposits($pdo, $userId) {
 }
 
 /**
- * Re-allocate Direct Referral Commission when a member's sponsor_id is updated by Admin/Super Admin
+ * Re-allocate Direct Referral Commission
  */
 function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $newSponsorId) {
     $oldSponsorId = strtoupper(trim($oldSponsorId));
@@ -1074,7 +1083,7 @@ function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $new
         return ['success' => true, 'message' => 'No sponsor change required.'];
     }
 
-    $refAmount = DIRECT_REFERRAL_AMOUNT; // $1.00 USD (10% of $10.00)
+    $refAmount = DIRECT_REFERRAL_AMOUNT;
     $userRef = round($refAmount * 0.50, 2);
     $burfeeRef = round($refAmount * 0.30, 2);
     $charityRef = round($refAmount * 0.20, 2);
@@ -1082,7 +1091,6 @@ function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $new
 
     $pdo->beginTransaction();
     try {
-        // 1. Debit Direct Referral Commission from Old Sponsor
         $stmtWOld = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
         $stmtWOld->execute([$oldSponsorId]);
         if ($stmtWOld->fetch()) {
@@ -1098,7 +1106,6 @@ function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $new
             ");
             $stmtDeb->execute([$refAmount, $userRef, $burfeeRef, $charityRef, $userRef, $companyRef, $oldSponsorId]);
 
-            // Log Debit Transaction
             $stmtTx1 = $pdo->prepare("
                 INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
                 VALUES (?, 'Admin_Adjustment', ?, 'Main', 'Debit', ?)
@@ -1107,7 +1114,6 @@ function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $new
             $stmtTx1->execute([$oldSponsorId, $refAmount, $descDeb]);
         }
 
-        // 2. Ensure New Sponsor Wallet Exists and Credit Direct Referral Commission
         $stmtWNew = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
         $stmtWNew->execute([$newSponsorId]);
         if (!$stmtWNew->fetch()) {
@@ -1126,7 +1132,6 @@ function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $new
         ");
         $stmtCred->execute([$refAmount, $userRef, $burfeeRef, $charityRef, $userRef, $companyRef, $newSponsorId]);
 
-        // Log Credit Transaction
         $stmtTx2 = $pdo->prepare("
             INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
             VALUES (?, 'Direct_Referral', ?, 'Main', 'Credit', ?)
@@ -1155,7 +1160,6 @@ function deleteMemberSafely($pdo, $memberIdToDelete) {
 
     $pdo->beginTransaction();
     try {
-        // Re-parent direct children of deleted member to Root EMP100000 or find new BFS placement under Root
         $stmtChildren = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id = ?");
         $stmtChildren->execute([$memberIdToDelete]);
         $children = $stmtChildren->fetchAll(PDO::FETCH_COLUMN);
@@ -1166,7 +1170,6 @@ function deleteMemberSafely($pdo, $memberIdToDelete) {
             $stmtReparent->execute([$placement['placement_parent_id'], $placement['matrix_position'], $childId]);
         }
 
-        // Delete from wallets, transactions, withdrawals, api_tokens, epins, members
         $pdo->prepare("DELETE FROM wallets WHERE member_id = ?")->execute([$memberIdToDelete]);
         $pdo->prepare("DELETE FROM withdrawals WHERE member_id = ?")->execute([$memberIdToDelete]);
         $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ?")->execute([$memberIdToDelete]);
@@ -1182,8 +1185,7 @@ function deleteMemberSafely($pdo, $memberIdToDelete) {
 }
 
 /**
- * Clean & Format Member Name (Separates person's actual name from Rebirth badges/labels)
- * Returns array: ['clean_name' => string, 'is_rebirth' => bool, 'rebirth_label' => string]
+ * Clean & Format Member Name
  */
 function formatMemberName($name) {
     if (preg_match('/^(.*?)\s*\((Rebirth\s*#[^)]+)\)$/i', trim($name), $matches)) {
@@ -1201,13 +1203,12 @@ function formatMemberName($name) {
 }
 
 /**
- * Verify USDT (BEP-20) Transaction on BSC Blockchain (via BSC JSON-RPC and BscScan API)
- * Returns array: ['success' => bool, 'verified' => bool, 'amount' => float, 'sender' => string, 'receiver' => string, 'message' => string]
+ * Verify USDT (BEP-20) Transaction on BSC Blockchain
  */
 function verifyBscTransactionOnChain($txHash, $expectedReceiverWallet = '0x9811cCf1E9dcc6451357D9f983E6E9bA615920B5', $bscScanApiKey = '') {
     $txHash = trim($txHash);
     $expectedReceiverWallet = strtolower(trim($expectedReceiverWallet));
-    $usdtContract = '0x55d398326f99059ff775485246999027b3197955'; // Official BSC USDT Token Contract
+    $usdtContract = '0x55d398326f99059ff775485246999027b3197955';
 
     if (!preg_match('/^0x[a-fA-F0-9]{64}$/', $txHash)) {
         return [
@@ -1217,7 +1218,6 @@ function verifyBscTransactionOnChain($txHash, $expectedReceiverWallet = '0x9811c
         ];
     }
 
-    // 1. Attempt BscScan API Endpoint
     $apiUrl = "https://api.bscscan.com/api?module=account&action=tokentx&contractaddress=" . $usdtContract . "&address=" . $expectedReceiverWallet . "&sort=desc";
     if (!empty($bscScanApiKey)) {
         $apiUrl .= "&apikey=" . urlencode($bscScanApiKey);
@@ -1231,7 +1231,6 @@ function verifyBscTransactionOnChain($txHash, $expectedReceiverWallet = '0x9811c
         CURLOPT_HTTPHEADER => ['Accept: application/json']
     ]);
     $response = curl_exec($ch);
-    $curlErr = curl_error($ch);
     curl_close($ch);
 
     if ($response) {
@@ -1259,7 +1258,6 @@ function verifyBscTransactionOnChain($txHash, $expectedReceiverWallet = '0x9811c
         }
     }
 
-    // 2. Fallback: Public BSC JSON-RPC Node (https://bsc-dataseed.binance.org/)
     $rpcPayload = json_encode([
         'jsonrpc' => '2.0',
         'method' => 'eth_getTransactionReceipt',
@@ -1320,7 +1318,7 @@ function verifyBscTransactionOnChain($txHash, $expectedReceiverWallet = '0x9811c
     return [
         'success' => false,
         'verified' => false,
-        'message' => 'Transaction Hash not found or not yet confirmed on BSC blockchain. Ensure funds were sent to ' . $expectedReceiverWallet
+        'message' => 'Transaction Hash not found or not yet confirmed on BSC blockchain.'
     ];
 }
 
@@ -1345,18 +1343,15 @@ function approveDepositAndCreditWallet($pdo, $depositId, $adminNotes = 'Verified
 
     $pdo->beginTransaction();
     try {
-        // Mark deposit as Approved
         $stmtUp = $pdo->prepare("UPDATE deposits SET status = 'Approved' WHERE id = ?");
         $stmtUp->execute([$depositId]);
 
-        // Ensure user wallet exists
         $stmtW = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
         $stmtW->execute([$userId]);
         if (!$stmtW->fetch()) {
             $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$userId]);
         }
 
-        // Credit user wallet
         $stmtCredit = $pdo->prepare("
             UPDATE wallets
             SET balance = balance + ?,
@@ -1366,10 +1361,9 @@ function approveDepositAndCreditWallet($pdo, $depositId, $adminNotes = 'Verified
         ");
         $stmtCredit->execute([$amount, $amount, $amount, $userId]);
 
-        // Record Transaction
         $stmtTx = $pdo->prepare("
             INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
-            VALUES (?, 'Admin_Adjustment', ?, 'User_Wallet', 'Credit', ?)
+            VALUES (?, 'Admin_Adjustment', 'User_Wallet', 'Credit', ?)
         ");
         $desc = "USDT (BEP-20) Deposit Credited. TxID: " . $dep['tx_hash'] . " (" . $adminNotes . ")";
         $stmtTx->execute([$userId, $amount, $desc]);
@@ -1387,7 +1381,7 @@ function approveDepositAndCreditWallet($pdo, $depositId, $adminNotes = 'Verified
 }
 
 /**
- * Reset Database to Fresh Initial State (0 Customer Members, only Root EMP100000 & Admins remain)
+ * Reset Database to Fresh Initial State
  */
 function resetDatabaseToCleanState($pdo) {
     $pdo->beginTransaction();
@@ -1403,7 +1397,7 @@ function resetDatabaseToCleanState($pdo) {
         $pdo->exec("DELETE FROM api_tokens");
 
         $pdo->commit();
-        return ['success' => true, 'message' => 'Database successfully reset to clean state! All customer members and transactions purged. Only Root EMP100000 and Admins remain.'];
+        return ['success' => true, 'message' => 'Database successfully reset to clean state!'];
     } catch (Exception $e) {
         $pdo->rollBack();
         return ['success' => false, 'message' => 'Database reset failed: ' . $e->getMessage()];

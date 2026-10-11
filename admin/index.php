@@ -159,7 +159,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <h3 class="text-lg font-bold text-neon-cyan mb-2 flex items-center gap-2">
                     <i class="fa-solid fa-sitemap"></i> Tree Matrix Inspector
                 </h3>
-                <p class="text-xs text-ice/70 mb-4">Drill down into any member's forced 3-matrix downline tree up to 6 levels.</p>
+                <p class="text-xs text-ice/70 mb-4">Drill down into any member's forced 3-matrix downline tree up to 7 levels.</p>
             </div>
             <a href="/admin/matrix_tree.php" class="glass-card border border-neon-cyan/40 hover:bg-neon-cyan/10 text-neon-cyan py-2.5 rounded-xl text-xs text-center font-bold">
                 Open Tree Inspector

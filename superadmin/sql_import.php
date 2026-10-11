@@ -206,7 +206,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <i class="fa-solid fa-code"></i> Paste SQL INSERT Statement
             </h3>
             <p class="text-xs text-ice/70">
-                Copy and paste your SQL `INSERT INTO members` statements below. The system will parse each row, execute a direct registration without ePINs, auto-spillover into the 3-matrix tree, initialize wallets, and credit matrix level commissions up 6 levels.
+                Copy and paste your SQL `INSERT INTO members` statements below. The system will parse each row, execute a direct registration without ePINs, auto-spillover into the 3-matrix tree, initialize wallets, and credit matrix level commissions up 7 levels.
             </p>
 
             <form method="POST" class="space-y-4">

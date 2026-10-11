@@ -117,12 +117,12 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <div>
                     <h2 class="text-base font-extrabold text-gold uppercase tracking-wider">5. 50:50 Smart Wallet Allocation Rules</h2>
-                    <span class="text-[10px] text-emerald-400 font-mono font-bold">Automated 6-Level Compensation Structure</span>
+                    <span class="text-[10px] text-emerald-400 font-mono font-bold">Automated 7-Level Compensation Structure</span>
                 </div>
             </div>
 
             <p>
-                Every matrix commission and helping contribution earned through the 6-level fixed tree is automatically partitioned as follows:
+                Every matrix commission and helping contribution earned through the 7-level fixed tree is automatically partitioned as follows:
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-2 text-center">

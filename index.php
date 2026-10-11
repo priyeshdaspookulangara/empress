@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/header.php';
             Reyon<br><span class="gold-gradient-text">Global Impact</span>
         </h1>
         <p class="text-base md:text-lg text-white/80 max-w-xl mb-10 leading-relaxed font-light">
-            Double Your Path, Empower Your Future. A revolutionary platform with automated 3-matrix forced spillover, 50:50 smart wallet division, and guaranteed 6-level fixed node payouts.
+            Double Your Path, Empower Your Future. A revolutionary platform with automated 3-matrix forced spillover, 50:50 smart wallet division, and guaranteed 7-level fixed node payouts.
         </p>
         <div class="flex items-center gap-5">
             <a class="pill cta gold-button font-cinzel text-sm px-8 py-3 tracking-wider" href="/register.php">JOIN NOW</a>
@@ -46,7 +46,7 @@ require_once __DIR__ . '/includes/header.php';
                         <span class="text-[10px] text-white/60 uppercase">Wallet Split</span>
                     </div>
                     <div class="p-4 rounded-2xl bg-gold/5 border border-gold/20">
-                        <div class="font-cinzel text-xl font-bold text-gold">6 Levels</div>
+                        <div class="font-cinzel text-xl font-bold text-gold">7 Levels</div>
                         <span class="text-[10px] text-white/60 uppercase">Fixed Income</span>
                     </div>
                 </div>

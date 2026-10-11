@@ -52,51 +52,51 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="space-y-8">
-    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30 flex justify-between items-center">
+    <div class="glass-card p-6 rounded-3xl border border-gold/30 flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-extrabold neon-gradient-text">Financial Audit & Reserve Ledger</h1>
-            <p class="text-xs text-ice/70 mt-1">Master USD ($) breakdown of 50:50 wallet distributions (50% Customer Wallet / 30% Burfee Cart / 20% Charity). Click any KPI card below to verify member-by-member calculations.</p>
+            <h1 class="text-2xl font-extrabold gold-gradient-text">Financial Audit & Reserve Ledger</h1>
+            <p class="text-xs text-champagne/70 mt-1">Master USD ($) breakdown of 50:50 wallet distributions (50% Customer Wallet / 30% Burfee Cart / 20% Charity). Click any KPI card below to verify member-by-member calculations.</p>
         </div>
     </div>
 
     <!-- Breakdown Grid Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <a href="?filter=all" class="glass-card p-6 rounded-3xl border transition block group <?php echo $filter === 'all' ? 'border-neon-cyan bg-neon-cyan/10 ring-2 ring-neon-cyan/50' : 'border-neon-cyan/40 hover:border-neon-cyan'; ?>">
-            <span class="text-xs font-bold text-neon-cyan uppercase tracking-wider group-hover:underline">Total Commission Distributed</span>
-            <div class="text-3xl font-extrabold neon-gradient-text mt-2">$<?php echo number_format($wTotals['total_earnings'], 2); ?> USD</div>
-            <p class="text-[11px] text-ice/50 mt-1">Sum of all level payouts credited (Click to verify)</p>
+        <a href="?filter=all" class="glass-card p-6 rounded-3xl border transition block group <?php echo $filter === 'all' ? 'border-gold bg-gold/10 ring-2 ring-gold/50' : 'border-gold/40 hover:border-gold'; ?>">
+            <span class="text-xs font-bold text-gold uppercase tracking-wider group-hover:underline">Total Commission Distributed</span>
+            <div class="text-3xl font-extrabold gold-gradient-text mt-2">$<?php echo number_format($wTotals['total_earnings'], 2); ?> USD</div>
+            <p class="text-[11px] text-champagne/50 mt-1">Sum of all level payouts credited (Click to verify)</p>
         </a>
 
         <a href="?filter=user_wallet" class="glass-card p-6 rounded-3xl border transition block group <?php echo $filter === 'user_wallet' ? 'border-emerald-400 bg-emerald-500/10 ring-2 ring-emerald-500/50' : 'border-emerald-500/40 bg-emerald-500/5 hover:border-emerald-400'; ?>">
             <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider group-hover:underline">Customer Wallet (50%)</span>
             <div class="text-3xl font-extrabold text-emerald-400 mt-2">$<?php echo number_format($wTotals['total_user_wallet'], 2); ?> USD</div>
-            <p class="text-[11px] text-ice/50 mt-1">Eligible for member withdrawals (Click to verify)</p>
+            <p class="text-[11px] text-champagne/50 mt-1">Eligible for member withdrawals (Click to verify)</p>
         </a>
 
         <a href="?filter=burfee_cart" class="glass-card p-6 rounded-3xl border transition block group <?php echo $filter === 'burfee_cart' ? 'border-amber-400 bg-amber-500/10 ring-2 ring-amber-500/50' : 'border-amber-500/40 bg-amber-500/5 hover:border-amber-400'; ?>">
             <span class="text-xs font-bold text-amber-400 uppercase tracking-wider group-hover:underline">Burfee Cart Wallet (30%)</span>
             <div class="text-3xl font-extrabold text-amber-400 mt-2">$<?php echo number_format($burfeeCartShare, 2); ?> USD</div>
-            <p class="text-[11px] text-ice/50 mt-1">60% of Company 50% allocation (Click to verify)</p>
+            <p class="text-[11px] text-champagne/50 mt-1">60% of Company 50% allocation (Click to verify)</p>
         </a>
 
         <a href="?filter=charity" class="glass-card p-6 rounded-3xl border transition block group <?php echo $filter === 'charity' ? 'border-blue-400 bg-blue-500/10 ring-2 ring-blue-500/50' : 'border-blue-500/40 bg-blue-500/5 hover:border-blue-400'; ?>">
             <span class="text-xs font-bold text-blue-400 uppercase tracking-wider group-hover:underline">Reyon Charity Fund (20%)</span>
             <div class="text-3xl font-extrabold text-blue-400 mt-2">$<?php echo number_format($charityShare, 2); ?> USD</div>
-            <p class="text-[11px] text-ice/50 mt-1">40% of Company 50% allocation (Click to verify)</p>
+            <p class="text-[11px] text-champagne/50 mt-1">40% of Company 50% allocation (Click to verify)</p>
         </a>
     </div>
 
-    <!-- 6-Level Income Matrix Schedule & Split Calculations Table -->
-    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30">
-        <h3 class="text-lg font-extrabold text-neon-cyan mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-layer-group"></i> 6-Level Fixed Matrix Compensation Schedule & Split Audit
+    <!-- 7-Level Income Matrix Schedule & Split Calculations Table -->
+    <div class="glass-card p-6 rounded-3xl border border-gold/30">
+        <h3 class="text-lg font-extrabold text-gold mb-2 flex items-center gap-2">
+            <i class="fa-solid fa-layer-group"></i> 7-Level Fixed Matrix Compensation Schedule & Split Audit
         </h3>
-        <p class="text-xs text-ice/70 mb-4">Detailed schedule breakdown showing gross level potential, helping fund deductions, 50:50 pool splits, rebirth costs, and net member withdrawable cash ($ USD).</p>
+        <p class="text-xs text-champagne/70 mb-4">Detailed schedule breakdown showing gross level potential, helping fund deductions, 50:50 pool splits, rebirth costs, and net member withdrawable cash ($ USD).</p>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
+                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
                         <th class="p-3">Level</th>
                         <th class="p-3">Capacity</th>
                         <th class="p-3">Gross Total</th>
@@ -108,15 +108,16 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3 text-blue-400">Charity Fund (20%)</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-neon-cyan/10 text-ice font-mono">
+                <tbody class="divide-y divide-gold/10 text-champagne font-mono">
                     <?php
                     $levels = [
-                        1 => ['nodes' => 3,   'gross' => 15.00,   'helping' => 10.00,  'net_pool' => 5.00,   'rebirth_cost' => 0.00,    'net_user' => 2.50,     'burfee' => 1.50,    'charity' => 1.00],
-                        2 => ['nodes' => 9,   'gross' => 90.00,   'helping' => 20.00,  'net_pool' => 70.00,  'rebirth_cost' => 0.00,    'net_user' => 35.00,    'burfee' => 21.00,   'charity' => 14.00],
-                        3 => ['nodes' => 27,  'gross' => 540.00,  'helping' => 120.00, 'net_pool' => 420.00, 'rebirth_cost' => 100.00,  'net_user' => 110.00,   'burfee' => 126.00,  'charity' => 84.00],
-                        4 => ['nodes' => 81,  'gross' => 2430.00, 'helping' => 0.00,   'net_pool' => 2430.00,'rebirth_cost' => 200.00,  'net_user' => 1015.00,  'burfee' => 729.00,  'charity' => 486.00],
-                        5 => ['nodes' => 243, 'gross' => 9720.00, 'helping' => 0.00,   'net_pool' => 9720.00,'rebirth_cost' => 700.00,  'net_user' => 4160.00,  'burfee' => 2916.00, 'charity' => 1944.00],
-                        6 => ['nodes' => 729, 'gross' => 36450.00,'helping' => 0.00,   'net_pool' => 36450.00,'rebirth_cost' => 1000.00,'net_user' => 17225.00, 'burfee' => 10935.00,'charity' => 7290.00],
+                        1 => ['nodes' => 3,    'gross' => 15.00,    'helping' => 10.00,  'net_pool' => 5.00,    'rebirth_cost' => 0.00,     'net_user' => 2.50,     'burfee' => 1.50,     'charity' => 1.00],
+                        2 => ['nodes' => 9,    'gross' => 90.00,    'helping' => 20.00,  'net_pool' => 70.00,   'rebirth_cost' => 0.00,     'net_user' => 35.00,    'burfee' => 21.00,    'charity' => 14.00],
+                        3 => ['nodes' => 27,   'gross' => 540.00,   'helping' => 120.00, 'net_pool' => 420.00,  'rebirth_cost' => 100.00,   'net_user' => 110.00,   'burfee' => 126.00,   'charity' => 84.00],
+                        4 => ['nodes' => 81,   'gross' => 2430.00,  'helping' => 0.00,   'net_pool' => 2430.00, 'rebirth_cost' => 200.00,   'net_user' => 1015.00,  'burfee' => 729.00,   'charity' => 486.00],
+                        5 => ['nodes' => 243,  'gross' => 9720.00,  'helping' => 0.00,   'net_pool' => 9720.00, 'rebirth_cost' => 700.00,   'net_user' => 4160.00,  'burfee' => 2916.00,  'charity' => 1944.00],
+                        6 => ['nodes' => 729,  'gross' => 36450.00, 'helping' => 0.00,   'net_pool' => 36450.00,'rebirth_cost' => 1000.00,  'net_user' => 17225.00, 'burfee' => 10935.00, 'charity' => 7290.00],
+                        7 => ['nodes' => 2187, 'gross' => 131220.00,'helping' => 0.00,   'net_pool' => 65610.00,'rebirth_cost' => 65610.00, 'net_user' => 32805.00, 'burfee' => 19683.00, 'charity' => 13122.00],
                     ];
                     $totNodes = 0; $totGross = 0; $totHelp = 0; $totPool = 0; $totRebirth = 0; $totUser = 0; $totBurf = 0; $totChar = 0;
                     foreach ($levels as $lvl => $info):
@@ -124,12 +125,12 @@ require_once __DIR__ . '/../includes/header.php';
                         $totPool += $info['net_pool']; $totRebirth += $info['rebirth_cost']; $totUser += $info['net_user'];
                         $totBurf += $info['burfee']; $totChar += $info['charity'];
                     ?>
-                        <tr class="hover:bg-neon-cyan/5">
-                            <td class="p-3 font-bold text-neon-cyan">Level <?php echo $lvl; ?></td>
-                            <td class="p-3 text-ice"><?php echo $info['nodes']; ?> Nodes</td>
-                            <td class="p-3 text-neon-gradient-text font-bold">$<?php echo number_format($info['gross'], 2); ?></td>
+                        <tr class="hover:bg-gold/5">
+                            <td class="p-3 font-bold text-gold">Level <?php echo $lvl; ?></td>
+                            <td class="p-3 text-champagne"><?php echo number_format($info['nodes']); ?> Nodes</td>
+                            <td class="p-3 text-gold-gradient-text font-bold">$<?php echo number_format($info['gross'], 2); ?></td>
                             <td class="p-3 text-amber-400">$<?php echo number_format($info['helping'], 2); ?></td>
-                            <td class="p-3 text-ice font-bold">$<?php echo number_format($info['net_pool'], 2); ?></td>
+                            <td class="p-3 text-champagne font-bold">$<?php echo number_format($info['net_pool'], 2); ?></td>
                             <td class="p-3 text-purple-400">$<?php echo number_format($info['rebirth_cost'], 2); ?></td>
                             <td class="p-3 text-emerald-400 font-bold">$<?php echo number_format($info['net_user'], 2); ?></td>
                             <td class="p-3 text-amber-400 font-bold">$<?php echo number_format($info['burfee'], 2); ?></td>
@@ -138,10 +139,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endforeach; ?>
                 </tbody>
                 <tfoot>
-                    <tr class="bg-neon-cyan/20 font-bold text-neon-cyan border-t border-neon-cyan/30 text-xs">
-                        <td class="p-3">TOTAL (L1-L6)</td>
-                        <td class="p-3"><?php echo $totNodes; ?> Nodes</td>
-                        <td class="p-3 text-neon-gradient-text font-extrabold">$<?php echo number_format($totGross, 2); ?> USD</td>
+                    <tr class="bg-gold/20 font-bold text-gold border-t border-gold/30 text-xs">
+                        <td class="p-3">TOTAL (L1-L7)</td>
+                        <td class="p-3"><?php echo number_format($totNodes); ?> Nodes</td>
+                        <td class="p-3 text-gold-gradient-text font-extrabold">$<?php echo number_format($totGross, 2); ?> USD</td>
                         <td class="p-3 text-amber-400">$<?php echo number_format($totHelp, 2); ?> USD</td>
                         <td class="p-3">$<?php echo number_format($totPool, 2); ?> USD</td>
                         <td class="p-3 text-purple-400">$<?php echo number_format($totRebirth, 2); ?> USD</td>
@@ -155,12 +156,12 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Calculation Verification Details Inspector -->
-    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30 bg-slate-900/40">
+    <div class="glass-card p-6 rounded-3xl border border-gold/30 bg-slate-900/40">
         <div class="flex justify-between items-center mb-4">
             <div>
-                <h3 class="text-lg font-extrabold text-neon-cyan flex items-center gap-2">
+                <h3 class="text-lg font-extrabold text-gold flex items-center gap-2">
                     <i class="fa-solid fa-calculator"></i> Calculation Verification Details:
-                    <span class="text-ice uppercase">
+                    <span class="text-champagne uppercase">
                         <?php echo match($filter) {
                             'user_wallet' => 'Customer Wallet (50%)',
                             'burfee_cart' => 'Burfee Cart Wallet (30%)',
@@ -169,15 +170,15 @@ require_once __DIR__ . '/../includes/header.php';
                         }; ?>
                     </span>
                 </h3>
-                <p class="text-xs text-ice/60 mt-1">Itemized member wallet audit table to verify KPI sum accuracy ($ USD)</p>
+                <p class="text-xs text-champagne/60 mt-1">Itemized member wallet audit table to verify KPI sum accuracy ($ USD)</p>
             </div>
-            <a href="?filter=all" class="text-xs text-neon-cyan hover:underline font-bold">Reset View</a>
+            <a href="?filter=all" class="text-xs text-gold hover:underline font-bold">Reset View</a>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
+                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
                         <th class="p-3">Member ID</th>
                         <th class="p-3">Name</th>
                         <th class="p-3">Total Commission</th>
@@ -187,9 +188,9 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3">Calculation Verification Formula</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-neon-cyan/10 text-ice">
+                <tbody class="divide-y divide-gold/10 text-champagne">
                     <?php if (empty($memberWallets)): ?>
-                        <tr><td colspan="7" class="p-4 text-center text-ice/50">No member wallet records found.</td></tr>
+                        <tr><td colspan="7" class="p-4 text-center text-champagne/50">No member wallet records found.</td></tr>
                     <?php else: ?>
                         <?php foreach ($memberWallets as $mw): ?>
                             <?php
@@ -199,13 +200,13 @@ require_once __DIR__ . '/../includes/header.php';
                             $ch = (float)($mw['charity_wallet'] > 0 ? $mw['charity_wallet'] : round($mw['company_wallet_40'] * 0.40, 2));
                             ?>
                             <tr class="<?php echo ($filter === 'user_wallet' ? 'bg-emerald-500/5' : ($filter === 'burfee_cart' ? 'bg-amber-500/5' : ($filter === 'charity' ? 'bg-blue-500/5' : ''))); ?>">
-                                <td class="p-3 font-mono font-bold text-neon-cyan"><?php echo htmlspecialchars($mw['member_id']); ?></td>
-                                <td class="p-3 font-semibold text-ice"><?php echo htmlspecialchars($mw['name']); ?></td>
-                                <td class="p-3 font-mono font-bold text-neon-gradient-text">$<?php echo number_format($b, 2); ?></td>
+                                <td class="p-3 font-mono font-bold text-gold"><?php echo htmlspecialchars($mw['member_id']); ?></td>
+                                <td class="p-3 font-semibold text-champagne"><?php echo htmlspecialchars($mw['name']); ?></td>
+                                <td class="p-3 font-mono font-bold text-gold-gradient-text">$<?php echo number_format($b, 2); ?></td>
                                 <td class="p-3 font-mono font-bold text-emerald-400">$<?php echo number_format($uw, 2); ?></td>
                                 <td class="p-3 font-mono font-bold text-amber-400">$<?php echo number_format($bc, 2); ?></td>
                                 <td class="p-3 font-mono font-bold text-blue-400">$<?php echo number_format($ch, 2); ?></td>
-                                <td class="p-3 font-mono text-[11px] text-ice/70">
+                                <td class="p-3 font-mono text-[11px] text-champagne/70">
                                     Customer Wallet: $<?php echo number_format($uw, 2); ?> | Burfee Cart: $<?php echo number_format($bc, 2); ?> | Charity: $<?php echo number_format($ch, 2); ?>
                                 </td>
                             </tr>
@@ -216,11 +217,12 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
+
     <!-- Approved Payout Metrics Card -->
-    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/20 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="glass-card p-6 rounded-3xl border border-gold/20 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-            <h3 class="text-lg font-bold text-neon-cyan">Total Approved Crypto Transfers</h3>
-            <p class="text-xs text-ice/70 mt-0.5">Disbursed to members after mandatory KYC approval</p>
+            <h3 class="text-lg font-bold text-gold">Total Approved Crypto Transfers</h3>
+            <p class="text-xs text-champagne/70 mt-0.5">Disbursed to members after mandatory KYC approval</p>
         </div>
         <div class="text-2xl font-extrabold text-emerald-400 font-mono">
             $<?php echo number_format($totalApprovedPayouts, 2); ?> USD
@@ -228,15 +230,15 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Master Transaction Audit Table -->
-    <div class="glass-card p-6 rounded-3xl border border-neon-cyan/20">
-        <h3 class="text-lg font-bold text-neon-cyan mb-4 flex items-center gap-2">
+    <div class="glass-card p-6 rounded-3xl border border-gold/20">
+        <h3 class="text-lg font-bold text-gold mb-4 flex items-center gap-2">
             <i class="fa-solid fa-book"></i> Master System Transaction Ledger
         </h3>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
+                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
                         <th class="p-3">Tx ID</th>
                         <th class="p-3">Member ID & Name</th>
                         <th class="p-3">Type</th>
@@ -247,27 +249,27 @@ require_once __DIR__ . '/../includes/header.php';
                         <th class="p-3">Timestamp</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-neon-cyan/10 text-ice">
+                <tbody class="divide-y divide-gold/10 text-champagne">
                     <?php if (empty($allTransactions)): ?>
                         <tr>
-                            <td colspan="8" class="p-4 text-center text-ice/50">No transactions recorded in system.</td>
+                            <td colspan="8" class="p-4 text-center text-champagne/50">No transactions recorded in system.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($allTransactions as $tx): ?>
                             <tr>
-                                <td class="p-3 font-mono text-neon-cyan/80">#TX-<?php echo $tx['id']; ?></td>
+                                <td class="p-3 font-mono text-gold/80">#TX-<?php echo $tx['id']; ?></td>
                                 <td class="p-3">
-                                    <div class="font-bold text-neon-cyan font-mono"><?php echo htmlspecialchars($tx['member_id']); ?></div>
-                                    <div class="text-ice/70 text-[11px]"><?php echo htmlspecialchars($tx['name'] ?? ''); ?></div>
+                                    <div class="font-bold text-gold font-mono"><?php echo htmlspecialchars($tx['member_id']); ?></div>
+                                    <div class="text-champagne/70 text-[11px]"><?php echo htmlspecialchars($tx['name'] ?? ''); ?></div>
                                 </td>
-                                <td class="p-3 font-semibold text-neon-cyan"><?php echo str_replace('_', ' ', $tx['type']); ?></td>
+                                <td class="p-3 font-semibold text-gold"><?php echo str_replace('_', ' ', $tx['type']); ?></td>
                                 <td class="p-3 font-bold <?php echo $tx['status'] === 'Credit' ? 'text-emerald-400' : 'text-red-400'; ?>">
                                     <?php echo $tx['status'] === 'Credit' ? '+' : '-'; ?>$<?php echo number_format($tx['amount'], 2); ?>
                                 </td>
-                                <td class="p-3 font-mono text-ice/70"><?php echo $tx['wallet_type']; ?></td>
+                                <td class="p-3 font-mono text-champagne/70"><?php echo $tx['wallet_type']; ?></td>
                                 <td class="p-3 font-semibold"><?php echo $tx['status']; ?></td>
-                                <td class="p-3 text-ice/80 max-w-xs"><?php echo htmlspecialchars($tx['description']); ?></td>
-                                <td class="p-3 font-mono text-ice/50"><?php echo $tx['created_at']; ?></td>
+                                <td class="p-3 text-champagne/80 max-w-xs"><?php echo htmlspecialchars($tx['description']); ?></td>
+                                <td class="p-3 font-mono text-champagne/50"><?php echo $tx['created_at']; ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

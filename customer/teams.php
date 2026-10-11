@@ -22,7 +22,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="glass-card p-6 rounded-3xl border border-gold/30 flex justify-between items-center">
         <div>
             <h1 class="text-2xl font-extrabold gold-gradient-text">My 3-Matrix Downline Tree</h1>
-            <p class="text-xs text-champagne/70 mt-1">Visual breakdown of your 3 direct slots and 6-level forced matrix downline</p>
+            <p class="text-xs text-champagne/70 mt-1">Visual breakdown of your 3 direct slots and 7-level forced matrix downline</p>
         </div>
         <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-neon-cyan bg-neon-cyan/10 px-3 py-1.5 rounded-xl border border-neon-cyan/20 font-mono">
@@ -105,10 +105,10 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
-    <!-- 6-Level Downline Member Table -->
+    <!-- 7-Level Downline Member Table -->
     <div class="glass-card p-6 rounded-3xl border border-gold/20">
         <h3 class="text-lg font-bold text-gold mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-list-ol"></i> 6-Level Detailed Downline Roster
+            <i class="fa-solid fa-list-ol"></i> 7-Level Detailed Downline Roster
         </h3>
 
         <div class="overflow-x-auto">

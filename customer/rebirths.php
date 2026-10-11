@@ -94,7 +94,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Rebirth KPI Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 text-center">
         <div class="glass-card p-5 rounded-2xl border border-gold/30 md:col-span-1">
             <span class="text-[10px] uppercase font-bold text-gold tracking-wider block">Total Rebirths</span>
             <div class="text-3xl font-extrabold text-gold mt-1"><?php echo $totalRebirthsEarned; ?></div>
@@ -123,6 +123,12 @@ require_once __DIR__ . '/../includes/header.php';
             <span class="text-[10px] uppercase font-semibold text-champagne/70 block">Level 6 Completion</span>
             <div class="text-xl font-bold text-emerald-400 mt-1">+100 Rebirths</div>
             <span class="text-[10px] text-champagne/40">729 Nodes Completed</span>
+        </div>
+
+        <div class="glass-card p-4 rounded-2xl border border-gold/20">
+            <span class="text-[10px] uppercase font-semibold text-champagne/70 block">Level 7 Completion</span>
+            <div class="text-xl font-bold text-emerald-400 mt-1">+6,561 Rebirths</div>
+            <span class="text-[10px] text-champagne/40">2,187 Nodes Completed (50% Rebirths)</span>
         </div>
     </div>
 

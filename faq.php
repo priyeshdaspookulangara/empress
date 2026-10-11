@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/header.php';
         <span class="text-xs uppercase font-mono tracking-widest text-gold bg-gold/10 px-3.5 py-1.5 rounded-full border border-gold/30">Knowledge Base & Platform Guide</span>
         <h1 class="text-3xl md:text-4xl font-extrabold gold-gradient-text mt-3">Frequently Asked Questions</h1>
         <p class="text-xs md:text-sm text-champagne/80 max-w-2xl mx-auto mt-2 leading-relaxed">
-            Everything you need to know about USDT (BEP-20) fund deposits, 50:50 wallet splits, 6-level matrix compensation, gas fees, and P2P wallet settings.
+            Everything you need to know about USDT (BEP-20) fund deposits, 50:50 wallet splits, 7-level matrix compensation, gas fees, and P2P wallet settings.
         </p>
 
         <!-- Search Box -->
@@ -129,7 +129,7 @@ require_once __DIR__ . '/includes/header.php';
             </button>
             <div class="faq-answer hidden px-5 pb-5 pt-2 text-xs text-champagne/80 border-t border-gold/10 space-y-2">
                 <p>
-                    Every matrix commission and helping contribution earned through the 6-level fixed tree is automatically split:
+                    Every matrix commission and helping contribution earned through the 7-level fixed tree is automatically split:
                 </p>
                 <ul class="list-disc pl-5 space-y-1 text-champagne/90">
                     <li><strong class="text-emerald-400">50% Customer Wallet:</strong> Directly eligible for payout withdrawal upon KYC approval.</li>

@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Business Plan - 6-Level Compensation Structure";
+$pageTitle = "Business Plan - 7-Level Compensation Structure";
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="glass-card p-8 md:p-12 rounded-3xl border border-gold/30 text-center">
         <h1 class="text-3xl md:text-5xl font-extrabold gold-gradient-text">Reyon Global Impact Business Model</h1>
         <p class="text-champagne/80 text-sm md:text-base mt-3 max-w-2xl mx-auto">
-            A revolutionary, single-phase direct selling platform with automated 3-matrix forced spillover, 50:50 smart wallet allocation (50% Customer Wallet / 50% Company Portion: 60% Burfee Cart & 40% Charity), and guaranteed 6-level payout potential.
+            A revolutionary, single-phase direct selling platform with automated 3-matrix forced spillover, 50:50 smart wallet allocation (50% Customer Wallet / 50% Company Portion: 60% Burfee Cart & 40% Charity), and guaranteed 7-level payout potential.
         </p>
     </div>
 
@@ -48,9 +48,9 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
-    <!-- Detailed 6-Level Compensation Table -->
+    <!-- Detailed 7-Level Compensation Table -->
     <div class="glass-card p-6 md:p-8 rounded-3xl border border-gold/30">
-        <h2 class="text-2xl font-bold text-gold mb-4 text-center">Master 6-Level Compensation & Deductions Schedule</h2>
+        <h2 class="text-2xl font-bold text-gold mb-4 text-center">Master 7-Level Compensation & Deductions Schedule</h2>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
@@ -134,17 +134,28 @@ require_once __DIR__ . '/includes/header.php';
                         <td class="p-3">$10,935.00</td>
                         <td class="p-3">$7,290.00</td>
                     </tr>
+                    <tr class="bg-gold/10">
+                        <td class="p-3 font-bold text-gold">Level 7</td>
+                        <td class="p-3">2,187 Nodes</td>
+                        <td class="p-3">$131,220.00</td>
+                        <td class="p-3 text-amber-400">$0.00</td>
+                        <td class="p-3">$65,610.00</td>
+                        <td class="p-3 text-purple-400">$65,610.00 (50% Rebirths - 6,561 Nodes)</td>
+                        <td class="p-3 font-bold text-emerald-400">$32,805.00</td>
+                        <td class="p-3">$19,683.00</td>
+                        <td class="p-3">$13,122.00</td>
+                    </tr>
                 </tbody>
                 <tfoot>
                     <tr class="bg-gold/20 text-gold font-bold">
-                        <td class="p-3" colspan="2">Total Potential (1,092 Nodes)</td>
-                        <td class="p-3">$49,245.00</td>
+                        <td class="p-3" colspan="2">Total Potential (3,279 Nodes)</td>
+                        <td class="p-3">$180,465.00</td>
                         <td class="p-3 text-amber-300">$150.00</td>
-                        <td class="p-3">$49,095.00</td>
-                        <td class="p-3 text-purple-300">$2,000.00 (200 Rebirths)</td>
-                        <td class="p-3 text-emerald-300">$22,547.50</td>
-                        <td class="p-3 text-champagne">$14,728.50</td>
-                        <td class="p-3 text-champagne">$9,819.00</td>
+                        <td class="p-3">$114,705.00</td>
+                        <td class="p-3 text-purple-300">$67,610.00 (6,761 Rebirths)</td>
+                        <td class="p-3 text-emerald-300">$55,352.50</td>
+                        <td class="p-3 text-champagne">$34,411.50</td>
+                        <td class="p-3 text-champagne">$22,941.00</td>
                     </tr>
                 </tfoot>
             </table>

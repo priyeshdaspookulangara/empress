@@ -86,10 +86,10 @@ require_once __DIR__ . '/../includes/header.php';
         </a>
     </div>
 
-    <!-- 6-Level Income Matrix Schedule & Split Calculations Table -->
+    <!-- 7-Level Income Matrix Schedule & Split Calculations Table -->
     <div class="glass-card p-6 rounded-3xl border border-neon-cyan/30">
         <h3 class="text-lg font-extrabold text-neon-cyan mb-2 flex items-center gap-2">
-            <i class="fa-solid fa-layer-group"></i> 6-Level Fixed Matrix Compensation Schedule & Split Audit
+            <i class="fa-solid fa-layer-group"></i> 7-Level Fixed Matrix Compensation Schedule & Split Audit
         </h3>
         <p class="text-xs text-ice/70 mb-4">Detailed schedule breakdown showing gross level potential, helping fund deductions, 50:50 pool splits, rebirth costs, and net member withdrawable cash ($ USD).</p>
 
@@ -111,12 +111,13 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody class="divide-y divide-neon-cyan/10 text-ice font-mono">
                     <?php
                     $levels = [
-                        1 => ['nodes' => 3,   'gross' => 15.00,   'helping' => 10.00,  'net_pool' => 5.00,   'rebirth_cost' => 0.00,    'net_user' => 2.50,     'burfee' => 1.50,    'charity' => 1.00],
-                        2 => ['nodes' => 9,   'gross' => 90.00,   'helping' => 20.00,  'net_pool' => 70.00,  'rebirth_cost' => 0.00,    'net_user' => 35.00,    'burfee' => 21.00,   'charity' => 14.00],
-                        3 => ['nodes' => 27,  'gross' => 540.00,  'helping' => 120.00, 'net_pool' => 420.00, 'rebirth_cost' => 100.00,  'net_user' => 110.00,   'burfee' => 126.00,  'charity' => 84.00],
-                        4 => ['nodes' => 81,  'gross' => 2430.00, 'helping' => 0.00,   'net_pool' => 2430.00,'rebirth_cost' => 200.00,  'net_user' => 1015.00,  'burfee' => 729.00,  'charity' => 486.00],
-                        5 => ['nodes' => 243, 'gross' => 9720.00, 'helping' => 0.00,   'net_pool' => 9720.00,'rebirth_cost' => 700.00,  'net_user' => 4160.00,  'burfee' => 2916.00, 'charity' => 1944.00],
-                        6 => ['nodes' => 729, 'gross' => 36450.00,'helping' => 0.00,   'net_pool' => 36450.00,'rebirth_cost' => 1000.00,'net_user' => 17225.00, 'burfee' => 10935.00,'charity' => 7290.00],
+                        1 => ['nodes' => 3,    'gross' => 15.00,    'helping' => 10.00,  'net_pool' => 5.00,    'rebirth_cost' => 0.00,     'net_user' => 2.50,     'burfee' => 1.50,     'charity' => 1.00],
+                        2 => ['nodes' => 9,    'gross' => 90.00,    'helping' => 20.00,  'net_pool' => 70.00,   'rebirth_cost' => 0.00,     'net_user' => 35.00,    'burfee' => 21.00,    'charity' => 14.00],
+                        3 => ['nodes' => 27,   'gross' => 540.00,   'helping' => 120.00, 'net_pool' => 420.00,  'rebirth_cost' => 100.00,   'net_user' => 110.00,   'burfee' => 126.00,   'charity' => 84.00],
+                        4 => ['nodes' => 81,   'gross' => 2430.00,  'helping' => 0.00,   'net_pool' => 2430.00, 'rebirth_cost' => 200.00,   'net_user' => 1015.00,  'burfee' => 729.00,   'charity' => 486.00],
+                        5 => ['nodes' => 243,  'gross' => 9720.00,  'helping' => 0.00,   'net_pool' => 9720.00, 'rebirth_cost' => 700.00,   'net_user' => 4160.00,  'burfee' => 2916.00,  'charity' => 1944.00],
+                        6 => ['nodes' => 729,  'gross' => 36450.00, 'helping' => 0.00,   'net_pool' => 36450.00,'rebirth_cost' => 1000.00,  'net_user' => 17225.00, 'burfee' => 10935.00, 'charity' => 7290.00],
+                        7 => ['nodes' => 2187, 'gross' => 131220.00,'helping' => 0.00,   'net_pool' => 65610.00,'rebirth_cost' => 65610.00, 'net_user' => 32805.00, 'burfee' => 19683.00, 'charity' => 13122.00],
                     ];
                     $totNodes = 0; $totGross = 0; $totHelp = 0; $totPool = 0; $totRebirth = 0; $totUser = 0; $totBurf = 0; $totChar = 0;
                     foreach ($levels as $lvl => $info):
@@ -126,7 +127,7 @@ require_once __DIR__ . '/../includes/header.php';
                     ?>
                         <tr class="hover:bg-neon-cyan/5">
                             <td class="p-3 font-bold text-neon-cyan">Level <?php echo $lvl; ?></td>
-                            <td class="p-3 text-ice"><?php echo $info['nodes']; ?> Nodes</td>
+                            <td class="p-3 text-ice"><?php echo number_format($info['nodes']); ?> Nodes</td>
                             <td class="p-3 text-neon-gradient-text font-bold">$<?php echo number_format($info['gross'], 2); ?></td>
                             <td class="p-3 text-amber-400">$<?php echo number_format($info['helping'], 2); ?></td>
                             <td class="p-3 text-ice font-bold">$<?php echo number_format($info['net_pool'], 2); ?></td>
@@ -139,8 +140,8 @@ require_once __DIR__ . '/../includes/header.php';
                 </tbody>
                 <tfoot>
                     <tr class="bg-neon-cyan/20 font-bold text-neon-cyan border-t border-neon-cyan/30 text-xs">
-                        <td class="p-3">TOTAL (L1-L6)</td>
-                        <td class="p-3"><?php echo $totNodes; ?> Nodes</td>
+                        <td class="p-3">TOTAL (L1-L7)</td>
+                        <td class="p-3"><?php echo number_format($totNodes); ?> Nodes</td>
                         <td class="p-3 text-neon-gradient-text font-extrabold">$<?php echo number_format($totGross, 2); ?> USD</td>
                         <td class="p-3 text-amber-400">$<?php echo number_format($totHelp, 2); ?> USD</td>
                         <td class="p-3">$<?php echo number_format($totPool, 2); ?> USD</td>

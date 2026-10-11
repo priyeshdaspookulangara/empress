@@ -32,7 +32,7 @@ $stmtRef = $pdo->prepare("SELECT COUNT(*) FROM members WHERE sponsor_id = ?");
 $stmtRef->execute([$memberId]);
 $directReferralsCount = $stmtRef->fetchColumn();
 
-// Count Downline (up to 6 levels)
+// Count Downline (up to 7 levels)
 $downline = getMemberDownline6Levels($pdo, $memberId);
 $downlineCount = count($downline);
 
@@ -169,7 +169,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div>
                     <h3 class="font-bold text-champagne">Visual 3-Matrix Tree</h3>
-                    <p class="text-xs text-champagne/60">Inspect your 6-level downline nodes</p>
+                    <p class="text-xs text-champagne/60">Inspect your 7-level downline nodes</p>
                 </div>
             </div>
             <i class="fa-solid fa-chevron-right text-gold text-sm group-hover:translate-x-1 transition"></i>
