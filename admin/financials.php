@@ -117,7 +117,7 @@ require_once __DIR__ . '/../includes/header.php';
                         4 => ['nodes' => 81,   'gross' => 2430.00,  'helping' => 0.00,   'net_pool' => 2430.00, 'rebirth_cost' => 200.00,   'net_user' => 1015.00,  'burfee' => 729.00,   'charity' => 486.00],
                         5 => ['nodes' => 243,  'gross' => 9720.00,  'helping' => 0.00,   'net_pool' => 9720.00, 'rebirth_cost' => 700.00,   'net_user' => 4160.00,  'burfee' => 2916.00,  'charity' => 1944.00],
                         6 => ['nodes' => 729,  'gross' => 36450.00, 'helping' => 0.00,   'net_pool' => 36450.00,'rebirth_cost' => 1000.00,  'net_user' => 17225.00, 'burfee' => 10935.00, 'charity' => 7290.00],
-                        7 => ['nodes' => 2187, 'gross' => 131220.00,'helping' => 0.00,   'net_pool' => 65610.00,'rebirth_cost' => 65610.00, 'net_user' => 32805.00, 'burfee' => 19683.00, 'charity' => 13122.00],
+                        7 => ['nodes' => 2187, 'gross' => 131220.00,'helping' => 0.00,   'net_pool' => 131220.00,'rebirth_cost' => 65610.00, 'net_user' => 0.00,     'burfee' => 39366.00, 'charity' => 26244.00],
                     ];
                     $totNodes = 0; $totGross = 0; $totHelp = 0; $totPool = 0; $totRebirth = 0; $totUser = 0; $totBurf = 0; $totChar = 0;
                     foreach ($levels as $lvl => $info):

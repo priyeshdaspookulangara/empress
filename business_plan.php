@@ -139,11 +139,11 @@ require_once __DIR__ . '/includes/header.php';
                         <td class="p-3">2,187 Nodes</td>
                         <td class="p-3">$131,220.00</td>
                         <td class="p-3 text-amber-400">$0.00</td>
-                        <td class="p-3">$65,610.00</td>
-                        <td class="p-3 text-purple-400">$65,610.00 (50% Rebirths - 6,561 Nodes)</td>
-                        <td class="p-3 font-bold text-emerald-400">$32,805.00</td>
-                        <td class="p-3">$19,683.00</td>
-                        <td class="p-3">$13,122.00</td>
+                        <td class="p-3">$131,220.00</td>
+                        <td class="p-3 text-purple-400">$65,610.00 (50% Customer Wallet -> 6,561 Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400">$0.00</td>
+                        <td class="p-3">$39,366.00</td>
+                        <td class="p-3">$26,244.00</td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -151,11 +151,11 @@ require_once __DIR__ . '/includes/header.php';
                         <td class="p-3" colspan="2">Total Potential (3,279 Nodes)</td>
                         <td class="p-3">$180,465.00</td>
                         <td class="p-3 text-amber-300">$150.00</td>
-                        <td class="p-3">$114,705.00</td>
+                        <td class="p-3">$180,315.00</td>
                         <td class="p-3 text-purple-300">$67,610.00 (6,761 Rebirths)</td>
-                        <td class="p-3 text-emerald-300">$55,352.50</td>
-                        <td class="p-3 text-champagne">$34,411.50</td>
-                        <td class="p-3 text-champagne">$22,941.00</td>
+                        <td class="p-3 text-emerald-300">$22,547.50</td>
+                        <td class="p-3 text-champagne">$54,094.50</td>
+                        <td class="p-3 text-champagne">$36,063.00</td>
                     </tr>
                 </tfoot>
             </table>

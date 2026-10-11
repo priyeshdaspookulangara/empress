@@ -107,11 +107,11 @@ const MATRIX_LEVEL_SPECS = [
         'capacity' => 2187,                    // 729 * 3
         'gross_per_node' => 60.00,            // $60.00 ($131,220 total gross)
         'helping_per_node' => 0.00,
-        'net_pool_per_node' => 30.00,          // 50% goes for Rebirths ($30.00 per node)
-        'user_wallet_per_node' => 15.00,       // $15.00 per node (50% of remaining $30 = $32,805 total)
-        'burfee_cart_per_node' => 9.00,        // $9.00 per node (30% of remaining $30 = $19,683 total)
-        'charity_per_node' => 6.00,            // $6.00 per node (20% of remaining $30 = $13,122 total)
-        'rebirth_cost_per_node' => 30.00,      // 50% ($30.00 per node = $65,610 total)
+        'net_pool_per_node' => 60.00,
+        'user_wallet_per_node' => 0.00,        // Customer 50% ($30.00 per node) used entirely for rebirths ($0.00 net withdrawable cash)
+        'burfee_cart_per_node' => 18.00,       // Burfee Cart 30% of gross ($18.00 per node = $39,366 total)
+        'charity_per_node' => 12.00,           // Charity 20% of gross ($12.00 per node = $26,244 total)
+        'rebirth_cost_per_node' => 30.00,      // 50% Customer Wallet portion ($30.00 per node = $65,610 total)
     ]
 ];
 
