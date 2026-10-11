@@ -105,10 +105,10 @@ require_once __DIR__ . '/includes/header.php';
                         <td class="p-3 font-bold text-gold">Level 4</td>
                         <td class="p-3">81 Nodes</td>
                         <td class="p-3">$2,430.00</td>
-                        <td class="p-3 text-amber-400">$0.00</td>
+                        <td class="p-3 text-amber-400">$60.00</td>
                         <td class="p-3">$2,430.00</td>
                         <td class="p-3 text-purple-400">$200.00 (20 Rebirths)</td>
-                        <td class="p-3 font-bold text-emerald-400">$1,015.00</td>
+                        <td class="p-3 font-bold text-emerald-400">$955.00</td>
                         <td class="p-3">$729.00</td>
                         <td class="p-3">$486.00</td>
                     </tr>
@@ -150,10 +150,10 @@ require_once __DIR__ . '/includes/header.php';
                     <tr class="bg-gold/20 text-gold font-bold">
                         <td class="p-3" colspan="2">Total Potential (3,279 Nodes)</td>
                         <td class="p-3">$180,465.00</td>
-                        <td class="p-3 text-amber-300">$150.00</td>
+                        <td class="p-3 text-amber-300">$210.00</td>
                         <td class="p-3">$180,315.00</td>
                         <td class="p-3 text-purple-300">$67,610.00 (6,761 Rebirths)</td>
-                        <td class="p-3 text-emerald-300">$22,547.50</td>
+                        <td class="p-3 text-emerald-300">$22,487.50</td>
                         <td class="p-3 text-champagne">$54,094.50</td>
                         <td class="p-3 text-champagne">$36,063.00</td>
                     </tr>
