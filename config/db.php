@@ -234,7 +234,7 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
                     $stmtUp->execute([$userWallet50, $burfeeCart, $charity, $mId]);
                 }
 
-                $pdo->exec("UPDATE members SET name = 'Burfee Cart' WHERE member_id != 'EMP100000'");
+                $pdo->exec("UPDATE members SET name = 'Burfee Cart' WHERE member_id != 'RGI100000'");
                 @file_put_contents($flagFile, date('Y-m-d H:i:s'));
             } catch (Exception $e) {
                 // Data correction query fallback
@@ -260,15 +260,15 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         $stmt->execute(['admin', $adminPass, 'admin']);
     }
 
-    // Seed Root Member (EMP100000) if not existing or ensure root details
+    // Seed Root Member (RGI100000) if not existing or ensure root details
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE member_id = ?");
-    $stmt->execute(['EMP100000']);
+    $stmt->execute(['RGI100000']);
     if ($stmt->fetchColumn() == 0) {
         $rootPass = password_hash('root123', PASSWORD_BCRYPT);
         $stmt = $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status, address_line, city, state, pincode, pan_number, bep20_address)
             VALUES (?, NULL, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
-            'EMP100000',
+            'RGI100000',
             'Burfee Cart',
             'support@burfeecart.com',
             '9544707955',
@@ -286,13 +286,13 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
         ]);
 
         $stmt = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
-        $stmt->execute(['EMP100000']);
+        $stmt->execute(['RGI100000']);
     } else {
-        // Update existing EMP100000 root details and package_type
+        // Update existing RGI100000 root details and package_type
         $stmtUp = $pdo->prepare("
             UPDATE members
             SET name = ?, email = ?, phone = ?, address_line = ?, city = ?, state = ?, pincode = ?, pan_number = ?, bep20_address = ?, package_type = 'Royal_Starter', kyc_status = 'Approved'
-            WHERE member_id = 'EMP100000'
+            WHERE member_id = 'RGI100000'
         ");
         $stmtUp->execute([
             'Burfee Cart',

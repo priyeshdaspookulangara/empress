@@ -21,10 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $wRow = $stmtW->fetch() ?: [];
     $userWallet = (float)($wRow['user_wallet_50'] ?? $wRow['user_wallet_60'] ?? 0);
 
-    if ($kycStatus !== 'Approved') {
-        sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: KYC status must be Approved. Current status: {$kycStatus}"], 403);
-    }
-
     if ($amount < 10.00) {
         sendJsonResponse(['success' => false, 'message' => "Withdrawal blocked: Minimum withdrawal amount is $10.00 USD."], 400);
     }

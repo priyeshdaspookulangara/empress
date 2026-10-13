@@ -56,7 +56,7 @@ function parseMemberInsertSQL($sql) {
                 $item['name'] = trim($rowValues[0] ?? 'Burfee Cart');
                 $item['email'] = trim($rowValues[1] ?? '');
                 $item['phone'] = trim($rowValues[2] ?? '');
-                $item['sponsor_id'] = trim($rowValues[3] ?? 'EMP100000');
+                $item['sponsor_id'] = trim($rowValues[3] ?? 'RGI100000');
             }
             $parsedRows[] = $item;
         }
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $line = trim($line);
                 if (!empty($line) && strpos($line, '--') !== 0 && strpos($line, '/*') !== 0) {
                     $regRes = registerMemberWithoutEpin($pdo, [
-                        'sponsor_id' => 'EMP100000',
+                        'sponsor_id' => 'RGI100000',
                         'name' => 'Burfee Cart'
                     ]);
                     if ($regRes['success']) {
@@ -122,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } elseif ($actionType === 'bulk_generator' && $singleCount > 0) {
-        $sponsorId = trim($_POST['bulk_sponsor_id'] ?? 'EMP100000');
+        $sponsorId = trim($_POST['bulk_sponsor_id'] ?? 'RGI100000');
         $bulkName = trim($_POST['bulk_name'] ?? 'Burfee Cart');
 
         for ($i = 1; $i <= $singleCount; $i++) {
@@ -218,8 +218,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <div>
                     <label class="block text-xs font-semibold text-gold mb-1">SQL Query Input</label>
                     <textarea name="sql_statement" rows="8" placeholder="INSERT INTO members (name, email, phone, sponsor_id) VALUES
-('Burfee Cart 1', 'member1@example.com', '9876543210', 'EMP100000'),
-('Burfee Cart 2', 'member2@example.com', '9876543211', 'EMP100000');" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl p-3 text-xs text-champagne font-mono focus:outline-none focus:border-gold"></textarea>
+('Burfee Cart 1', 'member1@example.com', '9876543210', 'RGI100000'),
+('Burfee Cart 2', 'member2@example.com', '9876543211', 'RGI100000');" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl p-3 text-xs text-champagne font-mono focus:outline-none focus:border-gold"></textarea>
                 </div>
 
                 <div class="flex justify-between items-center pt-2">
@@ -246,7 +246,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div>
                     <label class="block font-semibold text-gold mb-1">Sponsor ID</label>
-                    <input type="text" name="bulk_sponsor_id" value="EMP100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold font-mono">
+                    <input type="text" name="bulk_sponsor_id" value="RGI100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold font-mono">
                 </div>
 
                 <div>
@@ -273,7 +273,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <i class="fa-solid fa-triangle-exclamation"></i> Purge & Fresh DB Copy
                 </h3>
                 <p class="text-[11px] text-champagne/70 leading-relaxed">
-                    Wipe all customer members, matrix nodes, transactions, and wallets to start a 100% fresh copy with 0 members. Only Root <code class="text-gold font-mono">EMP100000</code> and Admin accounts will remain.
+                    Wipe all customer members, matrix nodes, transactions, and wallets to start a 100% fresh copy with 0 members. Only Root <code class="text-gold font-mono">RGI100000</code> and Admin accounts will remain.
                 </p>
                 <form method="POST" onsubmit="return confirm('WARNING: Are you sure you want to purge all members and reset the database to a fresh empty state? This action cannot be undone!');">
                     <input type="hidden" name="action_type" value="reset_database">

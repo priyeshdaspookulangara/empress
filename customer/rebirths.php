@@ -243,8 +243,8 @@ require_once __DIR__ . '/../includes/header.php';
                             <tr>
                                 <td class="p-3 font-mono font-bold text-gold"><?php echo htmlspecialchars($rn['member_id']); ?></td>
                                 <td class="p-3 font-semibold text-champagne"><?php echo htmlspecialchars($rn['name']); ?></td>
-                                <td class="p-3 font-mono text-emerald-400 font-bold"><?php echo htmlspecialchars($rn['sponsor_id'] ?: 'EMP100000'); ?></td>
-                                <td class="p-3 font-mono text-champagne/80"><?php echo htmlspecialchars($rn['placement_parent_id'] ?: 'EMP100000'); ?></td>
+                                <td class="p-3 font-mono text-emerald-400 font-bold"><?php echo htmlspecialchars($rn['sponsor_id'] ?: 'RGI100000'); ?></td>
+                                <td class="p-3 font-mono text-champagne/80"><?php echo htmlspecialchars($rn['placement_parent_id'] ?: 'RGI100000'); ?></td>
                                 <td class="p-3 font-mono font-bold text-gold">$<?php echo number_format($rn['wallet']['balance'] ?? 0, 2); ?></td>
                                 <td class="p-3 font-mono font-bold text-emerald-400">$<?php echo number_format($rn['wallet']['user_wallet_50'] ?? 0, 2); ?></td>
                                 <td class="p-3">

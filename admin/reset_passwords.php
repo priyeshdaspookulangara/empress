@@ -18,12 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = getDBConnection();
     $hashed = password_hash($commonPassword, PASSWORD_BCRYPT);
 
-    $stmt = $pdo->prepare("UPDATE members SET password = ? WHERE member_id != 'EMP100000'");
+    $stmt = $pdo->prepare("UPDATE members SET password = ? WHERE member_id != 'RGI100000'");
     $stmt->execute([$hashed]);
     $count = $stmt->rowCount();
 
     // Also update Root password if desired
-    $stmtRoot = $pdo->prepare("UPDATE members SET password = ? WHERE member_id = 'EMP100000'");
+    $stmtRoot = $pdo->prepare("UPDATE members SET password = ? WHERE member_id = 'RGI100000'");
     $stmtRoot->execute([$hashed]);
 
     header("Location: /admin/members.php?msg=" . urlencode("Successfully updated common password for all member accounts ({$count} members updated)."));

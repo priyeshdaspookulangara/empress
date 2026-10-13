@@ -19,7 +19,7 @@ require_once __DIR__ . '/includes/header.php';
                 <i class="fa-solid fa-sitemap"></i> Global BFS Auto-Spillover Matrix
             </h3>
             <p class="text-xs text-champagne/80 leading-relaxed mb-3">
-                Our engine uses strict company-wide <span class="text-gold font-semibold">Breadth-First Search (BFS)</span> auto-spillover logic. Starting from Root (<code class="bg-gold/10 px-1 py-0.5 rounded text-gold">EMP100000</code>), slots are filled left-to-right across each level before moving deeper.
+                Our engine uses strict company-wide <span class="text-gold font-semibold">Breadth-First Search (BFS)</span> auto-spillover logic. Starting from Root (<code class="bg-gold/10 px-1 py-0.5 rounded text-gold">RGI100000</code>), slots are filled left-to-right across each level before moving deeper.
             </p>
             <ul class="text-xs text-champagne/70 space-y-2 list-disc list-inside">
                 <li>Maximum 3 direct children per member node.</li>

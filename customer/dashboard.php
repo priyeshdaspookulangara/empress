@@ -83,30 +83,11 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
-    <!-- Mandatory KYC Warning Banner if not approved -->
-    <?php if ($member['kyc_status'] !== 'Approved'): ?>
-        <div class="glass-card p-5 rounded-2xl border border-amber-500/40 bg-amber-500/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-shield-triangle-exclamation"></i>
-                </div>
-                <div>
-                    <h4 class="text-sm font-bold text-amber-300">Mandatory KYC Verification Required</h4>
-                    <p class="text-xs text-champagne/80 mt-0.5">
-                        Status: <strong class="uppercase text-amber-400"><?php echo htmlspecialchars($member['kyc_status']); ?></strong>. Submit address, PAN, Aadhaar & Bank Details to enable wallet withdrawals.
-                    </p>
-                </div>
-            </div>
-            <a href="/customer/profile.php" class="gold-button px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">
-                Complete KYC <i class="fa-solid fa-arrow-right ml-1"></i>
-            </a>
-        </div>
-    <?php else: ?>
-        <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 flex items-center gap-3">
-            <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
-            <span class="text-xs text-emerald-300 font-semibold">Your KYC is Fully Approved! Payout withdrawals are enabled.</span>
-        </div>
-    <?php endif; ?>
+    <!-- Account Status Banner -->
+    <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+        <span class="text-xs text-emerald-300 font-semibold">Account Active! Payout withdrawals are enabled for your BEP-20 wallet.</span>
+    </div>
 
     <!-- Overview Financial Cards Grid using Template .grid .stats .card .stat -->
     <div class="grid stats">
@@ -194,8 +175,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <i class="fa-solid fa-user-gear"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-champagne">KYC & Bank Details</h3>
-                    <p class="text-xs text-champagne/60">Manage account & verification</p>
+                    <h3 class="font-bold text-champagne">Profile & Wallet</h3>
+                    <p class="text-xs text-champagne/60">Manage account & payout wallet</p>
                 </div>
             </div>
             <i class="fa-solid fa-chevron-right text-gold text-sm group-hover:translate-x-1 transition"></i>

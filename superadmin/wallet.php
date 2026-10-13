@@ -26,10 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
             try {
                 if ($action === 'Approve') {
-                    if ($w['kyc_status'] !== 'Approved') {
-                        throw new Exception("Cannot approve payout for member {$w['member_id']} whose KYC is not Approved.");
-                    }
-
                     $stmtApprove = $pdo->prepare("UPDATE withdrawals SET status = 'Approved', processed_date = CURRENT_TIMESTAMP WHERE id = ?");
                     $stmtApprove->execute([$withdrawalId]);
 
@@ -144,7 +140,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <?php if ($w['status'] === 'Pending'): ?>
                                         <form action="/superadmin/wallet.php" method="POST" class="flex gap-2">
                                             <input type="hidden" name="withdrawal_id" value="<?php echo $w['id']; ?>">
-                                            <button type="submit" name="action" value="Approve" <?php echo $w['kyc_status'] !== 'Approved' ? 'disabled title="Blocked: Member KYC not approved"' : ''; ?> class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1">
+                                            <button type="submit" name="action" value="Approve" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded transition flex items-center gap-1">
                                                 <i class="fa-solid fa-check"></i> Approve
                                             </button>
                                             <button type="submit" name="action" value="Reject" class="bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded transition flex items-center gap-1">

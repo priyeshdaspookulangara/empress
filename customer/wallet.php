@@ -29,9 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = (float)($_POST['amount'] ?? 0);
     $availableUserWallet = (float)($wallet['user_wallet_50'] ?? $wallet['user_wallet_60']);
 
-    if ($member['kyc_status'] !== 'Approved') {
-        $error = "Withdrawal blocked: Your KYC status must be 'Approved' by admin. Current status: " . strtoupper($member['kyc_status']);
-    } elseif ($amount < 10.00) {
+    if ($amount < 10.00) {
         $error = "Withdrawal blocked: Minimum withdrawal amount is $10.00 USD.";
     } elseif ($amount > $availableUserWallet) {
         $error = "Withdrawal blocked: Insufficient balance in your Customer Wallet (50%). Available: $" . number_format($availableUserWallet, 2);
@@ -146,32 +144,25 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             <?php endif; ?>
 
-            <?php if ($member['kyc_status'] !== 'Approved'): ?>
-                <div class="bg-amber-500/10 border border-amber-500/40 p-4 rounded-xl text-xs text-amber-300 mb-6">
-                    <i class="fa-solid fa-lock mr-1"></i> Withdrawal Form Locked: You must have an 'Approved' KYC status to request funds.
-                    <a href="/customer/profile.php" class="text-neon-cyan underline font-bold ml-2">Complete KYC & Save Wallet Address</a>
-                </div>
-            <?php endif; ?>
-
             <form action="/customer/wallet.php" method="POST" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-neon-cyan mb-1">Withdrawal Amount ($ USD) *</label>
                     <div class="relative">
                         <span class="absolute left-4 top-3 text-neon-cyan font-bold text-sm">$</span>
                         <?php $availUser = $wallet['user_wallet_50'] ?? $wallet['user_wallet_60']; ?>
-                        <input type="number" step="0.01" min="10" max="<?php echo $availUser; ?>" name="amount" required placeholder="10.00" <?php echo ($member['kyc_status'] !== 'Approved' || $availUser < 10) ? 'disabled' : ''; ?> class="w-full bg-navy/80 border border-neon-cyan/30 rounded-xl pl-8 pr-4 py-3 text-sm text-ice font-mono focus:outline-none focus:border-neon-cyan disabled:opacity-50">
+                        <input type="number" step="0.01" min="10" max="<?php echo $availUser; ?>" name="amount" required placeholder="10.00" <?php echo ($availUser < 10) ? 'disabled' : ''; ?> class="w-full bg-navy/80 border border-neon-cyan/30 rounded-xl pl-8 pr-4 py-3 text-sm text-ice font-mono focus:outline-none focus:border-neon-cyan disabled:opacity-50">
                     </div>
                     <span class="text-[10px] text-ice/50">Minimum $10 USD. Maximum available: $<?php echo number_format($availUser, 2); ?> USD</span>
                 </div>
 
                 <div class="bg-navy/60 p-4 rounded-xl border border-neon-cyan/15 text-xs text-ice/80 space-y-1">
                     <div class="text-neon-cyan font-bold text-[11px] uppercase tracking-wider mb-1">Destination Crypto Wallet:</div>
-                    <div>Network: <strong class="text-ice"><?php echo htmlspecialchars($member['wallet_network'] ?: 'USDT (TRC20)'); ?></strong></div>
-                    <div>Address: <strong class="text-neon-cyan font-mono text-[11px] break-all"><?php echo htmlspecialchars($member['crypto_wallet_address'] ?: 'Not Saved on Profile'); ?></strong></div>
+                    <div>Network: <strong class="text-ice"><?php echo htmlspecialchars($member['wallet_network'] ?: 'USDT (BEP-20)'); ?></strong></div>
+                    <div>Address: <strong class="text-neon-cyan font-mono text-[11px] break-all"><?php echo htmlspecialchars($member['bep20_address'] ?: $member['crypto_wallet_address'] ?: 'Not Saved on Profile'); ?></strong></div>
                 </div>
 
                 <div>
-                    <button type="submit" <?php echo ($member['kyc_status'] !== 'Approved' || $availUser < 10) ? 'disabled' : ''; ?> class="neon-button w-full py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-neon-cyan/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" <?php echo ($availUser < 10) ? 'disabled' : ''; ?> class="neon-button w-full py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-neon-cyan/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <i class="fa-solid fa-paper-plane"></i> Submit USD Withdrawal Request
                     </button>
                 </div>

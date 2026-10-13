@@ -92,14 +92,14 @@ require_once __DIR__ . '/../includes/header.php';
         $loginUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
         $cleanTargetName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $targetMember['name']));
 
-        $waText = "*WELCOME TO EMPRESS TWO WAY 4.0!*\n\n" .
+        $waText = "*WELCOME TO RGIRESS TWO WAY 4.0!*\n\n" .
                   "Dear *{$cleanTargetName}*,\n" .
                   "Congratulations and a warm welcome to the Reyon Global Impact family!\n\n" .
                   "*Activation Package:* {$pkgName}\n" .
                   "*Member ID:* {$targetMember['member_id']}\n" .
                   "*Default Password:* passWord123#\n" .
-                  "*Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'EMP100000') . "\n" .
-                  "*Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
+                  "*Sponsor ID:* " . ($targetMember['sponsor_id'] ?: 'RGI100000') . "\n" .
+                  "*Placement Parent:* " . ($targetMember['placement_parent_id'] ?: 'RGI100000') . " (Position " . ($targetMember['matrix_position'] ?: '1') . ")\n\n" .
                   "*MEMBER PORTAL LOGIN:*\n{$loginUrl}\n\n" .
                   "_" . $customQuote . "_\n\n" .
                   "Reyon Global Impact Management Team";
@@ -210,14 +210,14 @@ require_once __DIR__ . '/../includes/header.php';
                             $lUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/login.php";
                             $cleanMName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $m['name']));
 
-                            $mText = "*WELCOME TO EMPRESS TWO WAY 4.0!*\n\n" .
+                            $mText = "*WELCOME TO RGIRESS TWO WAY 4.0!*\n\n" .
                                       "Dear *{$cleanMName}*,\n" .
                                       "Congratulations and welcome aboard!\n\n" .
                                       "*Activation Package:* {$pkgN}\n" .
                                       "*Member ID:* {$m['member_id']}\n" .
                                       "*Default Password:* passWord123#\n" .
-                                      "*Sponsor ID:* " . ($m['sponsor_id'] ?: 'EMP100000') . "\n" .
-                                      "*Placement Parent:* " . ($m['placement_parent_id'] ?: 'EMP100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
+                                      "*Sponsor ID:* " . ($m['sponsor_id'] ?: 'RGI100000') . "\n" .
+                                      "*Placement Parent:* " . ($m['placement_parent_id'] ?: 'RGI100000') . " (Position " . ($m['matrix_position'] ?: '1') . ")\n\n" .
                                       "*MEMBER PORTAL LOGIN:*\n{$lUrl}\n\n" .
                                       "_" . $customQuote . "_\n\n" .
                                       "Reyon Global Impact Management Team";

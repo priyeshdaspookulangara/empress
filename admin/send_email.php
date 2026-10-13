@@ -152,7 +152,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="space-y-2 text-xs font-mono">
                     <div class="p-2.5 rounded bg-obsidian/80 border border-gold/20 flex justify-between">
                         <span class="text-gold">{{member_id}}</span>
-                        <span class="text-champagne/60 font-sans">e.g. EMP100001</span>
+                        <span class="text-champagne/60 font-sans">e.g. RGI100001</span>
                     </div>
                     <div class="p-2.5 rounded bg-obsidian/80 border border-gold/20 flex justify-between">
                         <span class="text-gold">{{name}}</span>

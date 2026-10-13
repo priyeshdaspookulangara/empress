@@ -116,16 +116,16 @@ const MATRIX_LEVEL_SPECS = [
 ];
 
 /**
- * Generate random unique non-sequential Member ID (e.g., EMP784920)
+ * Generate random unique non-sequential Member ID (e.g., RGI784920)
  * Prevents members from inferring tree placement or join sequence from sequential IDs
  */
 function generateMemberID($pdo) {
     do {
         // Generate random 6-digit number between 100001 and 999999
         $randomNum = random_int(100001, 999999);
-        $candidateId = 'EMP' . $randomNum;
+        $candidateId = 'RGI' . $randomNum;
 
-        // Ensure uniqueness and avoid colliding with Root EMP100000 or existing members
+        // Ensure uniqueness and avoid colliding with Root RGI100000 or existing members
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM members WHERE member_id = ?");
         $stmt->execute([$candidateId]);
         $exists = ($stmt->fetchColumn() > 0);
@@ -137,7 +137,7 @@ function generateMemberID($pdo) {
 /**
  * Generate unique ePIN code
  */
-function generateEpinCode($prefix = 'EMP') {
+function generateEpinCode($prefix = 'RGI') {
     return $prefix . strtoupper(bin2hex(random_bytes(4)));
 }
 
@@ -145,12 +145,12 @@ function generateEpinCode($prefix = 'EMP') {
  * Global BFS Auto-Spillover Matrix Placement Algorithm
  * Returns ['placement_parent_id' => string, 'matrix_position' => int]
  */
-function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
+function findBFSMatrixPlacement($pdo, $startMemberId = 'RGI100000') {
     // Verify start member exists
     $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
     $stmt->execute([$startMemberId]);
     if (!$stmt->fetch()) {
-        $startMemberId = 'EMP100000';
+        $startMemberId = 'RGI100000';
     }
 
     $queue = [$startMemberId];
@@ -188,7 +188,7 @@ function findBFSMatrixPlacement($pdo, $startMemberId = 'EMP100000') {
     }
 
     return [
-        'placement_parent_id' => 'EMP100000',
+        'placement_parent_id' => 'RGI100000',
         'matrix_position' => 1
     ];
 }
@@ -300,7 +300,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                 $stmtAncest = $pdo->prepare("SELECT placement_parent_id FROM members WHERE member_id = ?");
                 $stmtAncest->execute([$currentUplineId]);
                 $ancestorParent = $stmtAncest->fetchColumn();
-                $targetAncestorId = $ancestorParent ? $ancestorParent : 'EMP100000';
+                $targetAncestorId = $ancestorParent ? $ancestorParent : 'RGI100000';
 
                 // Ensure ancestor wallet exists
                 $stmtWAnc = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
@@ -506,10 +506,10 @@ function executeSingleRebirthPlacement($pdo, $parentMemberId, $rebirthIndex, $co
     if (!$parent) return;
 
     $isRebirthNode = (strpos($parent['used_epin'], 'REBIRTH_') === 0 || strpos($parent['name'], 'Rebirth') !== false);
-    $sponsorId = $isRebirthNode ? 'EMP100000' : $parentMemberId;
+    $sponsorId = $isRebirthNode ? 'RGI100000' : $parentMemberId;
     $cleanBaseName = trim(preg_replace('/\s*\(Rebirth\s*#.*$/i', '', $parent['name']));
 
-    $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+    $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
     $placementParentId = $placement['placement_parent_id'];
     $matrixPos = $placement['matrix_position'];
 
@@ -667,7 +667,7 @@ function getAggregateRebirthEarnings($pdo, $memberId) {
  * Register a new member with ePIN validation and BFS Matrix placement
  */
 function registerMember($pdo, $data) {
-    $sponsorId = !empty($data['sponsor_id']) ? trim($data['sponsor_id']) : 'EMP100000';
+    $sponsorId = !empty($data['sponsor_id']) ? trim($data['sponsor_id']) : 'RGI100000';
     $name = trim($data['name']);
     $email = trim($data['email']);
     $phone = trim($data['phone']);
@@ -678,7 +678,7 @@ function registerMember($pdo, $data) {
     $stmtSponsor = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
     $stmtSponsor->execute([$sponsorId]);
     if (!$stmtSponsor->fetch()) {
-        $sponsorId = 'EMP100000';
+        $sponsorId = 'RGI100000';
     }
 
     // Validate ePIN
@@ -693,7 +693,7 @@ function registerMember($pdo, $data) {
     $packageType = $epin['package_type'];
 
     // Find BFS Matrix Placement
-    $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+    $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
     $placementParentId = $placement['placement_parent_id'];
     $matrixPos = $placement['matrix_position'];
 
@@ -705,7 +705,7 @@ function registerMember($pdo, $data) {
         // Insert Member
         $stmtIns = $pdo->prepare("
             INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status, kyc_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', 'Pending')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', 'Approved')
         ");
         $stmtIns->execute([
             $memberId,
@@ -775,7 +775,7 @@ function registerMember($pdo, $data) {
  * Register a new member WITHOUT requiring an ePIN code
  */
 function registerMemberWithoutEpin($pdo, $data) {
-    $sponsorId = !empty($data['sponsor_id']) ? trim($data['sponsor_id']) : 'EMP100000';
+    $sponsorId = !empty($data['sponsor_id']) ? trim($data['sponsor_id']) : 'RGI100000';
     $name = !empty($data['name']) ? trim($data['name']) : 'Burfee Cart';
     $email = !empty($data['email']) ? trim($data['email']) : ('member_' . time() . '_' . rand(100,999) . '@reyonglobal.com');
     $phone = !empty($data['phone']) ? trim($data['phone']) : ('9' . str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT));
@@ -788,11 +788,11 @@ function registerMemberWithoutEpin($pdo, $data) {
     $stmtSponsor = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
     $stmtSponsor->execute([$sponsorId]);
     if (!$stmtSponsor->fetch()) {
-        $sponsorId = 'EMP100000';
+        $sponsorId = 'RGI100000';
     }
 
     // Find BFS Matrix Placement
-    $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+    $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
     $placementParentId = $placement['placement_parent_id'];
     $matrixPos = $placement['matrix_position'];
 
@@ -1163,11 +1163,11 @@ function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $new
 }
 
 /**
- * Safe Member Deletion: Re-parents matrix children to Root EMP100000
+ * Safe Member Deletion: Re-parents matrix children to Root RGI100000
  */
 function deleteMemberSafely($pdo, $memberIdToDelete) {
-    if ($memberIdToDelete === 'EMP100000') {
-        return ['success' => false, 'message' => 'Cannot delete system root member EMP100000.'];
+    if ($memberIdToDelete === 'RGI100000') {
+        return ['success' => false, 'message' => 'Cannot delete system root member RGI100000.'];
     }
 
     $pdo->beginTransaction();
@@ -1177,7 +1177,7 @@ function deleteMemberSafely($pdo, $memberIdToDelete) {
         $children = $stmtChildren->fetchAll(PDO::FETCH_COLUMN);
 
         foreach ($children as $childId) {
-            $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+            $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
             $stmtReparent = $pdo->prepare("UPDATE members SET placement_parent_id = ?, matrix_position = ? WHERE member_id = ?");
             $stmtReparent->execute([$placement['placement_parent_id'], $placement['matrix_position'], $childId]);
         }
@@ -1398,9 +1398,9 @@ function approveDepositAndCreditWallet($pdo, $depositId, $adminNotes = 'Verified
 function resetDatabaseToCleanState($pdo) {
     $pdo->beginTransaction();
     try {
-        $pdo->exec("DELETE FROM members WHERE member_id != 'EMP100000'");
-        $pdo->exec("DELETE FROM wallets WHERE member_id != 'EMP100000'");
-        $pdo->exec("UPDATE wallets SET balance = 0.00, user_wallet_50 = 0.00, burfee_cart_wallet = 0.00, charity_wallet = 0.00, user_wallet_60 = 0.00, company_wallet_40 = 0.00 WHERE member_id = 'EMP100000'");
+        $pdo->exec("DELETE FROM members WHERE member_id != 'RGI100000'");
+        $pdo->exec("DELETE FROM wallets WHERE member_id != 'RGI100000'");
+        $pdo->exec("UPDATE wallets SET balance = 0.00, user_wallet_50 = 0.00, burfee_cart_wallet = 0.00, charity_wallet = 0.00, user_wallet_60 = 0.00, company_wallet_40 = 0.00 WHERE member_id = 'RGI100000'");
         $pdo->exec("DELETE FROM transactions");
         $pdo->exec("DELETE FROM withdrawals");
         $pdo->exec("DELETE FROM deposits");
@@ -1418,12 +1418,12 @@ function resetDatabaseToCleanState($pdo) {
 /**
  * Duplicate a user as a brand new independent member.
  * Unlike rebirth nodes, this creates a completely independent account with its own Member ID,
- * new BFS matrix spillover placement under EMP100000 (or specified sponsor), initialized wallet,
+ * new BFS matrix spillover placement under RGI100000 (or specified sponsor), initialized wallet,
  * and full matrix commission distribution.
  *
  * @param PDO $pdo Database connection
  * @param string $sourceMemberId ID of member to clone
- * @param string|null $customSponsorId Optional custom sponsor ID (defaults to original sponsor or EMP100000)
+ * @param string|null $customSponsorId Optional custom sponsor ID (defaults to original sponsor or RGI100000)
  * @return array Result array with success status, new_member_id, and message
  */
 function duplicateMemberAsIndependent($pdo, $sourceMemberId, $customSponsorId = null) {
@@ -1436,7 +1436,7 @@ function duplicateMemberAsIndependent($pdo, $sourceMemberId, $customSponsorId = 
     }
 
     // Determine sponsor ID
-    $sponsorId = 'EMP100000';
+    $sponsorId = 'RGI100000';
     if (!empty($customSponsorId)) {
         $stmtSp = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
         $stmtSp->execute([$customSponsorId]);
@@ -1456,7 +1456,7 @@ function duplicateMemberAsIndependent($pdo, $sourceMemberId, $customSponsorId = 
     $duplicateName = $cleanName . " (Clone)";
 
     // Find BFS Matrix Placement starting from Root
-    $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+    $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
     $placementParentId = $placement['placement_parent_id'];
     $matrixPos = $placement['matrix_position'];
 

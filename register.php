@@ -8,10 +8,10 @@ $error = '';
 $success = '';
 
 // Pre-fill sponsor if passed in GET
-$sponsorId = isset($_GET['sponsor']) ? trim($_GET['sponsor']) : 'EMP100000';
+$sponsorId = isset($_GET['sponsor']) ? trim($_GET['sponsor']) : 'RGI100000';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $sponsorId = !empty($_POST['sponsor_id']) ? trim($_POST['sponsor_id']) : 'EMP100000';
+    $sponsorId = !empty($_POST['sponsor_id']) ? trim($_POST['sponsor_id']) : 'RGI100000';
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
@@ -69,8 +69,8 @@ require_once __DIR__ . '/includes/header.php';
             <form action="/register.php" method="POST" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-gold mb-1">Sponsor Member ID (Optional)</label>
-                    <input type="text" name="sponsor_id" value="<?php echo htmlspecialchars($sponsorId); ?>" placeholder="EMP100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-3 text-sm text-champagne focus:outline-none focus:border-gold">
-                    <span class="text-[10px] text-champagne/50">If left blank or invalid, default root EMP100000 sponsor is assigned.</span>
+                    <input type="text" name="sponsor_id" value="<?php echo htmlspecialchars($sponsorId); ?>" placeholder="RGI100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-3 text-sm text-champagne focus:outline-none focus:border-gold">
+                    <span class="text-[10px] text-champagne/50">If left blank or invalid, default root RGI100000 sponsor is assigned.</span>
                 </div>
 
                 <div>

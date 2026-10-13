@@ -60,7 +60,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </button>
             </form>
 
-            <a href="/admin/purge_members.php" onclick="return confirm('CRITICAL WARNING: Are you sure you want to PURGE ALL CUSTOMER MEMBERS and associated transaction/wallet calculations? Only Root EMP100000 and Admin accounts will remain.');" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-red-500/10">
+            <a href="/admin/purge_members.php" onclick="return confirm('CRITICAL WARNING: Are you sure you want to PURGE ALL CUSTOMER MEMBERS and associated transaction/wallet calculations? Only Root RGI100000 and Admin accounts will remain.');" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-red-500/10">
                 <i class="fa-solid fa-triangle-exclamation text-red-400"></i> Clear All Members (Except Root)
             </a>
         </div>
@@ -180,13 +180,13 @@ require_once __DIR__ . '/../includes/header.php';
                                             <i class="fa-solid fa-sitemap"></i> Tree
                                         </a>
 
-                                        <?php if ($m['member_id'] !== 'EMP100000'): ?>
+                                        <?php if ($m['member_id'] !== 'RGI100000'): ?>
                                             <a href="/admin/toggle_suspend.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Are you sure you want to toggle status for member <?php echo $m['member_id']; ?>?');" class="<?php echo $m['status'] === 'Active' ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'; ?> px-2 py-1 rounded text-[11px] font-bold border flex items-center gap-1">
                                                 <i class="fa-solid <?php echo $m['status'] === 'Active' ? 'fa-ban' : 'fa-circle-check'; ?>"></i>
                                                 <?php echo $m['status'] === 'Active' ? 'Suspend' : 'Activate'; ?>
                                             </a>
 
-                                            <a href="/admin/delete_member.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Are you sure you want to delete member <?php echo $m['member_id']; ?>? Direct matrix children will be safely re-parented to EMP100000.');" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1" title="Safe Delete">
+                                            <a href="/admin/delete_member.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Are you sure you want to delete member <?php echo $m['member_id']; ?>? Direct matrix children will be safely re-parented to RGI100000.');" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1" title="Safe Delete">
                                                 <i class="fa-solid fa-trash"></i>
                                             </a>
                                         <?php endif; ?>

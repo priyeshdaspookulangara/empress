@@ -9,13 +9,13 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 $pdo = getDBConnection();
-$targetId = trim($_GET['member_id'] ?? 'EMP100000');
+$targetId = trim($_GET['member_id'] ?? 'RGI100000');
 
 // Verify target exists
 $stmt = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ?");
 $stmt->execute([$targetId]);
 if (!$stmt->fetch()) {
-    $targetId = 'EMP100000';
+    $targetId = 'RGI100000';
 }
 
 $treeData = getMemberMatrixTree($pdo, $targetId);
@@ -31,10 +31,10 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <form action="/admin/matrix_tree.php" method="GET" class="flex gap-2">
-            <input type="text" name="member_id" value="<?php echo htmlspecialchars($targetId); ?>" placeholder="EMP100001" class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne uppercase font-mono focus:outline-none focus:border-gold">
+            <input type="text" name="member_id" value="<?php echo htmlspecialchars($targetId); ?>" placeholder="RGI100001" class="bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne uppercase font-mono focus:outline-none focus:border-gold">
             <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold">Inspect Tree</button>
-            <?php if ($targetId !== 'EMP100000'): ?>
-                <a href="/admin/matrix_tree.php?member_id=EMP100000" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset Root</a>
+            <?php if ($targetId !== 'RGI100000'): ?>
+                <a href="/admin/matrix_tree.php?member_id=RGI100000" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold px-3 py-2 rounded-xl text-xs flex items-center">Reset Root</a>
             <?php endif; ?>
         </form>
     </div>

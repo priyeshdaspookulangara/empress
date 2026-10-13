@@ -152,14 +152,14 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td class="p-3 font-mono font-bold text-neon-cyan"><?php echo htmlspecialchars($rn['member_id']); ?></td>
                                 <td class="p-3 font-semibold text-ice"><?php echo htmlspecialchars($rn['name']); ?></td>
                                 <td class="p-3 font-mono">
-                                    <span class="<?php echo $rn['sponsor_id'] === 'EMP100000' ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'; ?>">
-                                        <?php echo htmlspecialchars($rn['sponsor_id'] ?: 'EMP100000'); ?>
+                                    <span class="<?php echo $rn['sponsor_id'] === 'RGI100000' ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'; ?>">
+                                        <?php echo htmlspecialchars($rn['sponsor_id'] ?: 'RGI100000'); ?>
                                     </span>
-                                    <?php if ($rn['sponsor_id'] === 'EMP100000'): ?>
+                                    <?php if ($rn['sponsor_id'] === 'RGI100000'): ?>
                                         <span class="text-[9px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1 py-0.5 rounded ml-1">2nd Gen (Root)</span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="p-3 font-mono text-ice/80"><?php echo htmlspecialchars($rn['placement_parent_id'] ?: 'EMP100000'); ?></td>
+                                <td class="p-3 font-mono text-ice/80"><?php echo htmlspecialchars($rn['placement_parent_id'] ?: 'RGI100000'); ?></td>
                                 <td class="p-3 font-mono font-bold text-center text-neon-cyan">#<?php echo $rn['matrix_position'] ?: 1; ?></td>
                                 <td class="p-3">
                                     <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">

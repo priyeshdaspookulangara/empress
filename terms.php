@@ -129,7 +129,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
                     <span class="text-[10px] font-bold uppercase text-emerald-400 block">Customer Wallet</span>
                     <span class="text-lg font-extrabold text-emerald-300">50% Share</span>
-                    <span class="text-[10px] text-champagne/60 block mt-1">Withdrawable upon KYC approval</span>
+                    <span class="text-[10px] text-champagne/60 block mt-1">Withdrawable directly to BEP-20 wallet</span>
                 </div>
                 <div class="p-3 bg-gold/10 border border-gold/30 rounded-xl">
                     <span class="text-[10px] font-bold uppercase text-gold block">Burfee Cart Reserve</span>

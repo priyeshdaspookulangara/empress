@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Fetch current sponsor_id before updating
                 $stmtCurSp = $pdo->prepare("SELECT sponsor_id FROM members WHERE member_id = ?");
                 $stmtCurSp->execute([$memberId]);
-                $oldSponsorId = $stmtCurSp->fetchColumn() ?: 'EMP100000';
+                $oldSponsorId = $stmtCurSp->fetchColumn() ?: 'RGI100000';
 
                 $spVal = !empty($sponsor_id) ? $sponsor_id : NULL;
                 $parVal = !empty($placement_parent_id) ? $placement_parent_id : NULL;
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 // Check if sponsor_id changed and reallocate referrer income
-                $newSponsorId = $spVal ?: 'EMP100000';
+                $newSponsorId = $spVal ?: 'RGI100000';
                 if ($oldSponsorId !== $newSponsorId) {
                     $realloc = reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $newSponsorId);
                     $msg = "Member profile updated! " . $realloc['message'];
@@ -192,12 +192,12 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div>
                     <label class="block font-semibold text-gold mb-1">Sponsor ID</label>
-                    <input type="text" name="sponsor_id" value="<?php echo htmlspecialchars($m['sponsor_id'] ?? 'EMP100000'); ?>" placeholder="e.g. EMP100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne font-mono focus:outline-none focus:border-gold uppercase">
+                    <input type="text" name="sponsor_id" value="<?php echo htmlspecialchars($m['sponsor_id'] ?? 'RGI100000'); ?>" placeholder="e.g. RGI100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne font-mono focus:outline-none focus:border-gold uppercase">
                 </div>
 
                 <div>
                     <label class="block font-semibold text-gold mb-1">Placement Parent ID</label>
-                    <input type="text" name="placement_parent_id" value="<?php echo htmlspecialchars($m['placement_parent_id'] ?? 'EMP100000'); ?>" placeholder="e.g. EMP100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne font-mono focus:outline-none focus:border-gold uppercase">
+                    <input type="text" name="placement_parent_id" value="<?php echo htmlspecialchars($m['placement_parent_id'] ?? 'RGI100000'); ?>" placeholder="e.g. RGI100000" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-3 py-2 text-champagne font-mono focus:outline-none focus:border-gold uppercase">
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ $input = getJsonInput();
 $pdo = getDBConnection();
 
 $res = registerMember($pdo, [
-    'sponsor_id' => $input['sponsor_id'] ?? 'EMP100000',
+    'sponsor_id' => $input['sponsor_id'] ?? 'RGI100000',
     'name' => $input['name'] ?? '',
     'email' => $input['email'] ?? '',
     'phone' => $input['phone'] ?? '',

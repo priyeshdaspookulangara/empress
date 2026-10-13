@@ -56,7 +56,7 @@ require_once __DIR__ . '/includes/header.php';
         <form action="/login.php" method="POST" class="space-y-4">
             <div>
                 <label class="block text-xs font-semibold text-gold mb-1">Member ID</label>
-                <input type="text" name="member_id" required placeholder="e.g., EMP100001" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-3 text-sm text-champagne uppercase font-mono focus:outline-none focus:border-gold">
+                <input type="text" name="member_id" required placeholder="e.g., RGI100001" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-3 text-sm text-champagne uppercase font-mono focus:outline-none focus:border-gold">
             </div>
 
             <div>

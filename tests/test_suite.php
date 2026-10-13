@@ -7,13 +7,13 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 
 echo "========================================\n";
-echo " EMPRESS TWO WAY 4.0 AUTOMATED SUITE   \n";
+echo " REYON GLOBAL IMPACT AUTOMATED SUITE   \n";
 echo "========================================\n\n";
 
 $pdo = getDBConnection();
 
 // Test 1: Admin & System Root verification
-echo "[TEST 1] Verifying Super Admin, Admin & Root EMP100000 Seeding... ";
+echo "[TEST 1] Verifying Super Admin, Admin & Root RGI100000 Seeding... ";
 $stmtSuper = $pdo->prepare("SELECT * FROM admins WHERE username = 'superadmin'");
 $stmtSuper->execute();
 $super = $stmtSuper->fetch();
@@ -24,7 +24,7 @@ $stmtAdmin->execute();
 $admin = $stmtAdmin->fetch();
 assert($admin !== false && $admin['role'] === 'admin');
 
-$stmtRoot = $pdo->prepare("SELECT * FROM members WHERE member_id = 'EMP100000'");
+$stmtRoot = $pdo->prepare("SELECT * FROM members WHERE member_id = 'RGI100000'");
 $stmtRoot->execute();
 $root = $stmtRoot->fetch();
 assert($root !== false && $root['name'] === 'Reyon Root');
@@ -37,7 +37,7 @@ $stmtE = $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALU
 $stmtE->execute([$epin1]);
 
 $regRes1 = registerMember($pdo, [
-    'sponsor_id' => 'EMP100000',
+    'sponsor_id' => 'RGI100000',
     'name' => 'Member One',
     'email' => 'm1@example.com',
     'phone' => '9000000001',
@@ -47,11 +47,11 @@ $regRes1 = registerMember($pdo, [
 
 assert($regRes1['success'] === true);
 $m1Id = $regRes1['member_id'];
-assert(!empty($m1Id) && strpos($m1Id, 'EMP') === 0);
+assert(!empty($m1Id) && strpos($m1Id, 'RGI') === 0);
 
 // Check Root Wallet received 10% Direct Referrer ($1.00) + Level 1 Matrix Commission ($5.00) = $6.00 Total Gross
 // (Net Member User Wallet = $0.50 (Direct) + $0.8333 (L1) = $1.3333)
-$rootWallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
+$rootWallet = $pdo->query("SELECT * FROM wallets WHERE member_id = 'RGI100000'")->fetch();
 assert((float)$rootWallet['balance'] === 6.00);
 assert(round((float)$rootWallet['user_wallet_50'], 2) === 1.33);
 assert(round((float)$rootWallet['burfee_cart_wallet'], 2) === 0.80);
@@ -65,7 +65,7 @@ for ($i = 2; $i <= 4; $i++) {
     $ep = generateEpinCode();
     $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Royal_Starter', 'Unused')")->execute([$ep]);
     $res = registerMember($pdo, [
-        'sponsor_id' => 'EMP100000',
+        'sponsor_id' => 'RGI100000',
         'name' => "Member {$i}",
         'email' => "m{$i}@example.com",
         'phone' => "900000000{$i}",
@@ -76,14 +76,14 @@ for ($i = 2; $i <= 4; $i++) {
 }
 
 // Verify Level 1 children count of Root is 3
-$l1Children = $pdo->query("SELECT COUNT(*) FROM members WHERE placement_parent_id = 'EMP100000'")->fetchColumn();
+$l1Children = $pdo->query("SELECT COUNT(*) FROM members WHERE placement_parent_id = 'RGI100000'")->fetchColumn();
 assert((int)$l1Children === 3);
 
-// Member 4 (5th member overall) should spillover under EMP100001 at matrix_position 1
+// Member 4 (5th member overall) should spillover under RGI100001 at matrix_position 1
 $m5Epin = generateEpinCode();
 $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Royal_Starter', 'Unused')")->execute([$m5Epin]);
 $res5 = registerMember($pdo, [
-    'sponsor_id' => 'EMP100000',
+    'sponsor_id' => 'RGI100000',
     'name' => "Spillover Member 5",
     'email' => "m5@example.com",
     'phone' => "9000000005",
@@ -96,15 +96,15 @@ assert($m5['placement_parent_id'] === $m1Id);
 assert((int)$m5['matrix_position'] === 1);
 echo "PASSED\n";
 
-// Test 4: Check Multi-level Commission Flow (Level 1 for $m1Id, Level 2 for Root EMP100000)
+// Test 4: Check Multi-level Commission Flow (Level 1 for $m1Id, Level 2 for Root RGI100000)
 echo "[TEST 4] Testing Multi-level Fixed Commission Distribution (Level 1 + Level 2)... ";
 $m1Wallet = $pdo->query("SELECT * FROM wallets WHERE member_id = '{$m1Id}'")->fetch();
 // $m1Id gets Level 1 matrix payout for Spillover Member 5: $5.00 (Net Member User Wallet = $0.8333)
 assert((float)$m1Wallet['balance'] === 5.00);
 assert(round((float)$m1Wallet['user_wallet_50'], 2) === 0.83);
 
-// Root (EMP100000) gets: 5x $1.00 (Direct Referrals) + 3x $5.00 (Level 1 Matrix) + 1x $10.00 (Level 2 Matrix) = $30.00 Total Gross
-$rootWallet2 = $pdo->query("SELECT * FROM wallets WHERE member_id = 'EMP100000'")->fetch();
+// Root (RGI100000) gets: 5x $1.00 (Direct Referrals) + 3x $5.00 (Level 1 Matrix) + 1x $10.00 (Level 2 Matrix) = $30.00 Total Gross
+$rootWallet2 = $pdo->query("SELECT * FROM wallets WHERE member_id = 'RGI100000'")->fetch();
 assert((float)$rootWallet2['balance'] === 30.00);
 echo "PASSED\n";
 
@@ -147,7 +147,7 @@ echo "[TEST 8] Testing Direct Referrer Income Re-allocation upon Sponsor Change.
 $m6Epin = generateEpinCode();
 $pdo->prepare("INSERT INTO epins (epin_code, package_type, status) VALUES (?, 'Royal_Starter', 'Unused')")->execute([$m6Epin]);
 $res6 = registerMember($pdo, [
-    'sponsor_id' => 'EMP100000',
+    'sponsor_id' => 'RGI100000',
     'name' => "Sponsor Change Member 6",
     'email' => "m6@example.com",
     'phone' => "9000000006",
@@ -157,17 +157,17 @@ $res6 = registerMember($pdo, [
 $m6Id = $res6['member_id'];
 
 // Initial: Root has received $1.00 direct referral for M6
-$rootBalBefore = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'EMP100000'")->fetchColumn();
+$rootBalBefore = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'RGI100000'")->fetchColumn();
 $m1BalBefore = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = '{$m1Id}'")->fetchColumn();
 
-// Change M6 sponsor_id from EMP100000 to $m1Id
-$reallocRes = reallocateDirectReferralCommission($pdo, $m6Id, 'EMP100000', $m1Id);
+// Change M6 sponsor_id from RGI100000 to $m1Id
+$reallocRes = reallocateDirectReferralCommission($pdo, $m6Id, 'RGI100000', $m1Id);
 assert($reallocRes['success'] === true);
 
-$rootBalAfter = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'EMP100000'")->fetchColumn();
+$rootBalAfter = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = 'RGI100000'")->fetchColumn();
 $m1BalAfter = (float)$pdo->query("SELECT balance FROM wallets WHERE member_id = '{$m1Id}'")->fetchColumn();
 
-// Root balance should decrease by $1.00 and EMP100001 balance should increase by $1.00
+// Root balance should decrease by $1.00 and RGI100001 balance should increase by $1.00
 assert(round($rootBalBefore - $rootBalAfter, 2) === 1.00);
 assert(round($m1BalAfter - $m1BalBefore, 2) === 1.00);
 echo "PASSED\n";
@@ -178,7 +178,7 @@ echo "[TEST 7] Testing Rebirths Engine (Level 3 Completion = 10 Rebirths)... ";
 // Ensure $m1Id meets Level 3 completion status for test simulation
 $mockL3Nodes = [];
 for ($l3 = 1; $l3 <= 27; $l3++) {
-    $mockL3Nodes[] = 'EMP_L3_' . $l3;
+    $mockL3Nodes[] = 'RGI_L3_' . $l3;
 }
 
 // Call scheduleRebirthPositions directly for $m1Id
@@ -195,8 +195,8 @@ assert($firstRebirthNode !== false);
 // Trigger 2nd generation rebirth creation directly from the 1st gen rebirth node
 scheduleRebirthPositions($pdo, $firstRebirthNode['member_id'], 10, 3);
 
-// Check 2nd generation rebirth nodes created from this rebirth node have sponsor_id = 'EMP100000' (Root)
-$gen2RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = 'EMP100000' AND name LIKE '" . $firstRebirthNode['name'] . "%'")->fetchColumn();
+// Check 2nd generation rebirth nodes created from this rebirth node have sponsor_id = 'RGI100000' (Root)
+$gen2RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id = 'RGI100000' AND name LIKE '" . $firstRebirthNode['name'] . "%'")->fetchColumn();
 assert((int)$gen2RebirthNodes === 10);
 echo "PASSED\n";
 

@@ -24,9 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->beginTransaction();
     try {
         if ($action === 'Approve') {
-            if ($w['kyc_status'] !== 'Approved') {
-                sendJsonResponse(['success' => false, 'message' => "Cannot approve payout: Member KYC status is {$w['kyc_status']}."], 400);
-            }
 
             $stmtApprove = $pdo->prepare("UPDATE withdrawals SET status = 'Approved', processed_date = CURRENT_TIMESTAMP WHERE id = ?");
             $stmtApprove->execute([$withdrawalId]);

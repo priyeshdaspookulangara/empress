@@ -12,7 +12,7 @@ if (!isset($_SESSION['superadmin_id'])) {
 
 $memberId = trim($_GET['member_id'] ?? '');
 
-if (empty($memberId) || $memberId === 'EMP100000') {
+if (empty($memberId) || $memberId === 'RGI100000') {
     header("Location: /superadmin/members.php?err=" . urlencode("Cannot modify Root account."));
     exit();
 }

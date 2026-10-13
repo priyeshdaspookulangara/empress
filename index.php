@@ -34,7 +34,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div>
                 <p class="text-xs md:text-sm text-white/60 leading-relaxed mb-6">
-                    Our automated engine uses Breadth-First Search (BFS) auto-spillover placement starting from Root (EMP100000) to fill 3-child slots strictly left-to-right across the entire global network.
+                    Our automated engine uses Breadth-First Search (BFS) auto-spillover placement starting from Root (RGI100000) to fill 3-child slots strictly left-to-right across the entire global network.
                 </p>
                 <div class="grid grid-cols-3 gap-4 text-center">
                     <div class="p-4 rounded-2xl bg-gold/5 border border-gold/20">

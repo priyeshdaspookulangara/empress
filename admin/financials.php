@@ -222,7 +222,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="glass-card p-6 rounded-3xl border border-gold/20 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
             <h3 class="text-lg font-bold text-gold">Total Approved Crypto Transfers</h3>
-            <p class="text-xs text-champagne/70 mt-0.5">Disbursed to members after mandatory KYC approval</p>
+            <p class="text-xs text-champagne/70 mt-0.5">Disbursed directly to member crypto wallets</p>
         </div>
         <div class="text-2xl font-extrabold text-emerald-400 font-mono">
             $<?php echo number_format($totalApprovedPayouts, 2); ?> USD

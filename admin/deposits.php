@@ -206,7 +206,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             <div>
                 <label class="block text-[11px] text-champagne/70 font-semibold mb-1">Member ID <span class="text-red-400">*</span></label>
-                <input type="text" name="member_id" placeholder="e.g. EMP100001" required class="w-full bg-obsidian border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold font-mono">
+                <input type="text" name="member_id" placeholder="e.g. RGI100001" required class="w-full bg-obsidian border border-gold/30 rounded-xl px-3 py-2 text-champagne focus:outline-none focus:border-gold font-mono">
             </div>
 
             <div>
