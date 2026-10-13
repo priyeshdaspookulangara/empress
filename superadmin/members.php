@@ -172,6 +172,10 @@ require_once __DIR__ . '/../includes/header.php';
                                             <i class="fa-solid fa-pen-to-square"></i> Edit
                                         </a>
 
+                                        <a href="/superadmin/duplicate_member.php?member_id=<?php echo $m['member_id']; ?>" onclick="return confirm('Duplicate member <?php echo $m['member_id']; ?> as a brand new independent account in the matrix?');" class="bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1" title="Duplicate User As Independent ID">
+                                            <i class="fa-solid fa-clone"></i> Duplicate
+                                        </a>
+
                                         <a href="/superadmin/matrix_tree.php?member_id=<?php echo $m['member_id']; ?>" class="bg-neon-cyan/10 hover:bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 px-2 py-1 rounded text-[11px] font-bold flex items-center gap-1" title="View 3-Matrix Tree">
                                             <i class="fa-solid fa-sitemap"></i> Tree
                                         </a>

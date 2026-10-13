@@ -1415,3 +1415,134 @@ function resetDatabaseToCleanState($pdo) {
         return ['success' => false, 'message' => 'Database reset failed: ' . $e->getMessage()];
     }
 }
+/**
+ * Duplicate a user as a brand new independent member.
+ * Unlike rebirth nodes, this creates a completely independent account with its own Member ID,
+ * new BFS matrix spillover placement under EMP100000 (or specified sponsor), initialized wallet,
+ * and full matrix commission distribution.
+ *
+ * @param PDO $pdo Database connection
+ * @param string $sourceMemberId ID of member to clone
+ * @param string|null $customSponsorId Optional custom sponsor ID (defaults to original sponsor or EMP100000)
+ * @return array Result array with success status, new_member_id, and message
+ */
+function duplicateMemberAsIndependent($pdo, $sourceMemberId, $customSponsorId = null) {
+    $stmtSrc = $pdo->prepare("SELECT * FROM members WHERE member_id = ?");
+    $stmtSrc->execute([$sourceMemberId]);
+    $src = $stmtSrc->fetch();
+
+    if (!$src) {
+        return ['success' => false, 'message' => 'Source member account not found.'];
+    }
+
+    // Determine sponsor ID
+    $sponsorId = 'EMP100000';
+    if (!empty($customSponsorId)) {
+        $stmtSp = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
+        $stmtSp->execute([$customSponsorId]);
+        if ($stmtSp->fetch()) {
+            $sponsorId = $customSponsorId;
+        }
+    } elseif (!empty($src['sponsor_id'])) {
+        $stmtSp = $pdo->prepare("SELECT member_id FROM members WHERE member_id = ? AND status = 'Active'");
+        $stmtSp->execute([$src['sponsor_id']]);
+        if ($stmtSp->fetch()) {
+            $sponsorId = $src['sponsor_id'];
+        }
+    }
+
+    // Generate clean base name without rebirth labels or duplicate tags
+    $cleanName = trim(preg_replace('/\s*\((Rebirth|Duplicate)\s*#.*$/i', '', $src['name']));
+    $duplicateName = $cleanName . " (Clone)";
+
+    // Find BFS Matrix Placement starting from Root
+    $placement = findBFSMatrixPlacement($pdo, 'EMP100000');
+    $placementParentId = $placement['placement_parent_id'];
+    $matrixPos = $placement['matrix_position'];
+
+    $newMemberId = generateMemberID($pdo);
+    $epinCode = "DUPLICATE_ACC_" . strtoupper(bin2hex(random_bytes(3)));
+    $packageType = !empty($src['package_type']) ? $src['package_type'] : 'Royal_Starter';
+
+    // Generate unique email variant to keep independent
+    $emailParts = explode('@', $src['email']);
+    $uniqueEmail = $emailParts[0] . '_' . rand(100, 999) . '@' . ($emailParts[1] ?? 'reyonglobal.com');
+    // If password hash exists, use same password hash so user can log in with same password
+    $passwordHash = !empty($src['password']) ? $src['password'] : password_hash('passWord123#', PASSWORD_BCRYPT);
+
+    $pdo->beginTransaction();
+
+    try {
+        // Insert new independent member
+        $stmtIns = $pdo->prepare("
+            INSERT INTO members (
+                member_id, sponsor_id, placement_parent_id, matrix_position,
+                name, email, phone, password, used_epin, package_type, status, kyc_status,
+                address_line, place, city, pincode, state, pan_number, aadhaar_number,
+                bank_name, bank_account_number, ifsc_code, bep20_address, qr_code_url
+            ) VALUES (
+                ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?, 'Active', 'Approved',
+                ?, ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?
+            )
+        ");
+
+        $stmtIns->execute([
+            $newMemberId,
+            $sponsorId,
+            $placementParentId,
+            $matrixPos,
+            $duplicateName,
+            $src['email'], // keep same contact details or updated
+            $src['phone'],
+            $passwordHash,
+            $epinCode,
+            $packageType,
+            $src['address_line'] ?? null,
+            $src['place'] ?? null,
+            $src['city'] ?? null,
+            $src['pincode'] ?? null,
+            $src['state'] ?? null,
+            $src['pan_number'] ?? null,
+            $src['aadhaar_number'] ?? null,
+            $src['bank_name'] ?? null,
+            $src['bank_account_number'] ?? null,
+            $src['ifsc_code'] ?? null,
+            $src['bep20_address'] ?? null,
+            $src['qr_code_url'] ?? null
+        ]);
+
+        // Initialize Independent Wallet
+        $stmtWallet = $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)");
+        $stmtWallet->execute([$newMemberId]);
+
+        // Log creation transaction
+        $stmtTx = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES (?, 'Admin_Adjustment', 0.00, 'Main', 'Credit', ?)
+        ");
+        $desc = "Independent member account duplicated from {$sourceMemberId}. Placed under {$placementParentId} (Position {$matrixPos}).";
+        $stmtTx->execute([$newMemberId, $desc]);
+
+        // Distribute Matrix Level Commissions for the new independent account
+        distributeMatrixCommissions($pdo, $newMemberId);
+
+        $pdo->commit();
+
+        return [
+            'success' => true,
+            'new_member_id' => $newMemberId,
+            'placement_parent_id' => $placementParentId,
+            'matrix_position' => $matrixPos,
+            'message' => "Successfully duplicated member {$sourceMemberId} as new independent account {$newMemberId} placed under {$placementParentId} (Position {$matrixPos})."
+        ];
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => "Failed to duplicate member: " . $e->getMessage()
+        ];
+    }
+}
