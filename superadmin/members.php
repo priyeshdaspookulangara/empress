@@ -60,6 +60,9 @@ require_once __DIR__ . '/../includes/header.php';
                 </button>
             </form>
 
+            <a href="/superadmin/replace_prefix.php" class="glass-card border border-neon-cyan/40 hover:bg-neon-cyan/10 text-neon-cyan px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-pen-to-square"></i> Replace ID Prefix
+            </a>
             <a href="/superadmin/purge_members.php" onclick="return confirm('CRITICAL WARNING: Are you sure you want to PURGE ALL CUSTOMER MEMBERS and associated transaction/wallet calculations? Only Root RGI100000 and Admin accounts will remain.');" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-red-500/10">
                 <i class="fa-solid fa-triangle-exclamation text-red-400"></i> Clear All Members (Except Root)
             </a>
