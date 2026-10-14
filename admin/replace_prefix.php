@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update members.member_id, sponsor_id, placement_parent_id
             $stmtM = $pdo->prepare("
                 UPDATE members
-                SET member_id = CONCAT(?, SUBSTRING(member_id, ?))
+                SET member_id = CONCAT(?, SUBSTR(member_id, ?))
                 WHERE member_id LIKE ?
             ");
             $stmtM->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             $stmtSp = $pdo->prepare("
                 UPDATE members
-                SET sponsor_id = CONCAT(?, SUBSTRING(sponsor_id, ?))
+                SET sponsor_id = CONCAT(?, SUBSTR(sponsor_id, ?))
                 WHERE sponsor_id LIKE ?
             ");
             $stmtSp->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             $stmtPl = $pdo->prepare("
                 UPDATE members
-                SET placement_parent_id = CONCAT(?, SUBSTRING(placement_parent_id, ?))
+                SET placement_parent_id = CONCAT(?, SUBSTR(placement_parent_id, ?))
                 WHERE placement_parent_id LIKE ?
             ");
             $stmtPl->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update wallets.member_id
             $stmtW = $pdo->prepare("
                 UPDATE wallets
-                SET member_id = CONCAT(?, SUBSTRING(member_id, ?))
+                SET member_id = CONCAT(?, SUBSTR(member_id, ?))
                 WHERE member_id LIKE ?
             ");
             $stmtW->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update transactions.member_id
             $stmtTx = $pdo->prepare("
                 UPDATE transactions
-                SET member_id = CONCAT(?, SUBSTRING(member_id, ?))
+                SET member_id = CONCAT(?, SUBSTR(member_id, ?))
                 WHERE member_id LIKE ?
             ");
             $stmtTx->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update withdrawals.member_id
             $stmtWith = $pdo->prepare("
                 UPDATE withdrawals
-                SET member_id = CONCAT(?, SUBSTRING(member_id, ?))
+                SET member_id = CONCAT(?, SUBSTR(member_id, ?))
                 WHERE member_id LIKE ?
             ");
             $stmtWith->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update deposits.user_id
             $stmtDep = $pdo->prepare("
                 UPDATE deposits
-                SET user_id = CONCAT(?, SUBSTRING(user_id, ?))
+                SET user_id = CONCAT(?, SUBSTR(user_id, ?))
                 WHERE user_id LIKE ?
             ");
             $stmtDep->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update member_rebirths.member_id
             $stmtMr = $pdo->prepare("
                 UPDATE member_rebirths
-                SET member_id = CONCAT(?, SUBSTRING(member_id, ?))
+                SET member_id = CONCAT(?, SUBSTR(member_id, ?))
                 WHERE member_id LIKE ?
             ");
             $stmtMr->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update queued_rebirths.member_id
             $stmtQr = $pdo->prepare("
                 UPDATE queued_rebirths
-                SET member_id = CONCAT(?, SUBSTRING(member_id, ?))
+                SET member_id = CONCAT(?, SUBSTR(member_id, ?))
                 WHERE member_id LIKE ?
             ");
             $stmtQr->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -105,14 +105,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             // Update epins.used_by_member_id & assigned_to
             $stmtEp1 = $pdo->prepare("
                 UPDATE epins
-                SET used_by_member_id = CONCAT(?, SUBSTRING(used_by_member_id, ?))
+                SET used_by_member_id = CONCAT(?, SUBSTR(used_by_member_id, ?))
                 WHERE used_by_member_id LIKE ?
             ");
             $stmtEp1->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
 
             $stmtEp2 = $pdo->prepare("
                 UPDATE epins
-                SET assigned_to = CONCAT(?, SUBSTRING(assigned_to, ?))
+                SET assigned_to = CONCAT(?, SUBSTR(assigned_to, ?))
                 WHERE assigned_to LIKE ?
             ");
             $stmtEp2->execute([$newPrefix, $oldLen + 1, $oldPrefix . '%']);
@@ -128,9 +128,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Fetch preview counts for prefixes
 $stmtPrefixes = $pdo->query("
-    SELECT SUBSTRING(member_id, 1, 3) as prefix, COUNT(*) as count
+    SELECT SUBSTR(member_id, 1, 3) as prefix, COUNT(*) as count
     FROM members
-    GROUP BY prefix
+    GROUP BY SUBSTR(member_id, 1, 3)
 ");
 $prefixCounts = $stmtPrefixes->fetchAll();
 
