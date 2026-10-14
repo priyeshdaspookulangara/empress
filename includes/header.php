@@ -245,6 +245,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             <a href="/superadmin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-users text-neon-cyan w-4 text-center"></i> Member List
                             </a>
+                            <a href="/superadmin/replace_prefix.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-pen-to-square text-neon-cyan w-4 text-center"></i> Replace ID Prefix
+                            </a>
                             <a href="/superadmin/sql_import.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-database text-neon-cyan w-4 text-center"></i> SQL Member Import
                             </a>
@@ -298,6 +301,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             </a>
                             <a href="/admin/members.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-users text-gold w-4 text-center"></i> Member List
+                            </a>
+                            <a href="/admin/replace_prefix.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-pen-to-square text-gold w-4 text-center"></i> Replace ID Prefix
                             </a>
                             <a href="/admin/sql_import.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-database text-gold w-4 text-center"></i> SQL Member Import
