@@ -200,4 +200,20 @@ $gen2RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id =
 assert((int)$gen2RebirthNodes === 10);
 echo "PASSED\n";
 
+// Test 9: Test Cascaded Rebirth & Member Deletion
+echo "[TEST 9] Testing Cascaded Member & Rebirth Deletion... ";
+$delRes = deleteMemberSafely($pdo, $m1Id);
+assert($delRes['success'] === true);
+
+// Verify $m1Id and all its rebirth nodes are deleted
+$m1Check = $pdo->query("SELECT COUNT(*) FROM members WHERE member_id = '{$m1Id}' OR sponsor_id = '{$m1Id}' AND name LIKE '%Rebirth%'")->fetchColumn();
+assert((int)$m1Check === 0);
+
+$m1WalletCheck = $pdo->query("SELECT COUNT(*) FROM wallets WHERE member_id = '{$m1Id}'")->fetchColumn();
+assert((int)$m1WalletCheck === 0);
+
+$m1RebirthCheck = $pdo->query("SELECT COUNT(*) FROM member_rebirths WHERE member_id = '{$m1Id}'")->fetchColumn();
+assert((int)$m1RebirthCheck === 0);
+echo "PASSED\n";
+
 echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";

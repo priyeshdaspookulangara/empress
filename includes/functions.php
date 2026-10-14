@@ -1163,7 +1163,8 @@ function reallocateDirectReferralCommission($pdo, $memberId, $oldSponsorId, $new
 }
 
 /**
- * Safe Member Deletion: Re-parents matrix children to Root RGI100000
+ * Safe Member Deletion: Cascades deletion of rebirth nodes, queues, rebirth rewards, wallets,
+ * transactions, withdrawals, deposits, and re-parents matrix children to Root RGI100000.
  */
 function deleteMemberSafely($pdo, $memberIdToDelete) {
     if ($memberIdToDelete === 'RGI100000') {
@@ -1172,24 +1173,40 @@ function deleteMemberSafely($pdo, $memberIdToDelete) {
 
     $pdo->beginTransaction();
     try {
-        $stmtChildren = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id = ?");
-        $stmtChildren->execute([$memberIdToDelete]);
-        $children = $stmtChildren->fetchAll(PDO::FETCH_COLUMN);
+        // Collect all associated rebirth member nodes (where sponsor_id = $memberIdToDelete and name LIKE '%Rebirth%')
+        $stmtRebirthNodes = $pdo->prepare("SELECT member_id FROM members WHERE sponsor_id = ? AND (used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%')");
+        $stmtRebirthNodes->execute([$memberIdToDelete]);
+        $rebirthNodeIds = $stmtRebirthNodes->fetchAll(PDO::FETCH_COLUMN);
 
-        foreach ($children as $childId) {
-            $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
-            $stmtReparent = $pdo->prepare("UPDATE members SET placement_parent_id = ?, matrix_position = ? WHERE member_id = ?");
-            $stmtReparent->execute([$placement['placement_parent_id'], $placement['matrix_position'], $childId]);
+        $allMembersToDelete = array_merge([$memberIdToDelete], $rebirthNodeIds);
+
+        foreach ($allMembersToDelete as $targetId) {
+            // Re-parent direct children of targetId to Root RGI100000
+            $stmtChildren = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id = ?");
+            $stmtChildren->execute([$targetId]);
+            $children = $stmtChildren->fetchAll(PDO::FETCH_COLUMN);
+
+            foreach ($children as $childId) {
+                if (in_array($childId, $allMembersToDelete)) continue; // Skip if child is also being deleted
+                $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
+                $stmtReparent = $pdo->prepare("UPDATE members SET placement_parent_id = ?, matrix_position = ? WHERE member_id = ?");
+                $stmtReparent->execute([$placement['placement_parent_id'], $placement['matrix_position'], $childId]);
+            }
+
+            // Delete linked records for targetId
+            $pdo->prepare("DELETE FROM wallets WHERE member_id = ?")->execute([$targetId]);
+            $pdo->prepare("DELETE FROM transactions WHERE member_id = ?")->execute([$targetId]);
+            $pdo->prepare("DELETE FROM withdrawals WHERE member_id = ?")->execute([$targetId]);
+            $pdo->prepare("DELETE FROM deposits WHERE user_id = ?")->execute([$targetId]);
+            $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ?")->execute([$targetId]);
+            $pdo->prepare("DELETE FROM member_rebirths WHERE member_id = ?")->execute([$targetId]);
+            $pdo->prepare("DELETE FROM queued_rebirths WHERE member_id = ?")->execute([$targetId]);
+            $pdo->prepare("UPDATE epins SET used_by_member_id = NULL, status = 'Unused' WHERE used_by_member_id = ?")->execute([$targetId]);
+            $pdo->prepare("DELETE FROM members WHERE member_id = ?")->execute([$targetId]);
         }
 
-        $pdo->prepare("DELETE FROM wallets WHERE member_id = ?")->execute([$memberIdToDelete]);
-        $pdo->prepare("DELETE FROM withdrawals WHERE member_id = ?")->execute([$memberIdToDelete]);
-        $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ?")->execute([$memberIdToDelete]);
-        $pdo->prepare("UPDATE epins SET used_by_member_id = NULL, status = 'Unused' WHERE used_by_member_id = ?")->execute([$memberIdToDelete]);
-        $pdo->prepare("DELETE FROM members WHERE member_id = ?")->execute([$memberIdToDelete]);
-
         $pdo->commit();
-        return ['success' => true, 'message' => "Member {$memberIdToDelete} deleted and children safely re-parented."];
+        return ['success' => true, 'message' => "Member {$memberIdToDelete} and all associated rebirth positions/data deleted cleanly."];
     } catch (Exception $e) {
         $pdo->rollBack();
         return ['success' => false, 'message' => 'Deletion failed: ' . $e->getMessage()];
