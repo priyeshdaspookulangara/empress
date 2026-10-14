@@ -2,14 +2,14 @@
 // includes/email.php
 
 /**
- * Send HTML Email with standard MIME headers from support@reyonglobal.com
+ * Send HTML Email with standard MIME headers from support@rayonglobalimpact.com
  */
 function sendEmpressHtmlEmail($toEmail, $subject, $htmlContent) {
     if (empty($toEmail) || !filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
         return false;
     }
 
-    $fromEmail = 'support@reyonglobal.com';
+    $fromEmail = 'support@rayonglobalimpact.com';
     $fromName = 'Reyon Global Impact';
 
     $headers  = "MIME-Version: 1.0\r\n";
@@ -48,7 +48,7 @@ function sendEmpressHtmlEmail($toEmail, $subject, $htmlContent) {
             </div>
             <div class="footer">
                 &copy; ' . date('Y') . ' Reyon Global Impact. All Rights Reserved.<br>
-                Official Support: <a href="mailto:support@reyonglobal.com" style="color: #c5a059;">support@reyonglobal.com</a>
+                Official Support: <a href="mailto:support@rayonglobalimpact.com" style="color: #c5a059;">support@rayonglobalimpact.com</a>
             </div>
         </div>
     </body>

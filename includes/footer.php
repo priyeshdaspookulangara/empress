@@ -50,7 +50,7 @@
 
         <div class="max-w-7xl mx-auto border-t border-gold/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/50">
             <span>&copy; <?php echo date('Y'); ?> Reyon Global Impact. All rights reserved.</span>
-            <span>Official Support: <a href="mailto:support@reyonglobal.com" class="text-gold hover:underline">support@reyonglobal.com</a></span>
+            <span>Official Support: <a href="mailto:support@rayonglobalimpact.com" class="text-gold hover:underline">support@rayonglobalimpact.com</a></span>
         </div>
     </footer>
 

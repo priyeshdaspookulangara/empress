@@ -1392,7 +1392,7 @@ function approveDepositAndCreditWallet($pdo, $depositId, $adminNotes = 'Verified
 
         $stmtTx = $pdo->prepare("
             INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
-            VALUES (?, 'Admin_Adjustment', 'User_Wallet', 'Credit', ?)
+            VALUES (?, 'Admin_Adjustment', ?, 'User_Wallet', 'Credit', ?)
         ");
         $desc = "USDT (BEP-20) Deposit Credited. TxID: " . $dep['tx_hash'] . " (" . $adminNotes . ")";
         $stmtTx->execute([$userId, $amount, $desc]);
