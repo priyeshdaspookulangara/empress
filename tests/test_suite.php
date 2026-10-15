@@ -232,4 +232,17 @@ $m1RebirthCheck = $pdo->query("SELECT COUNT(*) FROM member_rebirths WHERE member
 assert((int)$m1RebirthCheck === 0);
 echo "PASSED\n";
 
+// Test 11: Testing System-Wide Rebirth Estimation Scan & Batch Grant
+echo "[TEST 11] Testing getSystemEligibleRebirthEstimates() and grantBatchApprovedRebirths()... ";
+$scanResults = getSystemEligibleRebirthEstimates($pdo);
+assert(is_array($scanResults));
+
+// Grant batch test
+$batchTestItems = [
+    ['member_id' => 'RGI100000', 'completed_level' => 3]
+];
+$batchGrantRes = grantBatchApprovedRebirths($pdo, $batchTestItems);
+assert($batchGrantRes['success'] === true);
+echo "PASSED\n";
+
 echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";

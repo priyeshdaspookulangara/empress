@@ -419,6 +419,106 @@ function checkAndGrantLevelRebirths($pdo, $memberId, $level) {
 }
 
 /**
+ * Recursively scan members down the matrix tree starting from $startMemberId (or all active members)
+ * to identify all accounts eligible for level completion rebirth rewards that have not yet been granted.
+ */
+function getSystemEligibleRebirthEstimates($pdo, $startMemberId = 'RGI100000') {
+    $stmtM = $pdo->query("SELECT member_id, name, email, sponsor_id FROM members WHERE status = 'Active' ORDER BY id ASC");
+    $members = $stmtM->fetchAll();
+
+    $eligibleList = [];
+
+    foreach ($members as $m) {
+        $mId = $m['member_id'];
+
+        // Must have completed Level 3
+        if (!hasMemberCompletedLevel3($pdo, $mId)) {
+            continue;
+        }
+
+        for ($lvl = 3; $lvl <= 7; $lvl++) {
+            if (!isset(REBIRTH_REWARDS[$lvl])) continue;
+
+            $capacity = MATRIX_LEVEL_CAPACITY[$lvl];
+
+            // Count downline members specifically at level depth $lvl
+            $currentLevelMembers = [$mId];
+            for ($l = 1; $l <= $lvl; $l++) {
+                if (empty($currentLevelMembers)) break;
+                $inClause = implode(',', array_fill(0, count($currentLevelMembers), '?'));
+                $stmtL = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id IN ($inClause)");
+                $stmtL->execute($currentLevelMembers);
+                $currentLevelMembers = $stmtL->fetchAll(PDO::FETCH_COLUMN);
+            }
+
+            $actualNodes = count($currentLevelMembers);
+
+            if ($actualNodes >= $capacity) {
+                // Check if already granted
+                $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM member_rebirths WHERE member_id = ? AND completed_level = ?");
+                $stmtCheck->execute([$mId, $lvl]);
+                if ($stmtCheck->fetchColumn() == 0) {
+                    $eligibleList[] = [
+                        'member_id' => $mId,
+                        'name' => $m['name'],
+                        'email' => $m['email'],
+                        'sponsor_id' => $m['sponsor_id'],
+                        'completed_level' => $lvl,
+                        'actual_nodes' => $actualNodes,
+                        'capacity' => $capacity,
+                        'rebirth_count' => REBIRTH_REWARDS[$lvl]
+                    ];
+                }
+            }
+        }
+    }
+
+    return $eligibleList;
+}
+
+/**
+ * Grant selected/approved rebirth rewards in batch
+ */
+function grantBatchApprovedRebirths($pdo, $approvedList) {
+    $grantedCount = 0;
+    $grantedNodesTotal = 0;
+
+    foreach ($approvedList as $item) {
+        $mId = strtoupper(trim($item['member_id'] ?? ''));
+        $lvl = (int)($item['completed_level'] ?? 0);
+
+        if (empty($mId) || !isset(REBIRTH_REWARDS[$lvl])) {
+            continue;
+        }
+
+        // Check if already granted
+        $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM member_rebirths WHERE member_id = ? AND completed_level = ?");
+        $stmtCheck->execute([$mId, $lvl]);
+
+        if ($stmtCheck->fetchColumn() == 0) {
+            $rebirthCount = REBIRTH_REWARDS[$lvl];
+
+            // Record rebirth reward entry
+            $stmtIns = $pdo->prepare("INSERT INTO member_rebirths (member_id, completed_level, rebirth_count) VALUES (?, ?, ?)");
+            $stmtIns->execute([$mId, $lvl, $rebirthCount]);
+
+            // Schedule/Queue Rebirth Positions
+            scheduleRebirthPositions($pdo, $mId, $rebirthCount, $lvl);
+
+            $grantedCount++;
+            $grantedNodesTotal += $rebirthCount;
+        }
+    }
+
+    return [
+        'success' => true,
+        'granted_records' => $grantedCount,
+        'granted_positions' => $grantedNodesTotal,
+        'message' => "Successfully granted {$grantedNodesTotal} rebirth positions across {$grantedCount} approved member levels!"
+    ];
+}
+
+/**
  * Schedule rebirth positions in the queue table with configurable time gaps (drip placement)
  */
 function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel) {
