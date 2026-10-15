@@ -178,11 +178,44 @@ function initDatabaseSchema($pdo, $isSqlite = false) {
             network VARCHAR(50) NOT NULL DEFAULT 'BEP-20',
             status VARCHAR(20) NOT NULL DEFAULT 'Pending',
             created_at $timestamp
+        )",
+
+        "CREATE TABLE IF NOT EXISTS achiever_club (
+            id $autoInc,
+            rank_level INT NOT NULL UNIQUE,
+            rank_name VARCHAR(100) NOT NULL,
+            required_direct_joinings INT NOT NULL DEFAULT 0,
+            reward_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+            is_royalty_eligible TINYINT(1) NOT NULL DEFAULT 0,
+            royalty_percentage DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+            updated_at $timestamp
         )"
     ];
 
     foreach ($queries as $q) {
         $pdo->exec($q);
+    }
+
+    // Seed default 10 Achiever Club ranks if not present
+    $stmtAchCheck = $pdo->query("SELECT COUNT(*) FROM achiever_club");
+    if ($stmtAchCheck->fetchColumn() == 0) {
+        $defaultRanks = [
+            1  => ['Star Achiever', 10, 50.00, 0, 0.00],
+            2  => ['Bronze Achiever', 25, 150.00, 0, 0.00],
+            3  => ['Silver Achiever', 50, 350.00, 1, 1.00],
+            4  => ['Gold Achiever', 100, 800.00, 1, 1.50],
+            5  => ['Platinum Achiever', 200, 1800.00, 1, 2.00],
+            6  => ['Diamond Achiever', 400, 4000.00, 1, 2.50],
+            7  => ['Crown Achiever', 800, 9000.00, 1, 3.00],
+            8  => ['Ambassador', 1500, 20000.00, 1, 3.50],
+            9  => ['Royal Ambassador', 3000, 45000.00, 1, 4.00],
+            10 => ['Global Legend', 5000, 100000.00, 1, 5.00],
+        ];
+
+        $insStmt = $pdo->prepare("INSERT INTO achiever_club (rank_level, rank_name, required_direct_joinings, reward_amount, is_royalty_eligible, royalty_percentage) VALUES (?, ?, ?, ?, ?, ?)");
+        foreach ($defaultRanks as $lvl => $rData) {
+            $insStmt->execute([$lvl, $rData[0], $rData[1], $rData[2], $rData[3], $rData[4]]);
+        }
     }
 
     // Ensure role and wallet columns exist if SQLite/MySQL table already created

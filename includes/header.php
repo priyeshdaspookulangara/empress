@@ -260,6 +260,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             <a href="/superadmin/rebirth_matrix.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-network-wired text-neon-cyan w-4 text-center"></i> Dynamic Rebirth Matrix
                             </a>
+                            <a href="/superadmin/achiever_club.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-trophy text-neon-cyan w-4 text-center"></i> Achiever Club CMS
+                            </a>
                             <a href="/superadmin/p2p_wallets.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-qrcode text-neon-cyan w-4 text-center"></i> P2P Wallet QR Codes
                             </a>
@@ -316,6 +319,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             </a>
                             <a href="/admin/rebirth_matrix.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-network-wired text-gold w-4 text-center"></i> Dynamic Rebirth Matrix
+                            </a>
+                            <a href="/admin/achiever_club.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-trophy text-gold w-4 text-center"></i> Achiever Club CMS
                             </a>
                             <a href="/admin/p2p_wallets.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-qrcode text-gold w-4 text-center"></i> P2P Wallet QR Codes

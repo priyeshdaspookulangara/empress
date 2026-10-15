@@ -113,9 +113,9 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
         </div>
 
-        <!-- Burfee Cart & Charity Allocation -->
+        <!-- Rayon Cart & Charity Allocation -->
         <div class="card stat">
-            <span>Burfee Cart / Charity</span>
+            <span>Rayon Cart / Charity</span>
             <b class="text-gold">$<?php echo number_format($wallet['burfee_cart_wallet'] ?? 0, 2); ?></b>
             <span class="chg up">Charity Fund: $<?php echo number_format($wallet['charity_wallet'] ?? 0, 2); ?></span>
         </div>
@@ -211,7 +211,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td class="p-3 font-mono text-gold/70">#<?php echo $tx['id']; ?></td>
                                 <td class="p-3 font-semibold text-gold"><?php echo str_replace('_', ' ', $tx['type']); ?></td>
                                 <td class="p-3 font-bold text-emerald-400">+$<?php echo number_format($tx['amount'], 2); ?></td>
-                                <td class="p-3 text-champagne/80"><?php echo htmlspecialchars($tx['description']); ?></td>
+                                <td class="p-3 text-champagne/80"><?php echo htmlspecialchars(str_replace('Burfee', 'Rayon', $tx['description'])); ?></td>
                                 <td class="p-3 text-champagne/50 font-mono"><?php echo $tx['created_at']; ?></td>
                             </tr>
                         <?php endforeach; ?>

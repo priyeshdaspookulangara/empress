@@ -235,7 +235,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
             INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
             VALUES (?, 'Direct_Referral', ?, 'Main', 'Credit', ?)
         ");
-        $descRef = "10% Direct Referrer Commission from new member {$newMemberId}. (50% Customer: \${$userRef}, Company 50%: \${$burfeeRef} Burfee Cart / \${$charityRef} Charity)";
+        $descRef = "10% Direct Referrer Commission from new member {$newMemberId}. (50% Customer: \${$userRef}, Company 50%: \${$burfeeRef} Rayon Cart / \${$charityRef} Charity)";
         $stmtTx->execute([$sponsorId, $refAmount, $descRef]);
 
         // Record 10% Referrer Income Deduction Entry on the new member audit log
@@ -291,7 +291,7 @@ function distributeMatrixCommissions($pdo, $newMemberId) {
                 INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
                 VALUES (?, 'Matrix_Income_L" . $distLevel . "', ?, 'Main', 'Credit', ?)
             ");
-            $desc = "Level {$distLevel} Matrix Commission from downline member {$newMemberId}. (Gross: \${$grossAmount}, Net User Wallet: \${$userAmount}, Burfee Cart: \${$burfeeAmount}, Charity: \${$charityAmount})";
+            $desc = "Level {$distLevel} Matrix Commission from downline member {$newMemberId}. (Gross: \${$grossAmount}, Net User Wallet: \${$userAmount}, Rayon Cart: \${$burfeeAmount}, Charity: \${$charityAmount})";
             $logTx->execute([$currentUplineId, $grossAmount, $desc]);
 
             // Credit Helping Fund portion if applicable
