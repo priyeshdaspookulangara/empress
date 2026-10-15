@@ -113,7 +113,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="glass-card p-6 rounded-3xl border border-neon-cyan/20">
             <div class="flex justify-between items-center">
-                <span class="text-xs font-bold text-neon-cyan uppercase">Burfee Cart (30%) & Charity (20%)</span>
+                <span class="text-xs font-bold text-neon-cyan uppercase">Rayon Cart (30%) & Charity (20%)</span>
                 <span class="text-[10px] bg-neon-cyan/10 text-neon-cyan px-2 py-0.5 rounded font-mono">Company 50%</span>
             </div>
             <div class="text-xl font-extrabold text-neon-cyan mt-2">
@@ -276,7 +276,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 </td>
                                 <td class="p-3 font-mono text-ice/70"><?php echo $tx['wallet_type']; ?></td>
                                 <td class="p-3 font-semibold"><?php echo $tx['status']; ?></td>
-                                <td class="p-3 text-ice/80"><?php echo htmlspecialchars($tx['description']); ?></td>
+                                <td class="p-3 text-ice/80"><?php echo htmlspecialchars(str_replace('Burfee', 'Rayon', $tx['description'])); ?></td>
                                 <td class="p-3 font-mono text-ice/50"><?php echo $tx['created_at']; ?></td>
                             </tr>
                         <?php endforeach; ?>
