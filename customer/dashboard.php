@@ -27,10 +27,14 @@ $stmtW = $pdo->prepare("SELECT * FROM wallets WHERE member_id = ?");
 $stmtW->execute([$memberId]);
 $wallet = $stmtW->fetch() ?: ['balance' => 0.00, 'user_wallet_60' => 0.00, 'company_wallet_40' => 0.00];
 
-// Count Direct Referrals
+// Count Direct Referrals & Calculate Referral Income
 $stmtRef = $pdo->prepare("SELECT COUNT(*) FROM members WHERE sponsor_id = ?");
 $stmtRef->execute([$memberId]);
 $directReferralsCount = $stmtRef->fetchColumn();
+
+$stmtRefInc = $pdo->prepare("SELECT COALESCE(SUM(amount), 0.00) FROM transactions WHERE member_id = ? AND type = 'Direct_Referral' AND status = 'Credit'");
+$stmtRefInc->execute([$memberId]);
+$directReferralIncome = (float)$stmtRefInc->fetchColumn();
 
 // Count Downline (up to 7 levels)
 $downline = getMemberDownline6Levels($pdo, $memberId);
@@ -100,6 +104,13 @@ require_once __DIR__ . '/../includes/header.php';
             <?php else: ?>
                 <span class="chg up">+100% Commission Solvency</span>
             <?php endif; ?>
+        </div>
+
+        <!-- Direct Referral Income -->
+        <div class="card stat">
+            <span>Direct Referral Income</span>
+            <b class="text-gold">$<?php echo number_format($directReferralIncome, 2); ?></b>
+            <span class="chg up"><?php echo $directReferralsCount; ?> Direct Sponsored Members</span>
         </div>
 
         <!-- User Wallet (50%) -->
