@@ -110,6 +110,17 @@ CREATE TABLE IF NOT EXISTS deposits (
     INDEX idx_tx (tx_hash)
 );
 
+CREATE TABLE IF NOT EXISTS achiever_club (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    rank_level INT NOT NULL UNIQUE,
+    rank_name VARCHAR(100) NOT NULL,
+    required_direct_joinings INT NOT NULL DEFAULT 0,
+    reward_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    is_royalty_eligible TINYINT(1) NOT NULL DEFAULT 0,
+    royalty_percentage DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS member_rebirths (
     id INT AUTO_INCREMENT PRIMARY KEY,
     member_id VARCHAR(20) NOT NULL,
