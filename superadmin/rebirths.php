@@ -18,7 +18,14 @@ $search = trim($_GET['search'] ?? '');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
 
-    if ($action === 'delete_rebirth_node') {
+    if ($action === 'clear_all_rebirths') {
+        $res = clearAllRebirths($pdo);
+        if ($res['success']) {
+            $msg = $res['message'];
+        } else {
+            $error = $res['message'];
+        }
+    } elseif ($action === 'delete_rebirth_node') {
         $rebirthMemberId = trim($_POST['rebirth_member_id'] ?? '');
         if (!empty($rebirthMemberId)) {
             $res = deleteMemberSafely($pdo, $rebirthMemberId);
@@ -59,7 +66,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             $msg = "Matrix completion recalculated and eligible rebirths granted for member {$targetMemberId}.";
         }
+    } elseif ($action === 'grant_batch_rebirths') {
+        $approvedItems = $_POST['approved_items'] ?? [];
+        $parsedItems = [];
+        foreach ($approvedItems as $val) {
+            $parts = explode('_', $val);
+            if (count($parts) === 2) {
+                $parsedItems[] = [
+                    'member_id' => $parts[0],
+                    'completed_level' => (int)$parts[1]
+                ];
+            }
+        }
+        if (!empty($parsedItems)) {
+            $res = grantBatchApprovedRebirths($pdo, $parsedItems);
+            if ($res['success']) {
+                $msg = $res['message'];
+            } else {
+                $error = $res['message'];
+            }
+        } else {
+            $error = "No eligible members selected for rebirth approval.";
+        }
     }
+}
+
+// System-wide Rebirth Estimation Scan
+$systemEligible = [];
+$isScanTriggered = (isset($_GET['scan_eligible']) && $_GET['scan_eligible'] == '1');
+if ($isScanTriggered) {
+    $systemEligible = getSystemEligibleRebirthEstimates($pdo);
 }
 
 // Base Query
@@ -175,11 +211,93 @@ require_once __DIR__ . '/../includes/header.php';
                 <p class="text-xs text-champagne/70 mt-0.5">Select a member to estimate 7-level matrix completion percentage, gross payouts, and pending rebirth rewards.</p>
             </div>
 
-            <form action="/superadmin/rebirths.php" method="GET" class="flex gap-2 w-full md:w-auto">
-                <input type="text" name="estimate_member_id" value="<?php echo htmlspecialchars($estimateMemberId); ?>" placeholder="e.g. RGI100000" required class="bg-obsidian border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne uppercase font-mono focus:outline-none focus:border-gold">
-                <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Estimate Member</button>
-            </form>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <a href="/superadmin/rebirths.php?scan_eligible=1" class="neon-button px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Estimate & Add Rebirths (System-Wide)
+                </a>
+                <form action="/superadmin/rebirths.php" method="GET" class="flex gap-2">
+                    <input type="text" name="estimate_member_id" value="<?php echo htmlspecialchars($estimateMemberId); ?>" placeholder="e.g. RGI100000" required class="bg-obsidian border border-gold/30 rounded-xl px-4 py-2 text-xs text-champagne uppercase font-mono focus:outline-none focus:border-gold">
+                    <button type="submit" class="gold-button px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Estimate Member</button>
+                </form>
+            </div>
         </div>
+
+        <?php if ($isScanTriggered): ?>
+            <div class="glass-card p-6 rounded-3xl border border-neon-cyan/40 bg-neon-cyan/5 space-y-4">
+                <div class="flex justify-between items-center border-b border-neon-cyan/20 pb-3">
+                    <div>
+                        <h3 class="text-base font-bold text-neon-cyan flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-gold"></i> System-Wide Eligible Rebirth Approval Console
+                        </h3>
+                        <p class="text-xs text-ice/70 mt-0.5">Scanned matrix downline trees for all active members across Levels 3–7 eligible for ungranted rebirth positions.</p>
+                    </div>
+                    <a href="/superadmin/rebirths.php" class="text-xs text-ice/60 hover:text-ice underline">Close Approval Panel</a>
+                </div>
+
+                <?php if (empty($systemEligible)): ?>
+                    <div class="p-4 bg-navy/60 rounded-2xl border border-neon-cyan/20 text-center text-ice/70 text-xs font-semibold">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-lg mb-1 block"></i>
+                        All eligible rebirth positions across all active member accounts are currently up-to-date! No pending ungranted rebirths found.
+                    </div>
+                <?php else: ?>
+                    <form action="/superadmin/rebirths.php" method="POST" onsubmit="return confirm('Approve and schedule rebirth positions for selected members?');">
+                        <input type="hidden" name="action" value="grant_batch_rebirths">
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-neon-cyan/10 border-b border-neon-cyan/20 text-neon-cyan font-semibold uppercase">
+                                        <th class="p-3 text-center w-10">
+                                            <input type="checkbox" id="selectAllRebirths" checked onclick="toggleAllRebirthCheckboxes(this);" class="rounded border-neon-cyan/30 bg-navy text-neon-cyan focus:ring-neon-cyan">
+                                        </th>
+                                        <th class="p-3">Member ID</th>
+                                        <th class="p-3">Member Name</th>
+                                        <th class="p-3">Completed Level</th>
+                                        <th class="p-3">Actual Downline</th>
+                                        <th class="p-3 text-purple-400">Rebirth Reward</th>
+                                        <th class="p-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-neon-cyan/10 text-ice font-mono">
+                                    <?php foreach ($systemEligible as $eItem): ?>
+                                        <?php $valKey = $eItem['member_id'] . '_' . $eItem['completed_level']; ?>
+                                        <tr class="hover:bg-neon-cyan/5">
+                                            <td class="p-3 text-center">
+                                                <input type="checkbox" name="approved_items[]" value="<?php echo htmlspecialchars($valKey); ?>" checked class="rebirth-checkbox rounded border-neon-cyan/30 bg-navy text-neon-cyan focus:ring-neon-cyan">
+                                            </td>
+                                            <td class="p-3 font-bold text-neon-cyan"><?php echo htmlspecialchars($eItem['member_id']); ?></td>
+                                            <td class="p-3 font-semibold text-ice font-sans"><?php echo htmlspecialchars($eItem['name']); ?></td>
+                                            <td class="p-3 font-bold text-gold">Level <?php echo $eItem['completed_level']; ?></td>
+                                            <td class="p-3 text-emerald-400 font-bold"><?php echo $eItem['actual_nodes']; ?> / <?php echo $eItem['capacity']; ?> Nodes</td>
+                                            <td class="p-3 text-purple-400 font-bold"><?php echo number_format($eItem['rebirth_count']); ?> Rebirths</td>
+                                            <td class="p-3">
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">Eligible (Pending Approval)</span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-3 border-t border-neon-cyan/20">
+                            <span class="text-xs text-ice/70">Found <strong class="text-gold"><?php echo count($systemEligible); ?></strong> eligible level completion event(s).</span>
+                            <button type="submit" class="gold-button px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check"></i> Approve & Add Selected Rebirths
+                            </button>
+                        </div>
+                    </form>
+
+                    <script>
+                    function toggleAllRebirthCheckboxes(master) {
+                        var checkboxes = document.querySelectorAll('.rebirth-checkbox');
+                        for (var i = 0; i < checkboxes.length; i++) {
+                            checkboxes[i].checked = master.checked;
+                        }
+                    }
+                    </script>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
         <?php if ($estMember): ?>
             <div class="flex items-center gap-4 bg-gold/10 p-4 rounded-2xl border border-gold/20 text-xs text-champagne">
@@ -329,8 +447,16 @@ require_once __DIR__ . '/../includes/header.php';
             <h3 class="text-lg font-bold text-neon-cyan">Global System Rebirth Counter</h3>
             <p class="text-xs text-ice/70 mt-0.5">Automated positions generated across Levels 3, 4, 5, 6, and 7 matrix completion events</p>
         </div>
-        <div class="text-3xl font-extrabold text-neon-cyan font-mono">
-            <?php echo $totalRebirthsCount; ?> <span class="text-xs font-normal text-ice/60">Active Nodes</span>
+        <div class="flex items-center gap-4">
+            <form action="/superadmin/rebirths.php" method="POST" onsubmit="return confirm('DANGER: Are you sure you want to CLEAR ALL REBIRTH POSITIONS and QUEUES system-wide? This will delete all rebirth nodes and queue logs while preserving primary customer accounts.');">
+                <input type="hidden" name="action" value="clear_all_rebirths">
+                <button type="submit" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-trash-can"></i> Clear All Rebirths
+                </button>
+            </form>
+            <div class="text-3xl font-extrabold text-neon-cyan font-mono">
+                <?php echo $totalRebirthsCount; ?> <span class="text-xs font-normal text-ice/60">Active Nodes</span>
+            </div>
         </div>
     </div>
 

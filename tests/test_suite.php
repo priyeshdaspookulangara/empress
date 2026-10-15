@@ -200,8 +200,24 @@ $gen2RebirthNodes = $pdo->query("SELECT COUNT(*) FROM members WHERE sponsor_id =
 assert((int)$gen2RebirthNodes === 10);
 echo "PASSED\n";
 
-// Test 9: Test Cascaded Rebirth & Member Deletion
-echo "[TEST 9] Testing Cascaded Member & Rebirth Deletion... ";
+// Test 9: Clear All Rebirths System-Wide
+echo "[TEST 9] Testing clearAllRebirths() function... ";
+scheduleRebirthPositions($pdo, 'RGI100000', 5, 3);
+$rebirthsCountBefore = $pdo->query("SELECT COUNT(*) FROM members WHERE used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%'")->fetchColumn();
+assert((int)$rebirthsCountBefore > 0);
+
+$clearRes = clearAllRebirths($pdo);
+assert($clearRes['success'] === true);
+
+$rebirthsCountAfter = $pdo->query("SELECT COUNT(*) FROM members WHERE used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%'")->fetchColumn();
+assert((int)$rebirthsCountAfter === 0);
+
+$queuedCountAfter = $pdo->query("SELECT COUNT(*) FROM queued_rebirths")->fetchColumn();
+assert((int)$queuedCountAfter === 0);
+echo "PASSED\n";
+
+// Test 10: Test Cascaded Rebirth & Member Deletion
+echo "[TEST 10] Testing Cascaded Member & Deletion... ";
 $delRes = deleteMemberSafely($pdo, $m1Id);
 assert($delRes['success'] === true);
 
@@ -214,6 +230,19 @@ assert((int)$m1WalletCheck === 0);
 
 $m1RebirthCheck = $pdo->query("SELECT COUNT(*) FROM member_rebirths WHERE member_id = '{$m1Id}'")->fetchColumn();
 assert((int)$m1RebirthCheck === 0);
+echo "PASSED\n";
+
+// Test 11: Testing System-Wide Rebirth Estimation Scan & Batch Grant
+echo "[TEST 11] Testing getSystemEligibleRebirthEstimates() and grantBatchApprovedRebirths()... ";
+$scanResults = getSystemEligibleRebirthEstimates($pdo);
+assert(is_array($scanResults));
+
+// Grant batch test
+$batchTestItems = [
+    ['member_id' => 'RGI100000', 'completed_level' => 3]
+];
+$batchGrantRes = grantBatchApprovedRebirths($pdo, $batchTestItems);
+assert($batchGrantRes['success'] === true);
 echo "PASSED\n";
 
 echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";

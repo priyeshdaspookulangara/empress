@@ -419,6 +419,106 @@ function checkAndGrantLevelRebirths($pdo, $memberId, $level) {
 }
 
 /**
+ * Recursively scan members down the matrix tree starting from $startMemberId (or all active members)
+ * to identify all accounts eligible for level completion rebirth rewards that have not yet been granted.
+ */
+function getSystemEligibleRebirthEstimates($pdo, $startMemberId = 'RGI100000') {
+    $stmtM = $pdo->query("SELECT member_id, name, email, sponsor_id FROM members WHERE status = 'Active' ORDER BY id ASC");
+    $members = $stmtM->fetchAll();
+
+    $eligibleList = [];
+
+    foreach ($members as $m) {
+        $mId = $m['member_id'];
+
+        // Must have completed Level 3
+        if (!hasMemberCompletedLevel3($pdo, $mId)) {
+            continue;
+        }
+
+        for ($lvl = 3; $lvl <= 7; $lvl++) {
+            if (!isset(REBIRTH_REWARDS[$lvl])) continue;
+
+            $capacity = MATRIX_LEVEL_CAPACITY[$lvl];
+
+            // Count downline members specifically at level depth $lvl
+            $currentLevelMembers = [$mId];
+            for ($l = 1; $l <= $lvl; $l++) {
+                if (empty($currentLevelMembers)) break;
+                $inClause = implode(',', array_fill(0, count($currentLevelMembers), '?'));
+                $stmtL = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id IN ($inClause)");
+                $stmtL->execute($currentLevelMembers);
+                $currentLevelMembers = $stmtL->fetchAll(PDO::FETCH_COLUMN);
+            }
+
+            $actualNodes = count($currentLevelMembers);
+
+            if ($actualNodes >= $capacity) {
+                // Check if already granted
+                $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM member_rebirths WHERE member_id = ? AND completed_level = ?");
+                $stmtCheck->execute([$mId, $lvl]);
+                if ($stmtCheck->fetchColumn() == 0) {
+                    $eligibleList[] = [
+                        'member_id' => $mId,
+                        'name' => $m['name'],
+                        'email' => $m['email'],
+                        'sponsor_id' => $m['sponsor_id'],
+                        'completed_level' => $lvl,
+                        'actual_nodes' => $actualNodes,
+                        'capacity' => $capacity,
+                        'rebirth_count' => REBIRTH_REWARDS[$lvl]
+                    ];
+                }
+            }
+        }
+    }
+
+    return $eligibleList;
+}
+
+/**
+ * Grant selected/approved rebirth rewards in batch
+ */
+function grantBatchApprovedRebirths($pdo, $approvedList) {
+    $grantedCount = 0;
+    $grantedNodesTotal = 0;
+
+    foreach ($approvedList as $item) {
+        $mId = strtoupper(trim($item['member_id'] ?? ''));
+        $lvl = (int)($item['completed_level'] ?? 0);
+
+        if (empty($mId) || !isset(REBIRTH_REWARDS[$lvl])) {
+            continue;
+        }
+
+        // Check if already granted
+        $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM member_rebirths WHERE member_id = ? AND completed_level = ?");
+        $stmtCheck->execute([$mId, $lvl]);
+
+        if ($stmtCheck->fetchColumn() == 0) {
+            $rebirthCount = REBIRTH_REWARDS[$lvl];
+
+            // Record rebirth reward entry
+            $stmtIns = $pdo->prepare("INSERT INTO member_rebirths (member_id, completed_level, rebirth_count) VALUES (?, ?, ?)");
+            $stmtIns->execute([$mId, $lvl, $rebirthCount]);
+
+            // Schedule/Queue Rebirth Positions
+            scheduleRebirthPositions($pdo, $mId, $rebirthCount, $lvl);
+
+            $grantedCount++;
+            $grantedNodesTotal += $rebirthCount;
+        }
+    }
+
+    return [
+        'success' => true,
+        'granted_records' => $grantedCount,
+        'granted_positions' => $grantedNodesTotal,
+        'message' => "Successfully granted {$grantedNodesTotal} rebirth positions across {$grantedCount} approved member levels!"
+    ];
+}
+
+/**
  * Schedule rebirth positions in the queue table with configurable time gaps (drip placement)
  */
 function scheduleRebirthPositions($pdo, $parentMemberId, $count, $completedLevel) {
@@ -1034,6 +1134,60 @@ function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null
         return [
             'success' => false,
             'message' => 'Database update failed: ' . $e->getMessage()
+        ];
+    }
+}
+
+/**
+ * Clear All Rebirth Nodes and Rebirth Reward Queues System-Wide
+ * Deletes all rebirth positions from matrix, wipes queued/granted rebirth logs,
+ * and cleans up associated rebirth node wallets/transactions while preserving primary customer accounts.
+ */
+function clearAllRebirths($pdo) {
+    $pdo->beginTransaction();
+    try {
+        // Fetch all rebirth member IDs
+        $stmtNodes = $pdo->query("SELECT member_id FROM members WHERE used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%'");
+        $rebirthMemberIds = $stmtNodes->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!empty($rebirthMemberIds)) {
+            foreach ($rebirthMemberIds as $targetId) {
+                // Re-parent direct children to Root RGI100000
+                $stmtChildren = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id = ?");
+                $stmtChildren->execute([$targetId]);
+                $children = $stmtChildren->fetchAll(PDO::FETCH_COLUMN);
+
+                foreach ($children as $childId) {
+                    if (in_array($childId, $rebirthMemberIds)) continue;
+                    $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
+                    $stmtReparent = $pdo->prepare("UPDATE members SET placement_parent_id = ?, matrix_position = ? WHERE member_id = ?");
+                    $stmtReparent->execute([$placement['placement_parent_id'], $placement['matrix_position'], $childId]);
+                }
+
+                $pdo->prepare("DELETE FROM wallets WHERE member_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM transactions WHERE member_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM withdrawals WHERE member_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM deposits WHERE user_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM members WHERE member_id = ?")->execute([$targetId]);
+            }
+        }
+
+        // Wipe member_rebirths and queued_rebirths logs
+        $pdo->exec("DELETE FROM member_rebirths");
+        $pdo->exec("DELETE FROM queued_rebirths");
+
+        $pdo->commit();
+        $countDeleted = count($rebirthMemberIds);
+        return [
+            'success' => true,
+            'message' => "Successfully cleared all {$countDeleted} rebirth positions, queue items, and rebirth reward records system-wide!"
+        ];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => "Failed to clear rebirths: " . $e->getMessage()
         ];
     }
 }
