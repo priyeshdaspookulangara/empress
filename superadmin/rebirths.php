@@ -18,7 +18,14 @@ $search = trim($_GET['search'] ?? '');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
 
-    if ($action === 'delete_rebirth_node') {
+    if ($action === 'clear_all_rebirths') {
+        $res = clearAllRebirths($pdo);
+        if ($res['success']) {
+            $msg = $res['message'];
+        } else {
+            $error = $res['message'];
+        }
+    } elseif ($action === 'delete_rebirth_node') {
         $rebirthMemberId = trim($_POST['rebirth_member_id'] ?? '');
         if (!empty($rebirthMemberId)) {
             $res = deleteMemberSafely($pdo, $rebirthMemberId);
@@ -329,8 +336,16 @@ require_once __DIR__ . '/../includes/header.php';
             <h3 class="text-lg font-bold text-neon-cyan">Global System Rebirth Counter</h3>
             <p class="text-xs text-ice/70 mt-0.5">Automated positions generated across Levels 3, 4, 5, 6, and 7 matrix completion events</p>
         </div>
-        <div class="text-3xl font-extrabold text-neon-cyan font-mono">
-            <?php echo $totalRebirthsCount; ?> <span class="text-xs font-normal text-ice/60">Active Nodes</span>
+        <div class="flex items-center gap-4">
+            <form action="/superadmin/rebirths.php" method="POST" onsubmit="return confirm('DANGER: Are you sure you want to CLEAR ALL REBIRTH POSITIONS and QUEUES system-wide? This will delete all rebirth nodes and queue logs while preserving primary customer accounts.');">
+                <input type="hidden" name="action" value="clear_all_rebirths">
+                <button type="submit" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-trash-can"></i> Clear All Rebirths
+                </button>
+            </form>
+            <div class="text-3xl font-extrabold text-neon-cyan font-mono">
+                <?php echo $totalRebirthsCount; ?> <span class="text-xs font-normal text-ice/60">Active Nodes</span>
+            </div>
         </div>
     </div>
 

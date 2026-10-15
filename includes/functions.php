@@ -1039,6 +1039,60 @@ function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null
 }
 
 /**
+ * Clear All Rebirth Nodes and Rebirth Reward Queues System-Wide
+ * Deletes all rebirth positions from matrix, wipes queued/granted rebirth logs,
+ * and cleans up associated rebirth node wallets/transactions while preserving primary customer accounts.
+ */
+function clearAllRebirths($pdo) {
+    $pdo->beginTransaction();
+    try {
+        // Fetch all rebirth member IDs
+        $stmtNodes = $pdo->query("SELECT member_id FROM members WHERE used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%'");
+        $rebirthMemberIds = $stmtNodes->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!empty($rebirthMemberIds)) {
+            foreach ($rebirthMemberIds as $targetId) {
+                // Re-parent direct children to Root RGI100000
+                $stmtChildren = $pdo->prepare("SELECT member_id FROM members WHERE placement_parent_id = ?");
+                $stmtChildren->execute([$targetId]);
+                $children = $stmtChildren->fetchAll(PDO::FETCH_COLUMN);
+
+                foreach ($children as $childId) {
+                    if (in_array($childId, $rebirthMemberIds)) continue;
+                    $placement = findBFSMatrixPlacement($pdo, 'RGI100000');
+                    $stmtReparent = $pdo->prepare("UPDATE members SET placement_parent_id = ?, matrix_position = ? WHERE member_id = ?");
+                    $stmtReparent->execute([$placement['placement_parent_id'], $placement['matrix_position'], $childId]);
+                }
+
+                $pdo->prepare("DELETE FROM wallets WHERE member_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM transactions WHERE member_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM withdrawals WHERE member_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM deposits WHERE user_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM api_tokens WHERE user_id = ?")->execute([$targetId]);
+                $pdo->prepare("DELETE FROM members WHERE member_id = ?")->execute([$targetId]);
+            }
+        }
+
+        // Wipe member_rebirths and queued_rebirths logs
+        $pdo->exec("DELETE FROM member_rebirths");
+        $pdo->exec("DELETE FROM queued_rebirths");
+
+        $pdo->commit();
+        $countDeleted = count($rebirthMemberIds);
+        return [
+            'success' => true,
+            'message' => "Successfully cleared all {$countDeleted} rebirth positions, queue items, and rebirth reward records system-wide!"
+        ];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => "Failed to clear rebirths: " . $e->getMessage()
+        ];
+    }
+}
+
+/**
  * Submit USDT Fund Deposit Request
  */
 function submitFundDeposit($pdo, $userId, $txHash, $amount, $network = 'BEP-20') {
