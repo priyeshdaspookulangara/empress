@@ -6,6 +6,7 @@ require_once __DIR__ . '/includes/functions.php';
 $pdo = getDBConnection();
 $error = '';
 $success = '';
+$registeredMember = null;
 
 // Pre-fill sponsor if passed in GET
 $sponsorId = isset($_GET['sponsor']) ? trim($_GET['sponsor']) : 'RGI100000';
@@ -35,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($res['success']) {
             $success = $res['message'];
+            $registeredMember = $res['member_data'] ?? null;
         } else {
             $error = $res['message'];
         }
@@ -59,11 +61,56 @@ require_once __DIR__ . '/includes/header.php';
         <?php endif; ?>
 
         <?php if (!empty($success)): ?>
-            <div class="bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 p-6 rounded-2xl text-center mb-6">
-                <i class="fa-solid fa-circle-check text-4xl mb-3 text-emerald-400"></i>
-                <h3 class="text-lg font-bold">Registration Completed!</h3>
-                <p class="text-xs text-champagne/90 mt-2"><?php echo htmlspecialchars($success); ?></p>
-                <div class="mt-6">
+            <div class="bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 p-6 rounded-2xl mb-6">
+                <div class="text-center">
+                    <i class="fa-solid fa-circle-check text-4xl mb-3 text-emerald-400"></i>
+                    <h3 class="text-lg font-bold text-white">Registration Completed Successfully!</h3>
+                    <p class="text-xs text-champagne/90 mt-1"><?php echo htmlspecialchars($success); ?></p>
+                </div>
+
+                <?php if ($registeredMember): ?>
+                    <div class="mt-6 bg-obsidian/90 border border-gold/40 rounded-2xl p-5 text-left space-y-3 font-mono text-xs text-champagne">
+                        <div class="text-gold font-bold uppercase text-[11px] border-b border-gold/20 pb-2 flex justify-between items-center">
+                            <span><i class="fa-solid fa-id-card"></i> Your Account Credentials</span>
+                            <span class="text-emerald-400 font-semibold uppercase text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded">Active</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <div>
+                                <span class="text-gold/70 block text-[10px] uppercase">Member ID:</span>
+                                <span class="text-gold font-extrabold text-sm"><?php echo htmlspecialchars($registeredMember['member_id']); ?></span>
+                            </div>
+                            <div>
+                                <span class="text-gold/70 block text-[10px] uppercase">Full Name:</span>
+                                <span class="font-bold text-white"><?php echo htmlspecialchars($registeredMember['name']); ?></span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <span class="text-gold/70 block text-[10px] uppercase">Account Password:</span>
+                                <span class="text-emerald-300 font-extrabold text-sm"><?php echo htmlspecialchars($registeredMember['password']); ?></span>
+                            </div>
+                            <div>
+                                <span class="text-gold/70 block text-[10px] uppercase">Sponsor ID:</span>
+                                <span class="text-champagne font-bold"><?php echo htmlspecialchars($registeredMember['sponsor_id']); ?></span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <span class="text-gold/70 block text-[10px] uppercase">Email:</span>
+                                <span class="text-champagne/90 truncate block"><?php echo htmlspecialchars($registeredMember['email']); ?></span>
+                            </div>
+                            <div>
+                                <span class="text-gold/70 block text-[10px] uppercase">Phone:</span>
+                                <span class="text-champagne/90 block"><?php echo htmlspecialchars($registeredMember['phone']); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="mt-6 text-center">
                     <a href="/login.php" class="gold-button px-6 py-2.5 rounded-xl text-sm inline-block">Proceed to Login</a>
                 </div>
             </div>

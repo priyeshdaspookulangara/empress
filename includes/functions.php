@@ -762,6 +762,15 @@ function registerMember($pdo, $data) {
         return [
             'success' => true,
             'member_id' => $memberId,
+            'member_data' => [
+                'member_id' => $memberId,
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'sponsor_id' => $sponsorId,
+                'package_type' => $packageType,
+                'password' => $data['password']
+            ],
             'message' => 'Registration successful! Your Member ID is ' . $memberId
         ];
 
