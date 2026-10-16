@@ -32,6 +32,11 @@ $stmtRef = $pdo->prepare("SELECT COUNT(*) FROM members WHERE sponsor_id = ?");
 $stmtRef->execute([$memberId]);
 $directReferralsCount = $stmtRef->fetchColumn();
 
+// Fetch Direct Referral Income
+$stmtDirectInc = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE member_id = ? AND type = 'Direct_Referral'");
+$stmtDirectInc->execute([$memberId]);
+$directReferralIncome = (float)$stmtDirectInc->fetchColumn();
+
 // Count Downline (up to 7 levels)
 $downline = getMemberDownline6Levels($pdo, $memberId);
 $downlineCount = count($downline);
@@ -41,11 +46,6 @@ $totalRebirths = getMemberTotalRebirths($pdo, $memberId);
 $rebirthData = getAggregateRebirthEarnings($pdo, $memberId);
 $combinedTotalIncome = $wallet['balance'] + $rebirthData['total_balance'];
 $combinedCustomerWallet = $wallet['user_wallet_60'] + $rebirthData['user_wallet_50'];
-
-// Recent Transactions
-$stmtTx = $pdo->prepare("SELECT * FROM transactions WHERE member_id = ? ORDER BY id DESC LIMIT 5");
-$stmtTx->execute([$memberId]);
-$recentTx = $stmtTx->fetchAll();
 
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
 $referralLink = $protocol . $_SERVER['HTTP_HOST'] . "/register.php?sponsor=" . $memberId;
@@ -90,45 +90,52 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Overview Financial Cards Grid using Template .grid .stats .card .stat -->
-    <div class="grid stats">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <!-- Total Earnings -->
         <div class="card stat">
-            <span>Primary Total Income</span>
-            <b>$<?php echo number_format($wallet['balance'], 2); ?></b>
+            <span class="text-xs text-champagne/70 block mb-1">Primary Total Income</span>
+            <b class="text-xl font-bold text-white block mb-1">$<?php echo number_format($wallet['balance'], 2); ?></b>
             <?php if ($rebirthData['total_balance'] > 0): ?>
-                <span class="chg up">Group Total: $<?php echo number_format($combinedTotalIncome, 2); ?> (incl. Rebirths)</span>
+                <span class="text-xs text-emerald-400 block">Group Total: $<?php echo number_format($combinedTotalIncome, 2); ?> (incl. Rebirths)</span>
             <?php else: ?>
-                <span class="chg up">+100% Commission Solvency</span>
+                <span class="text-xs text-emerald-400 block">+100% Commission Solvency</span>
             <?php endif; ?>
         </div>
 
         <!-- User Wallet (50%) -->
         <div class="card stat">
-            <span>Customer Wallet (50%)</span>
-            <b class="text-emerald-400">$<?php echo number_format($wallet['user_wallet_60'], 2); ?></b>
+            <span class="text-xs text-champagne/70 block mb-1">Customer Wallet (50%)</span>
+            <b class="text-xl font-bold text-emerald-400 block mb-1">$<?php echo number_format($wallet['user_wallet_60'], 2); ?></b>
             <?php if ($rebirthData['user_wallet_50'] > 0): ?>
-                <span class="chg up">Group Withdrawable: $<?php echo number_format($combinedCustomerWallet, 2); ?></span>
+                <span class="text-xs text-emerald-400 block">Group Withdrawable: $<?php echo number_format($combinedCustomerWallet, 2); ?></span>
             <?php else: ?>
-                <span class="chg up">Eligible for Payout Withdrawal</span>
+                <span class="text-xs text-emerald-400 block">Eligible for Payout Withdrawal</span>
             <?php endif; ?>
+        </div>
+
+        <!-- Direct Referral Income -->
+        <div class="card stat">
+            <span class="text-xs text-champagne/70 block mb-1">Direct Referral Income</span>
+            <b class="text-xl font-bold text-gold block mb-1">$<?php echo number_format($directReferralIncome, 2); ?></b>
+            <span class="text-xs text-emerald-400 block"><?php echo $directReferralsCount; ?> Direct Referral(s)</span>
         </div>
 
         <!-- Rayon Cart & Charity Allocation -->
         <div class="card stat">
-            <span>Rayon Cart / Charity</span>
-            <b class="text-gold">$<?php echo number_format($wallet['burfee_cart_wallet'] ?? 0, 2); ?></b>
-            <span class="chg up">Charity Fund: $<?php echo number_format($wallet['charity_wallet'] ?? 0, 2); ?></span>
+            <span class="text-xs text-champagne/70 block mb-1">Rayon Cart / Charity</span>
+            <b class="text-xl font-bold text-gold block mb-1">$<?php echo number_format($wallet['burfee_cart_wallet'] ?? 0, 2); ?></b>
+            <span class="text-xs text-emerald-400 block">Charity Fund: $<?php echo number_format($wallet['charity_wallet'] ?? 0, 2); ?></span>
         </div>
 
         <!-- Team Downline Count & Rebirth Badges -->
         <a href="/customer/rebirths.php" class="card stat block hover:border-neon-cyan transition group">
-            <span class="group-hover:text-neon-cyan transition">Matrix Network</span>
-            <b><?php echo $downlineCount; ?> <small class="text-xs font-normal text-gold">Members</small></b>
-            <span class="chg up font-mono">Rebirth Nodes Earned: <?php echo $totalRebirths; ?></span>
+            <span class="text-xs text-champagne/70 block mb-1 group-hover:text-neon-cyan transition">Matrix Network</span>
+            <b class="text-xl font-bold text-white block mb-1"><?php echo $downlineCount; ?> <small class="text-xs font-normal text-gold">Members</small></b>
+            <span class="text-xs text-emerald-400 block font-mono">Rebirth Nodes Earned: <?php echo $totalRebirths; ?></span>
         </a>
     </div>
 
-    <!-- Quick Quick Links Section -->
+    <!-- Quick Links Section -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <a href="/customer/deposit.php" class="glass-card p-6 rounded-2xl border border-emerald-500/30 hover:border-emerald-500/60 flex items-center justify-between group transition">
             <div class="flex items-center gap-4">
@@ -181,44 +188,6 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <i class="fa-solid fa-chevron-right text-gold text-sm group-hover:translate-x-1 transition"></i>
         </a>
-    </div>
-
-    <!-- Recent Earning Transactions Log -->
-    <div class="glass-card p-6 rounded-3xl border border-gold/20">
-        <h3 class="text-lg font-bold text-gold mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-clock-rotate-left"></i> Recent Transaction Activity
-        </h3>
-
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="bg-gold/10 border-b border-gold/20 text-gold font-semibold uppercase">
-                        <th class="p-3">ID</th>
-                        <th class="p-3">Type</th>
-                        <th class="p-3">Amount</th>
-                        <th class="p-3">Description</th>
-                        <th class="p-3">Date</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gold/10 text-champagne">
-                    <?php if (empty($recentTx)): ?>
-                        <tr>
-                            <td colspan="5" class="p-4 text-center text-champagne/50">No transaction logs recorded yet.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($recentTx as $tx): ?>
-                            <tr>
-                                <td class="p-3 font-mono text-gold/70">#<?php echo $tx['id']; ?></td>
-                                <td class="p-3 font-semibold text-gold"><?php echo str_replace('_', ' ', $tx['type']); ?></td>
-                                <td class="p-3 font-bold text-emerald-400">+$<?php echo number_format($tx['amount'], 2); ?></td>
-                                <td class="p-3 text-champagne/80"><?php echo htmlspecialchars(str_replace('Burfee', 'Rayon', $tx['description'])); ?></td>
-                                <td class="p-3 text-champagne/50 font-mono"><?php echo $tx['created_at']; ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
     </div>
 </div>
 
