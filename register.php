@@ -16,10 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $password = $_POST['password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
     $epinCode = trim($_POST['epin_code'] ?? '');
 
-    if (empty($name) || empty($email) || empty($phone) || empty($password) || empty($epinCode)) {
-        $error = "Please fill in all required fields including a valid ePIN code.";
+    if (empty($name) || empty($email) || empty($phone) || empty($password) || empty($confirmPassword) || empty($epinCode)) {
+        $error = "Please fill in all required fields including password confirmation and a valid ePIN code.";
+    } elseif ($password !== $confirmPassword) {
+        $error = "Account password and confirm password do not match.";
     } else {
         $res = registerMember($pdo, [
             'sponsor_id' => $sponsorId,
@@ -89,9 +92,26 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-gold mb-1">Account Password *</label>
-                    <input type="password" name="password" required placeholder="••••••••" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl px-4 py-3 text-sm text-champagne focus:outline-none focus:border-gold">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gold mb-1">Account Password *</label>
+                        <div class="relative">
+                            <input type="password" id="regPassword" name="password" required placeholder="••••••••" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl pl-4 pr-10 py-3 text-sm text-champagne focus:outline-none focus:border-gold">
+                            <button type="button" onclick="togglePasswordVisibility('regPassword', 'togglePassIcon1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gold/60 hover:text-gold text-sm focus:outline-none">
+                                <i id="togglePassIcon1" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gold mb-1">Confirm Password *</label>
+                        <div class="relative">
+                            <input type="password" id="regConfirmPassword" name="confirm_password" required placeholder="••••••••" class="w-full bg-obsidian/80 border border-gold/30 rounded-xl pl-4 pr-10 py-3 text-sm text-champagne focus:outline-none focus:border-gold">
+                            <button type="button" onclick="togglePasswordVisibility('regConfirmPassword', 'togglePassIcon2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gold/60 hover:text-gold text-sm focus:outline-none">
+                                <i id="togglePassIcon2" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -114,5 +134,22 @@ require_once __DIR__ . '/includes/header.php';
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+function togglePasswordVisibility(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (!input || !icon) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
