@@ -1132,7 +1132,7 @@ function auditBFSMatrixPlacement($pdo) {
     $queue = ['RGI100000'];
     $bfsOrderedChildren = [];
     $allActiveMembers = [];
-    $stmtAll = $pdo->query("SELECT member_id, placement_parent_id, matrix_position, created_at FROM members WHERE status = 'Active' ORDER BY id ASC");
+    $stmtAll = $pdo->query("SELECT member_id, placement_parent_id, matrix_position, created_at FROM members WHERE status = 'Active' ORDER BY created_at ASC, id ASC");
     $memberList = $stmtAll->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
 
     $misplacedCount = 0;
@@ -1271,12 +1271,12 @@ function rearrangeBFSMatrixPlacement($pdo) {
             ")->execute([$dAmount, $dAmount, $dAmount, $uId]);
         }
 
-        // 3. Fetch all active non-root members ordered by join creation sequence
+        // 3. Fetch all active non-root members ordered strictly by join creation timestamp (first-in basis)
         $stmtMembers = $pdo->query("
             SELECT member_id, sponsor_id, name, created_at
             FROM members
             WHERE member_id != 'RGI100000' AND status = 'Active'
-            ORDER BY id ASC, created_at ASC
+            ORDER BY created_at ASC, id ASC
         ");
         $membersToRearrange = $stmtMembers->fetchAll();
 
