@@ -216,4 +216,28 @@ $m1RebirthCheck = $pdo->query("SELECT COUNT(*) FROM member_rebirths WHERE member
 assert((int)$m1RebirthCheck === 0);
 echo "PASSED\n";
 
+// Test 10: Test Achiever Club CMS & Rank Evaluation
+echo "[TEST 10] Testing Achiever Club Ranks CMS & Rank Evaluation... ";
+// Clean up any existing test records
+$mTestId = 'RGI_ACH_TEST';
+deleteMemberSafely($pdo, $mTestId);
+$pdo->exec("DELETE FROM members WHERE member_id LIKE 'RGI_SUB_ACH_%'");
+
+// Create test member and verify getMemberAchieverRank
+$pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, 'RGI100000', 'RGI100000', 1, 'Achiever Tester', 'ach@example.com', '9999999999', 'pass', 'EPIN', 'Royal_Starter', 'Active')")->execute([$mTestId]);
+
+// Sponsor 12 members directly under $mTestId
+for ($a = 1; $a <= 12; $a++) {
+    $pdo->prepare("INSERT INTO members (member_id, sponsor_id, placement_parent_id, matrix_position, name, email, phone, password, used_epin, package_type, status) VALUES (?, ?, 'RGI100000', 1, 'Sub Ach {$a}', 'ach{$a}@example.com', '999999999{$a}', 'pass', 'EPIN', 'Royal_Starter', 'Active')")->execute(["RGI_SUB_ACH_{$a}", $mTestId]);
+}
+
+$eval = getMemberAchieverRank($pdo, $mTestId);
+assert($eval['direct_count'] === 12);
+assert($eval['current_rank'] !== null && $eval['current_rank']['rank_level'] == 1);
+assert($eval['next_rank'] !== null && $eval['next_rank']['rank_level'] == 2);
+assert(count($eval['ranks']) === 10);
+
+deleteMemberSafely($pdo, $mTestId);
+echo "PASSED\n";
+
 echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";

@@ -1,5 +1,8 @@
 <?php
 // admin/achiever_club.php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $pageTitle = "Achiever Club CMS - Direct Referral Ranks";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -19,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ranks'])) {
         $pdo->beginTransaction();
 
         $ranks = $_POST['ranks'] ?? [];
+        $stmtChk = $pdo->prepare("SELECT COUNT(*) FROM achiever_club WHERE rank_level = ?");
         $stmtUp = $pdo->prepare("
             UPDATE achiever_club
             SET rank_name = ?,
@@ -27,6 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ranks'])) {
                 is_royalty_eligible = ?,
                 royalty_percentage = ?
             WHERE rank_level = ?
+        ");
+        $stmtIns = $pdo->prepare("
+            INSERT INTO achiever_club (rank_level, rank_name, required_direct_joinings, reward_amount, is_royalty_eligible, royalty_percentage)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
 
         foreach ($ranks as $lvl => $data) {
@@ -43,14 +51,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ranks'])) {
             $isRoyalty = !empty($data['is_royalty_eligible']) ? 1 : 0;
             $royaltyPct = $isRoyalty ? max(0.00, min(100.00, (float)($data['royalty_percentage'] ?? 0))) : 0.00;
 
-            $stmtUp->execute([
-                $rankName,
-                $joinings,
-                $reward,
-                $isRoyalty,
-                $royaltyPct,
-                $lvlInt
-            ]);
+            $stmtChk->execute([$lvlInt]);
+            if ($stmtChk->fetchColumn() > 0) {
+                $stmtUp->execute([
+                    $rankName,
+                    $joinings,
+                    $reward,
+                    $isRoyalty,
+                    $royaltyPct,
+                    $lvlInt
+                ]);
+            } else {
+                $stmtIns->execute([
+                    $lvlInt,
+                    $rankName,
+                    $joinings,
+                    $reward,
+                    $isRoyalty,
+                    $royaltyPct
+                ]);
+            }
         }
 
         $pdo->commit();
@@ -62,8 +82,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ranks'])) {
 }
 
 // Fetch 10 Ranks
-$stmt = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
-$ranksList = $stmt->fetchAll();
+try {
+    $stmt = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+    $ranksList = $stmt->fetchAll();
+} catch (Exception $e) {
+    initDatabaseSchema($pdo);
+    try {
+        $stmt = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+        $ranksList = $stmt->fetchAll();
+    } catch (Exception $e2) {
+        $ranksList = [];
+    }
+}
 
 // If fewer than 10 ranks exist, ensure array has 10 entries
 $ranksByLevel = [];
@@ -113,7 +143,7 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endif; ?>
 
     <!-- CMS Input Table Form -->
-    <form action="/admin/achiever_club.php" method="POST" class="space-y-6">
+    <form action="" method="POST" class="space-y-6">
         <input type="hidden" name="update_ranks" value="1">
 
         <div class="glass-card p-6 rounded-3xl border border-gold/20">
@@ -170,7 +200,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                                 <td class="p-3">
                                     <div class="relative">
-                                        <input type="number" step="0.01" min="0" max="100" id="royalty_pct_<?php echo $lvl; ?>" name="ranks[<?php echo $lvl; ?>][royalty_percentage]" value="<?php echo number_format((float)$r['royalty_percentage'], 2, '.', ''); ?>" <?php echo !$r['is_royalty_eligible'] ? 'disabled' : ''; ?> class="w-full bg-obsidian border border-gold/30 rounded-xl pl-3 pr-7 py-2 text-xs text-gold font-mono font-bold focus:outline-none focus:border-gold disabled:opacity-30 disabled:cursor-not-allowed">
+                                        <input type="number" step="0.01" min="0" max="100" id="royalty_pct_<?php echo $lvl; ?>" name="ranks[<?php echo $lvl; ?>][royalty_percentage]" value="<?php echo number_format((float)$r['royalty_percentage'], 2, '.', ''); ?>" class="w-full bg-obsidian border border-gold/30 rounded-xl pl-3 pr-7 py-2 text-xs text-gold font-mono font-bold focus:outline-none focus:border-gold <?php echo !$r['is_royalty_eligible'] ? 'opacity-30' : ''; ?>">
                                         <span class="absolute right-3 top-2 text-gold font-bold">%</span>
                                     </div>
                                 </td>
@@ -193,10 +223,9 @@ require_once __DIR__ . '/../includes/header.php';
 function toggleRoyaltyInput(selectElem, lvl) {
     const inputElem = document.getElementById('royalty_pct_' + lvl);
     if (selectElem.value === '1') {
-        inputElem.disabled = false;
         inputElem.classList.remove('opacity-30');
     } else {
-        inputElem.disabled = true;
+        inputElem.classList.add('opacity-30');
         inputElem.value = '0.00';
     }
 }

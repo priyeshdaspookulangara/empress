@@ -1039,6 +1039,85 @@ function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null
 }
 
 /**
+ * Evaluate Achiever Club Rank for a member based on direct joinings count
+ * Returns current rank, direct count, ranks list, and progress to next rank
+ */
+function getMemberAchieverRank($pdo, $memberId) {
+    $stmtDirect = $pdo->prepare("SELECT COUNT(*) FROM members WHERE sponsor_id = ? AND status = 'Active'");
+    $stmtDirect->execute([$memberId]);
+    $directCount = (int)$stmtDirect->fetchColumn();
+
+    try {
+        $stmtRanks = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+        $ranks = $stmtRanks->fetchAll();
+    } catch (Exception $e) {
+        initDatabaseSchema($pdo);
+        try {
+            $stmtRanks = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+            $ranks = $stmtRanks->fetchAll();
+        } catch (Exception $e2) {
+            $ranks = [];
+        }
+    }
+
+    if (empty($ranks)) {
+        $ranks = [];
+        $defaultRanks = [
+            1  => ['Star Achiever', 10, 50.00, 0, 0.00],
+            2  => ['Bronze Achiever', 25, 150.00, 0, 0.00],
+            3  => ['Silver Achiever', 50, 350.00, 1, 1.00],
+            4  => ['Gold Achiever', 100, 800.00, 1, 1.50],
+            5  => ['Platinum Achiever', 200, 1800.00, 1, 2.00],
+            6  => ['Diamond Achiever', 400, 4000.00, 1, 2.50],
+            7  => ['Crown Achiever', 800, 9000.00, 1, 3.00],
+            8  => ['Ambassador', 1500, 20000.00, 1, 3.50],
+            9  => ['Royal Ambassador', 3000, 45000.00, 1, 4.00],
+            10 => ['Global Legend', 5000, 100000.00, 1, 5.00],
+        ];
+        foreach ($defaultRanks as $lvl => $rData) {
+            $ranks[] = [
+                'rank_level' => $lvl,
+                'rank_name' => $rData[0],
+                'required_direct_joinings' => $rData[1],
+                'reward_amount' => $rData[2],
+                'is_royalty_eligible' => $rData[3],
+                'royalty_percentage' => $rData[4],
+            ];
+        }
+    }
+
+    $currentRank = null;
+    $nextRank = null;
+
+    foreach ($ranks as $r) {
+        if ($directCount >= (int)$r['required_direct_joinings']) {
+            $currentRank = $r;
+        } else {
+            if ($nextRank === null) {
+                $nextRank = $r;
+            }
+        }
+    }
+
+    $progressPercentage = 100;
+    if ($nextRank !== null) {
+        $prevRequired = $currentRank ? (int)$currentRank['required_direct_joinings'] : 0;
+        $nextRequired = (int)$nextRank['required_direct_joinings'];
+        $needed = $nextRequired - $prevRequired;
+        $achievedInLevel = max(0, $directCount - $prevRequired);
+        $progressPercentage = ($needed > 0) ? min(100, round(($achievedInLevel / $needed) * 100)) : 0;
+    }
+
+    return [
+        'direct_count' => $directCount,
+        'ranks' => $ranks,
+        'current_rank' => $currentRank,
+        'next_rank' => $nextRank,
+        'progress_percentage' => $progressPercentage
+    ];
+}
+
+/**
  * Submit USDT Fund Deposit Request
  */
 function submitFundDeposit($pdo, $userId, $txHash, $amount, $network = 'BEP-20') {
