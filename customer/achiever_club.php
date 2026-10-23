@@ -1,5 +1,8 @@
 <?php
 // customer/achiever_club.php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $pageTitle = "Achiever Club - Direct Referral Ranks";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';

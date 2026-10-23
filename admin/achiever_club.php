@@ -1,5 +1,8 @@
 <?php
 // admin/achiever_club.php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $pageTitle = "Achiever Club CMS - Direct Referral Ranks";
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -79,8 +82,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ranks'])) {
 }
 
 // Fetch 10 Ranks
-$stmt = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
-$ranksList = $stmt->fetchAll();
+try {
+    $stmt = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+    $ranksList = $stmt->fetchAll();
+} catch (Exception $e) {
+    initDatabaseSchema($pdo);
+    try {
+        $stmt = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+        $ranksList = $stmt->fetchAll();
+    } catch (Exception $e2) {
+        $ranksList = [];
+    }
+}
 
 // If fewer than 10 ranks exist, ensure array has 10 entries
 $ranksByLevel = [];

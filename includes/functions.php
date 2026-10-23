@@ -1047,8 +1047,18 @@ function getMemberAchieverRank($pdo, $memberId) {
     $stmtDirect->execute([$memberId]);
     $directCount = (int)$stmtDirect->fetchColumn();
 
-    $stmtRanks = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
-    $ranks = $stmtRanks->fetchAll();
+    try {
+        $stmtRanks = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+        $ranks = $stmtRanks->fetchAll();
+    } catch (Exception $e) {
+        initDatabaseSchema($pdo);
+        try {
+            $stmtRanks = $pdo->query("SELECT * FROM achiever_club ORDER BY rank_level ASC");
+            $ranks = $stmtRanks->fetchAll();
+        } catch (Exception $e2) {
+            $ranks = [];
+        }
+    }
 
     if (empty($ranks)) {
         $ranks = [];

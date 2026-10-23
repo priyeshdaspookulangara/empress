@@ -29,6 +29,7 @@ function getDBConnection() {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ]);
+        initDatabaseSchema($pdo, false);
         return $pdo;
     } catch (PDOException $e) {
         // Fallback to SQLite if MySQL fails
