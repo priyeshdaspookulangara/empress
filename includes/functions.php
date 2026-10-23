@@ -38,8 +38,8 @@ const REBIRTH_REWARDS = [
     7 => 6561
 ];
 
-// Configurable Rebirth Drip Time Interval (Minutes between consecutive rebirth placements for the same member)
-const REBIRTH_INTERVAL_MINUTES = 15;
+// Configurable Rebirth Drip Time Interval (Set to 0 for instant placement of all rebirths at once with zero delay)
+const REBIRTH_INTERVAL_MINUTES = 0;
 
 // Master Matrix Level Specification with Helping Fund & Rebirth Cost Deductions
 const MATRIX_LEVEL_SPECS = [
