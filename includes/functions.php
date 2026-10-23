@@ -1039,6 +1039,333 @@ function updateP2PWalletSettings($pdo, $memberId, $bep20Address, $fileArr = null
 }
 
 /**
+ * Audit BFS 3-Matrix Placement Structure & Financial Integrity
+ * Performs comprehensive checks on tree parents, position collisions, node capacities,
+ * and matrix commission distribution state.
+ *
+ * @param PDO $pdo Database connection
+ * @return array Detailed audit report array
+ */
+function auditBFSMatrixPlacement($pdo) {
+    $issues = [];
+    $warnings = [];
+
+    // 1. Fetch total active member stats
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM members WHERE status = 'Active'");
+    $totalActive = (int)$stmtTotal->fetchColumn();
+
+    $stmtNonRoot = $pdo->query("SELECT COUNT(*) FROM members WHERE member_id != 'RGI100000' AND status = 'Active'");
+    $totalNonRoot = (int)$stmtNonRoot->fetchColumn();
+
+    $stmtRebirths = $pdo->query("SELECT COUNT(*) FROM members WHERE (used_epin LIKE 'REBIRTH_%' OR name LIKE '%Rebirth%') AND status = 'Active'");
+    $totalRebirths = (int)$stmtRebirths->fetchColumn();
+
+    // 2. Check Root Member RGI100000
+    $stmtRoot = $pdo->prepare("SELECT member_id, placement_parent_id FROM members WHERE member_id = 'RGI100000'");
+    $stmtRoot->execute();
+    $root = $stmtRoot->fetch();
+    if (!$root) {
+        $issues[] = "CRITICAL: System Root member RGI100000 is missing from database!";
+    } elseif ($root['placement_parent_id'] !== null && $root['placement_parent_id'] !== '') {
+        $warnings[] = "Root member RGI100000 has a non-null placement parent: '{$root['placement_parent_id']}'. Expected NULL.";
+    }
+
+    // 3. Check for Orphan Nodes (non-root active members whose placement_parent_id does not exist)
+    $stmtOrphans = $pdo->query("
+        SELECT m.member_id, m.name, m.placement_parent_id
+        FROM members m
+        LEFT JOIN members p ON m.placement_parent_id = p.member_id
+        WHERE m.member_id != 'RGI100000' AND m.status = 'Active' AND (p.member_id IS NULL OR p.status != 'Active')
+    ");
+    $orphans = $stmtOrphans->fetchAll();
+    if (!empty($orphans)) {
+        foreach ($orphans as $orphan) {
+            $issues[] = "Orphan Member: '{$orphan['member_id']}' ({$orphan['name']}) has invalid placement parent '{$orphan['placement_parent_id']}' that does not exist or is inactive.";
+        }
+    }
+
+    // 4. Check for Over-capacity Parents (more than 3 children)
+    $stmtCapacity = $pdo->query("
+        SELECT placement_parent_id, COUNT(*) as child_count
+        FROM members
+        WHERE member_id != 'RGI100000' AND status = 'Active' AND placement_parent_id IS NOT NULL
+        GROUP BY placement_parent_id
+        HAVING child_count > 3
+    ");
+    $overCapacity = $stmtCapacity->fetchAll();
+    if (!empty($overCapacity)) {
+        foreach ($overCapacity as $oc) {
+            $issues[] = "Over-Capacity Parent: '{$oc['placement_parent_id']}' has {$oc['child_count']} direct matrix children (Maximum allowed is 3).";
+        }
+    }
+
+    // 5. Check for Position Collisions (duplicate matrix_position 1, 2, or 3 under same parent)
+    $stmtCollisions = $pdo->query("
+        SELECT placement_parent_id, matrix_position, COUNT(*) as pos_count
+        FROM members
+        WHERE member_id != 'RGI100000' AND status = 'Active' AND placement_parent_id IS NOT NULL
+        GROUP BY placement_parent_id, matrix_position
+        HAVING pos_count > 1
+    ");
+    $collisions = $stmtCollisions->fetchAll();
+    if (!empty($collisions)) {
+        foreach ($collisions as $col) {
+            $issues[] = "Position Collision: Parent '{$col['placement_parent_id']}' has {$col['pos_count']} children assigned to matrix position {$col['matrix_position']}.";
+        }
+    }
+
+    // 6. Check for Invalid Matrix Positions (not 1, 2, or 3)
+    $stmtInvalidPos = $pdo->query("
+        SELECT member_id, name, placement_parent_id, matrix_position
+        FROM members
+        WHERE member_id != 'RGI100000' AND status = 'Active' AND (matrix_position IS NULL OR matrix_position NOT IN (1, 2, 3))
+    ");
+    $invalidPos = $stmtInvalidPos->fetchAll();
+    if (!empty($invalidPos)) {
+        foreach ($invalidPos as $inv) {
+            $issues[] = "Invalid Position: Member '{$inv['member_id']}' ({$inv['name']}) under parent '{$inv['placement_parent_id']}' has invalid matrix_position: " . var_export($inv['matrix_position'], true);
+        }
+    }
+
+    // 7. Check BFS Alignment / Level Order Deviations
+    // Reconstruct expected BFS sequence from RGI100000 and compare against current placements
+    $queue = ['RGI100000'];
+    $bfsOrderedChildren = [];
+    $allActiveMembers = [];
+    $stmtAll = $pdo->query("SELECT member_id, placement_parent_id, matrix_position, created_at FROM members WHERE status = 'Active' ORDER BY id ASC");
+    $memberList = $stmtAll->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+
+    $misplacedCount = 0;
+    while (!empty($queue)) {
+        $currentParent = array_shift($queue);
+
+        // Find direct children in current DB
+        $stmtChilds = $pdo->prepare("SELECT member_id, matrix_position FROM members WHERE placement_parent_id = ? AND status = 'Active' ORDER BY matrix_position ASC");
+        $stmtChilds->execute([$currentParent]);
+        $children = $stmtChilds->fetchAll();
+
+        foreach ($children as $c) {
+            $bfsOrderedChildren[] = $c['member_id'];
+            $queue[] = $c['member_id'];
+        }
+    }
+
+    // Check if any non-root active member is unreachable in BFS tree traversal from Root
+    $unreachableCount = 0;
+    foreach ($memberList as $mId => $mData) {
+        if ($mId === 'RGI100000') continue;
+        if (!in_array($mId, $bfsOrderedChildren)) {
+            $unreachableCount++;
+            $issues[] = "Unreachable Node: Member '{$mId}' is disconnected from Root RGI100000 BFS traversal tree.";
+        }
+    }
+
+    // 8. Financial Matrix Payout Summary
+    $stmtMatrixTx = $pdo->query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type LIKE 'Matrix_Income_L%'");
+    $totalMatrixCommissions = (float)$stmtMatrixTx->fetchColumn();
+
+    $stmtTotalWallet = $pdo->query("SELECT COALESCE(SUM(balance), 0), COALESCE(SUM(user_wallet_50), 0), COALESCE(SUM(burfee_cart_wallet), 0), COALESCE(SUM(charity_wallet), 0) FROM wallets");
+    $walletTotals = $stmtTotalWallet->fetch(PDO::FETCH_NUM);
+
+    $isClean = empty($issues);
+
+    return [
+        'status' => $isClean ? 'OK' : 'MISTAKES_FOUND',
+        'is_clean' => $isClean,
+        'issues_count' => count($issues),
+        'warnings_count' => count($warnings),
+        'issues' => $issues,
+        'warnings' => $warnings,
+        'stats' => [
+            'total_active_members' => $totalActive,
+            'total_non_root_members' => $totalNonRoot,
+            'total_rebirth_nodes' => $totalRebirths,
+            'unreachable_nodes' => $unreachableCount,
+            'total_matrix_commissions_distributed' => $totalMatrixCommissions,
+            'total_wallet_balance' => (float)$walletTotals[0],
+            'total_user_wallet_50' => (float)$walletTotals[1],
+            'total_rayonglobal_cart_wallet' => (float)$walletTotals[2],
+            'total_charity_wallet' => (float)$walletTotals[3]
+        ]
+    ];
+}
+
+/**
+ * Rearrange BFS Autofill Matrix Placement (Spillover)
+ *
+ * Process:
+ * 1. Clears all amounts due to 3-matrix placement (wipes matrix income transactions, member rebirth rewards,
+ *    and matrix commission wallet balances across all accounts).
+ * 2. Fetches all active non-root members (primary customer accounts & rebirth nodes) ordered by original join/creation sequence.
+ * 3. Performs strict BFS level-by-level placement starting from Root RGI100000, updating placement_parent_id
+ *    and matrix_position (1, 2, 3) for every account.
+ * 4. Re-distributes matrix commissions up to 7 levels for all re-placed accounts in the new BFS sequence,
+ *    updating wallet balances and logging updated matrix transaction records cleanly.
+ *
+ * @param PDO $pdo Database connection
+ * @return array Summary of rearrangement operation
+ */
+function rearrangeBFSMatrixPlacement($pdo) {
+    $pdo->beginTransaction();
+
+    try {
+        // 1. Audit current total matrix amounts before clearing
+        $stmtPrevTx = $pdo->query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type LIKE 'Matrix_Income_L%' OR description LIKE '%Matrix Commission%'");
+        $clearedMatrixIncome = (float)$stmtPrevTx->fetchColumn();
+
+        // 2. Clear all 3-Matrix placement financial entries
+        // Delete Matrix Income transactions
+        $pdo->exec("DELETE FROM transactions WHERE type LIKE 'Matrix_Income_L%'");
+        // Delete Helping fund transactions received from matrix placement
+        $pdo->exec("DELETE FROM transactions WHERE type = 'Admin_Adjustment' AND description LIKE '%Helping Fund Received%'");
+
+        // Clear member rebirth records & pending queue
+        $pdo->exec("DELETE FROM member_rebirths");
+        $pdo->exec("DELETE FROM queued_rebirths");
+
+        // Reset all wallets balance to 0.00
+        $pdo->exec("UPDATE wallets SET balance = 0.00, user_wallet_50 = 0.00, burfee_cart_wallet = 0.00, charity_wallet = 0.00, user_wallet_60 = 0.00, company_wallet_40 = 0.00");
+
+        // Restore Direct Referral income if any non-matrix transactions exist
+        $stmtRefTx = $pdo->query("SELECT member_id, type, amount, description FROM transactions WHERE type = 'Direct_Referral'");
+        $refTxs = $stmtRefTx->fetchAll();
+
+        foreach ($refTxs as $rtx) {
+            $mId = $rtx['member_id'];
+            $amt = (float)$rtx['amount'];
+            $uRef = round($amt * 0.50, 2);
+            $bRef = round($amt * 0.30, 2);
+            $cRef = round($amt * 0.20, 2);
+
+            $stmtW = $pdo->prepare("SELECT member_id FROM wallets WHERE member_id = ?");
+            $stmtW->execute([$mId]);
+            if (!$stmtW->fetch()) {
+                $pdo->prepare("INSERT INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0, 0, 0, 0, 0, 0)")->execute([$mId]);
+            }
+
+            $upW = $pdo->prepare("
+                UPDATE wallets
+                SET balance = balance + ?,
+                    user_wallet_50 = user_wallet_50 + ?,
+                    burfee_cart_wallet = burfee_cart_wallet + ?,
+                    charity_wallet = charity_wallet + ?,
+                    user_wallet_60 = user_wallet_60 + ?,
+                    company_wallet_40 = company_wallet_40 + ?
+                WHERE member_id = ?
+            ");
+            $upW->execute([$amt, $uRef, $bRef, $cRef, $uRef, $bRef + $cRef, $mId]);
+        }
+
+        // Restore Approved Deposit wallet balances if any
+        $stmtDep = $pdo->query("SELECT user_id, amount FROM deposits WHERE status = 'Approved'");
+        $approvedDeposits = $stmtDep->fetchAll();
+        foreach ($approvedDeposits as $ad) {
+            $uId = $ad['user_id'];
+            $dAmount = (float)$ad['amount'];
+            $pdo->prepare("
+                UPDATE wallets
+                SET balance = balance + ?,
+                    user_wallet_50 = user_wallet_50 + ?,
+                    user_wallet_60 = user_wallet_60 + ?
+                WHERE member_id = ?
+            ")->execute([$dAmount, $dAmount, $dAmount, $uId]);
+        }
+
+        // 3. Fetch all active non-root members ordered by join creation sequence
+        $stmtMembers = $pdo->query("
+            SELECT member_id, sponsor_id, name, created_at
+            FROM members
+            WHERE member_id != 'RGI100000' AND status = 'Active'
+            ORDER BY id ASC, created_at ASC
+        ");
+        $membersToRearrange = $stmtMembers->fetchAll();
+
+        $totalMembersReplaced = count($membersToRearrange);
+
+        // Temporary map to track current BFS tree placement
+        // Reset placement parent and position for all non-root accounts
+        $pdo->exec("UPDATE members SET placement_parent_id = NULL, matrix_position = NULL WHERE member_id != 'RGI100000'");
+
+        // 4. Perform strict BFS auto-spillover placement starting from Root RGI100000
+        $bfsQueue = ['RGI100000'];
+        $parentChildCounts = ['RGI100000' => 0];
+
+        $stmtUpdatePlacement = $pdo->prepare("UPDATE members SET placement_parent_id = ?, matrix_position = ? WHERE member_id = ?");
+
+        foreach ($membersToRearrange as $m) {
+            $mId = $m['member_id'];
+
+            // Find current available BFS parent from queue
+            $targetParent = null;
+            $assignedPos = null;
+
+            while (!empty($bfsQueue)) {
+                $candidateParent = $bfsQueue[0];
+                if (!isset($parentChildCounts[$candidateParent])) {
+                    $parentChildCounts[$candidateParent] = 0;
+                }
+
+                if ($parentChildCounts[$candidateParent] < 3) {
+                    $targetParent = $candidateParent;
+                    $parentChildCounts[$candidateParent]++;
+                    $assignedPos = $parentChildCounts[$candidateParent];
+                    break;
+                } else {
+                    // Parent is full (3 children), pop from queue
+                    array_shift($bfsQueue);
+                }
+            }
+
+            if (!$targetParent) {
+                $targetParent = 'RGI100000';
+                $assignedPos = 1;
+            }
+
+            // Update database placement
+            $stmtUpdatePlacement->execute([$targetParent, $assignedPos, $mId]);
+
+            // Add new member node to BFS queue so it can act as parent for future downline nodes
+            $bfsQueue[] = $mId;
+            $parentChildCounts[$mId] = 0;
+        }
+
+        // 5. Re-distribute 3-Matrix Commissions for all re-placed accounts in BFS order
+        foreach ($membersToRearrange as $m) {
+            $mId = $m['member_id'];
+            distributeMatrixCommissions($pdo, $mId);
+        }
+
+        // 6. Log system rearrangement transaction
+        $stmtLogTx = $pdo->prepare("
+            INSERT INTO transactions (member_id, type, amount, wallet_type, status, description)
+            VALUES ('RGI100000', 'Admin_Adjustment', 0.00, 'Main', 'Credit', ?)
+        ");
+        $logDesc = "System BFS Autofill Placement rearranged for {$totalMembersReplaced} accounts. All matrix commissions cleared and re-distributed based on updated BFS placement order.";
+        $stmtLogTx->execute([$logDesc]);
+
+        $pdo->commit();
+
+        // 7. Re-audit post-rearrangement state
+        $postAudit = auditBFSMatrixPlacement($pdo);
+
+        return [
+            'success' => true,
+            'message' => "BFS Autofill Matrix Placement rearranged successfully! {$totalMembersReplaced} accounts re-placed in strict BFS order.",
+            'cleared_matrix_income' => $clearedMatrixIncome,
+            'replaced_count' => $totalMembersReplaced,
+            'post_audit' => $postAudit
+        ];
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => 'Rearrangement failed: ' . $e->getMessage()
+        ];
+    }
+}
+
+/**
  * Submit USDT Fund Deposit Request
  */
 function submitFundDeposit($pdo, $userId, $txHash, $amount, $network = 'BEP-20') {

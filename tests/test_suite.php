@@ -216,4 +216,24 @@ $m1RebirthCheck = $pdo->query("SELECT COUNT(*) FROM member_rebirths WHERE member
 assert((int)$m1RebirthCheck === 0);
 echo "PASSED\n";
 
+// Test 10: BFS Matrix Placement Audit & Rearrangement Engine
+echo "[TEST 10] Testing BFS Matrix Placement Audit & Rearrangement Engine... ";
+
+// Perform audit on current database
+$audit1 = auditBFSMatrixPlacement($pdo);
+assert(isset($audit1['status']));
+assert(isset($audit1['is_clean']));
+
+// Run rearrangement
+$rearrangeRes = rearrangeBFSMatrixPlacement($pdo);
+assert($rearrangeRes['success'] === true);
+assert(isset($rearrangeRes['cleared_matrix_income']));
+assert(isset($rearrangeRes['replaced_count']));
+
+// Post-rearrangement audit should be 100% clean (OK)
+$postAudit = auditBFSMatrixPlacement($pdo);
+assert($postAudit['is_clean'] === true);
+assert($postAudit['issues_count'] === 0);
+echo "PASSED\n";
+
 echo "\nALL AUTOMATED TESTS PASSED SUCCESSFULLY! 🚀\n";

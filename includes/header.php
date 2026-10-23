@@ -254,6 +254,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             <a href="/superadmin/matrix_tree.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-sitemap text-neon-cyan w-4 text-center"></i> Matrix Tree
                             </a>
+                            <a href="/superadmin/rearrange_placement.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
+                                <i class="fa-solid fa-arrows-split-up-and-left text-neon-cyan w-4 text-center"></i> Rearrange BFS Placement
+                            </a>
                             <a href="/superadmin/rebirths.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-neon-cyan/10 text-ice hover:text-neon-cyan transition">
                                 <i class="fa-solid fa-rotate text-neon-cyan w-4 text-center"></i> Rebirth Positions
                             </a>
@@ -313,6 +316,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             </a>
                             <a href="/admin/matrix_tree.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-sitemap text-gold w-4 text-center"></i> Matrix Tree
+                            </a>
+                            <a href="/admin/rearrange_placement.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
+                                <i class="fa-solid fa-arrows-split-up-and-left text-gold w-4 text-center"></i> Rearrange BFS Placement
                             </a>
                             <a href="/admin/rebirths.php" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gold/10 text-champagne hover:text-gold transition">
                                 <i class="fa-solid fa-rotate text-gold w-4 text-center"></i> Rebirth Positions
