@@ -16,7 +16,7 @@ require_once __DIR__ . '/includes/header.php';
             Reyon SpeedFill Plan 2.0
         </h1>
         <p class="text-champagne/90 text-sm md:text-lg mt-4 max-w-3xl mx-auto leading-relaxed">
-            The Industry's Most Practical & Lucrative <span class="text-gold font-bold">2-Matrix Progressive Autofill Model</span>. Engineered for rapid conversion with low entry friction and high lifetime retention.
+            The Industry's Most Practical & Lucrative <span class="text-gold font-bold">3-Matrix Progressive Autofill Model</span>. Engineered for rapid conversion with low entry friction and high lifetime retention.
         </p>
 
         <div class="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs font-bold">
@@ -30,7 +30,7 @@ require_once __DIR__ . '/includes/header.php';
                 <i class="fa-solid fa-layer-group"></i> 3 Directs = Full Master Unlock
             </span>
             <span class="bg-purple-500/10 text-purple-300 px-4 py-2 rounded-xl border border-purple-500/30 flex items-center gap-2">
-                <i class="fa-solid fa-gauge-high"></i> 40% Direct Speed Bonus ($4.00)
+                <i class="fa-solid fa-gauge-high"></i> 10% Direct Referrer Bonus ($1.00)
             </span>
         </div>
     </div>
@@ -86,7 +86,7 @@ require_once __DIR__ . '/includes/header.php';
                     <ul class="text-xs text-champagne/90 space-y-2.5 list-disc list-inside">
                         <li><strong class="text-white">1 Direct:</strong> Instantly unlocks Global Autofill entry & Levels 1-2 income.</li>
                         <li><strong class="text-white">2 Directs:</strong> Unlocks deeper Levels 3-4 + Rebirth rewards.</li>
-                        <li><strong class="text-white">3 Directs:</strong> Unlocks Master Levels 5-6 & Unlimited Withdrawals!</li>
+                        <li><strong class="text-white">3 Directs:</strong> Unlocks Master Levels 5-7 & Unlimited Withdrawals!</li>
                     </ul>
                 </div>
                 <div class="mt-4 pt-3 border-t border-emerald-400/20 text-[11px] text-emerald-300 font-bold">
@@ -100,8 +100,8 @@ require_once __DIR__ . '/includes/header.php';
     <div class="glass-card p-6 md:p-8 rounded-3xl border border-gold/30">
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
-                <h2 class="text-2xl font-bold font-cinzel text-gold">Progressive SpeedFill Unlock Schedule</h2>
-                <p class="text-xs text-champagne/70 mt-1">2-Matrix Global Spillover Tree ($10 Activation Package)</p>
+                <h2 class="text-2xl font-bold font-cinzel text-gold">3-Matrix Progressive SpeedFill Unlock Schedule</h2>
+                <p class="text-xs text-champagne/70 mt-1">3-Matrix Global Forced Spillover Tree ($10 Activation Package)</p>
             </div>
             <div class="flex gap-2">
                 <span class="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold">
@@ -111,7 +111,7 @@ require_once __DIR__ . '/includes/header.php';
                     2 Directs = L3-L4
                 </span>
                 <span class="px-3 py-1 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-[11px] font-bold">
-                    3 Directs = L5-L6
+                    3 Directs = L5-L7
                 </span>
             </div>
         </div>
@@ -124,6 +124,7 @@ require_once __DIR__ . '/includes/header.php';
                         <th class="p-3">Matrix Capacity</th>
                         <th class="p-3">Rate / Node</th>
                         <th class="p-3">Gross Level Pool</th>
+                        <th class="p-3">Helping Fund</th>
                         <th class="p-3 text-emerald-400">Required Directs</th>
                         <th class="p-3 text-emerald-400">Net Member Cash (Withdrawable)</th>
                         <th class="p-3">Auto Rebirth Funded</th>
@@ -132,67 +133,84 @@ require_once __DIR__ . '/includes/header.php';
                 <tbody class="divide-y divide-gold/10 text-champagne">
                     <tr class="bg-emerald-500/5">
                         <td class="p-3 font-bold text-gold">Level 1</td>
-                        <td class="p-3 font-mono">2 Nodes</td>
-                        <td class="p-3 font-mono">$0.75</td>
-                        <td class="p-3 font-mono">$1.50</td>
+                        <td class="p-3 font-mono">3 Nodes</td>
+                        <td class="p-3 font-mono">$5.00</td>
+                        <td class="p-3 font-mono">$15.00</td>
+                        <td class="p-3 font-mono text-amber-400">$10.00</td>
                         <td class="p-3 font-bold text-emerald-400">1 Direct Referral</td>
-                        <td class="p-3 font-bold text-emerald-400 font-mono">$1.20</td>
+                        <td class="p-3 font-bold text-emerald-400 font-mono">$2.50</td>
                         <td class="p-3 text-champagne/50">$0.00</td>
                     </tr>
                     <tr class="bg-emerald-500/5">
                         <td class="p-3 font-bold text-gold">Level 2</td>
-                        <td class="p-3 font-mono">4 Nodes</td>
-                        <td class="p-3 font-mono">$1.00</td>
-                        <td class="p-3 font-mono">$4.00</td>
+                        <td class="p-3 font-mono">9 Nodes</td>
+                        <td class="p-3 font-mono">$10.00</td>
+                        <td class="p-3 font-mono">$90.00</td>
+                        <td class="p-3 font-mono text-amber-400">$20.00</td>
                         <td class="p-3 font-bold text-emerald-400">1 Direct Referral</td>
-                        <td class="p-3 font-bold text-emerald-400 font-mono">$3.20</td>
+                        <td class="p-3 font-bold text-emerald-400 font-mono">$35.00</td>
                         <td class="p-3 text-champagne/50">$0.00</td>
                     </tr>
                     <tr class="bg-gold/5">
                         <td class="p-3 font-bold text-gold">Level 3</td>
-                        <td class="p-3 font-mono">8 Nodes</td>
-                        <td class="p-3 font-mono">$1.50</td>
-                        <td class="p-3 font-mono">$12.00</td>
+                        <td class="p-3 font-mono">27 Nodes</td>
+                        <td class="p-3 font-mono">$20.00</td>
+                        <td class="p-3 font-mono">$540.00</td>
+                        <td class="p-3 font-mono text-amber-400">$120.00</td>
                         <td class="p-3 font-bold text-gold">2 Direct Referrals</td>
-                        <td class="p-3 font-bold text-emerald-400 font-mono">$8.00</td>
-                        <td class="p-3 text-purple-300 font-semibold">$2.00 (2 Free Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400 font-mono">$110.00</td>
+                        <td class="p-3 text-purple-300 font-semibold">$100.00 (10 Free Rebirths)</td>
                     </tr>
                     <tr class="bg-gold/5">
                         <td class="p-3 font-bold text-gold">Level 4</td>
-                        <td class="p-3 font-mono">16 Nodes</td>
-                        <td class="p-3 font-mono">$2.00</td>
-                        <td class="p-3 font-mono">$32.00</td>
+                        <td class="p-3 font-mono">81 Nodes</td>
+                        <td class="p-3 font-mono">$30.00</td>
+                        <td class="p-3 font-mono">$2,430.00</td>
+                        <td class="p-3 font-mono text-amber-400">$60.00</td>
                         <td class="p-3 font-bold text-gold">2 Direct Referrals</td>
-                        <td class="p-3 font-bold text-emerald-400 font-mono">$21.60</td>
-                        <td class="p-3 text-purple-300 font-semibold">$5.00 (5 Free Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400 font-mono">$955.00</td>
+                        <td class="p-3 text-purple-300 font-semibold">$200.00 (20 Free Rebirths)</td>
                     </tr>
                     <tr class="bg-neon-cyan/5">
                         <td class="p-3 font-bold text-gold">Level 5</td>
-                        <td class="p-3 font-mono">32 Nodes</td>
-                        <td class="p-3 font-mono">$3.50</td>
-                        <td class="p-3 font-mono">$112.00</td>
+                        <td class="p-3 font-mono">243 Nodes</td>
+                        <td class="p-3 font-mono">$40.00</td>
+                        <td class="p-3 font-mono">$9,720.00</td>
+                        <td class="p-3 font-mono text-champagne/50">$0.00</td>
                         <td class="p-3 font-bold text-neon-cyan">3 Direct Referrals</td>
-                        <td class="p-3 font-bold text-emerald-400 font-mono">$73.60</td>
-                        <td class="p-3 text-purple-300 font-semibold">$20.00 (20 Free Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400 font-mono">$4,160.00</td>
+                        <td class="p-3 text-purple-300 font-semibold">$700.00 (70 Free Rebirths)</td>
                     </tr>
                     <tr class="bg-neon-cyan/5">
                         <td class="p-3 font-bold text-gold">Level 6</td>
-                        <td class="p-3 font-mono">64 Nodes</td>
-                        <td class="p-3 font-mono">$5.00</td>
-                        <td class="p-3 font-mono">$320.00</td>
+                        <td class="p-3 font-mono">729 Nodes</td>
+                        <td class="p-3 font-mono">$50.00</td>
+                        <td class="p-3 font-mono">$36,450.00</td>
+                        <td class="p-3 font-mono text-champagne/50">$0.00</td>
                         <td class="p-3 font-bold text-neon-cyan">3 Direct Referrals</td>
-                        <td class="p-3 font-bold text-emerald-400 font-mono">$216.00</td>
-                        <td class="p-3 text-purple-300 font-semibold">$50.00 (50 Free Rebirths)</td>
+                        <td class="p-3 font-bold text-emerald-400 font-mono">$17,225.00</td>
+                        <td class="p-3 text-purple-300 font-semibold">$1,000.00 (100 Free Rebirths)</td>
+                    </tr>
+                    <tr class="bg-purple-500/5">
+                        <td class="p-3 font-bold text-gold">Level 7</td>
+                        <td class="p-3 font-mono">2,187 Nodes</td>
+                        <td class="p-3 font-mono">$60.00</td>
+                        <td class="p-3 font-mono">$131,220.00</td>
+                        <td class="p-3 font-mono text-champagne/50">$0.00</td>
+                        <td class="p-3 font-bold text-neon-cyan">3 Direct Referrals</td>
+                        <td class="p-3 font-bold text-emerald-400 font-mono">$0.00</td>
+                        <td class="p-3 text-purple-300 font-semibold">$65,610.00 (6,561 Free Rebirths)</td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr class="bg-gold/20 text-gold font-bold">
-                        <td class="p-3" colspan="2">Total Potential (126 Nodes)</td>
-                        <td class="p-3 font-mono">$13.75</td>
-                        <td class="p-3 font-mono">$481.50</td>
+                        <td class="p-3" colspan="2">Total Potential (3,279 Nodes)</td>
+                        <td class="p-3 font-mono">$215.00</td>
+                        <td class="p-3 font-mono">$170,465.00</td>
+                        <td class="p-3 font-mono text-amber-400">$210.00</td>
                         <td class="p-3 text-emerald-300">Max 3 Directs Total</td>
-                        <td class="p-3 text-emerald-300 font-mono text-sm">$323.60</td>
-                        <td class="p-3 text-purple-300 font-mono">$77.00 (77 Free Rebirths)</td>
+                        <td class="p-3 text-emerald-300 font-mono text-sm">$22,487.50</td>
+                        <td class="p-3 text-purple-300 font-mono">$67,610.00 (6,761 Free Rebirths)</td>
                     </tr>
                 </tfoot>
             </table>
@@ -206,19 +224,19 @@ require_once __DIR__ . '/includes/header.php';
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-black/40 p-5 rounded-2xl border border-gold/20 text-center">
-                <span class="text-2xl font-extrabold text-emerald-400 block">$4.00</span>
+                <span class="text-2xl font-extrabold text-emerald-400 block">$1.00</span>
                 <span class="text-xs font-bold text-gold uppercase tracking-wider block mt-1">1 Direct Referral</span>
-                <p class="text-[11px] text-champagne/70 mt-2">Earn $4.00 instant 40% Direct Speed Bonus + Unlock Level 1 & 2 Global Autofill!</p>
+                <p class="text-[11px] text-champagne/70 mt-2">Earn $1.00 instant 10% Direct Referrer Bonus + Unlock Level 1 & 2 Global Autofill!</p>
             </div>
             <div class="bg-black/40 p-5 rounded-2xl border border-gold/20 text-center">
-                <span class="text-2xl font-extrabold text-emerald-400 block">$8.00</span>
+                <span class="text-2xl font-extrabold text-emerald-400 block">$2.00</span>
                 <span class="text-xs font-bold text-gold uppercase tracking-wider block mt-1">2 Direct Referrals</span>
-                <p class="text-[11px] text-champagne/70 mt-2">Recover 80% of your $10 package instantly + Unlock Level 3 & 4 + 7 Free Rebirths!</p>
+                <p class="text-[11px] text-champagne/70 mt-2">Earn $2.00 direct referrer income + Unlock Level 3 & 4 + 10 Free Rebirth Rewards!</p>
             </div>
             <div class="bg-black/40 p-5 rounded-2xl border border-gold/20 text-center">
-                <span class="text-2xl font-extrabold text-emerald-400 block">$12.00</span>
+                <span class="text-2xl font-extrabold text-emerald-400 block">$3.00</span>
                 <span class="text-xs font-bold text-gold uppercase tracking-wider block mt-1">3 Direct Referrals</span>
-                <p class="text-[11px] text-champagne/70 mt-2">120% Pure Net Profit ($12 cash back) + Unlock Full Master Matrix (Level 1-6) & $323.60 potential!</p>
+                <p class="text-[11px] text-champagne/70 mt-2">Earn $3.00 total direct income + Unlock Full Master 3-Matrix (Levels 1-7) & $22,487.50 potential!</p>
             </div>
         </div>
     </div>
