@@ -29,12 +29,13 @@ const MATRIX_LEVEL_CAPACITY = [
 ];
 
 // Rebirth Rewards per Level Completion Schedule
-// Level 7: 50% of total gross amount ($131,220 * 0.50 = $65,610 -> 6,561 Rebirths @ $10 package)
+// 6-Level Cycle: 10 + 50 + 200 + 500 = 760 Rebirth IDs per user
+// Level 7: Preserved 50% master extension ($131,220 * 0.50 = $65,610 -> 6,561 Rebirths @ $10 package)
 const REBIRTH_REWARDS = [
     3 => 10,
-    4 => 20,
-    5 => 70,
-    6 => 100,
+    4 => 50,
+    5 => 200,
+    6 => 500,
     7 => 6561
 ];
 
