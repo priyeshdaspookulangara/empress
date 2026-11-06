@@ -251,10 +251,10 @@ require_once __DIR__ . '/../includes/header.php';
                             <input type="number" name="rebirth_count" value="10" min="1" max="6561" class="w-20 bg-obsidian border border-gold/30 rounded px-2 py-1 text-xs text-champagne font-mono">
                             <select name="level" class="bg-obsidian border border-gold/30 rounded px-2 py-1 text-xs text-champagne font-mono">
                                 <option value="3">Level 3 (10)</option>
-                                <option value="4">Level 4 (20)</option>
-                                <option value="5">Level 5 (70)</option>
-                                <option value="6">Level 6 (100)</option>
-                                <option value="7">Level 7 (6,561)</option>
+                                <option value="4">Level 4 (50)</option>
+                                <option value="5">Level 5 (200)</option>
+                                <option value="6">Level 6 (500)</option>
+                                <option value="7">Level 7 / Cycle Completion (3,000 Charity IDs)</option>
                             </select>
                         </div>
                     </div>

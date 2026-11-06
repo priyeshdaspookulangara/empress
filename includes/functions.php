@@ -29,89 +29,93 @@ const MATRIX_LEVEL_CAPACITY = [
 ];
 
 // Rebirth Rewards per Level Completion Schedule
-// Level 7: 50% of total gross amount ($131,220 * 0.50 = $65,610 -> 6,561 Rebirths @ $10 package)
+// Levels 3-6: 760 Total Rebirth IDs (L3: 10, L4: 50, L5: 200, L6: 500)
+// Level 7: Backend / Platform Cycle completion allocation (3,000 Extra Charity IDs)
 const REBIRTH_REWARDS = [
     3 => 10,
-    4 => 20,
-    5 => 70,
-    6 => 100,
-    7 => 6561
+    4 => 50,
+    5 => 200,
+    6 => 500,
+    7 => 3000
 ];
 
 // Configurable Rebirth Drip Time Interval (Minutes between consecutive rebirth placements for the same member)
 const REBIRTH_INTERVAL_MINUTES = 15;
 
 // Master Matrix Level Specification with Helping Fund & Rebirth Cost Deductions
+// Calibrated to the Rayon Global Impact Helping Platform:
+// L1: $4.00, L2: $56.00, L3: $188.00, L4: $1,444.00, L5: $5,776.00, L6: $24,160.00 ($31,628.00 Total Help Received)
+// Level 7 is retained in backend architecture (hidden from customers)
 const MATRIX_LEVEL_SPECS = [
     1 => [
         'capacity' => 3,
-        'gross_per_node' => 5.00,             // $5.00
-        'helping_per_node' => 3.33333333333,  // Total $10.00 / 3
-        'net_pool_per_node' => 1.66666666667, // $1.6667
-        'user_wallet_per_node' => 0.83333333333, // Total $2.50 / 3
-        'burfee_cart_per_node' => 0.50,        // Total $1.50 / 3
-        'charity_per_node' => 0.33333333333,    // Total $1.00 / 3
+        'gross_per_node' => 2.66666666667,    // Total $8.00 / 3
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 2.66666666667, // Total $8.00 / 3
+        'user_wallet_per_node' => 1.33333333333, // Total $4.00 / 3 ($4.00 Net Member Cash)
+        'burfee_cart_per_node' => 0.80,        // Total $2.40 / 3 (60% Company)
+        'charity_per_node' => 0.53333333333,    // Total $1.60 / 3 (40% Company)
         'rebirth_cost_per_node' => 0.00,
     ],
     2 => [
         'capacity' => 9,
-        'gross_per_node' => 10.00,            // $10.00
-        'helping_per_node' => 2.22222222222,  // Total $20.00 / 9
-        'net_pool_per_node' => 7.77777777778, // $7.7778
-        'user_wallet_per_node' => 3.88888888889, // Total $35.00 / 9
-        'burfee_cart_per_node' => 2.33333333333, // Total $21.00 / 9
-        'charity_per_node' => 1.55555555556,    // Total $14.00 / 9
+        'gross_per_node' => 12.44444444444,   // Total $112.00 / 9
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 12.44444444444, // Total $112.00 / 9
+        'user_wallet_per_node' => 6.22222222222, // Total $56.00 / 9 ($56.00 Net Member Cash)
+        'burfee_cart_per_node' => 3.73333333333, // Total $33.60 / 9 (60% Company)
+        'charity_per_node' => 2.48888888889,    // Total $22.40 / 9 (40% Company)
         'rebirth_cost_per_node' => 0.00,
     ],
     3 => [
         'capacity' => 27,
-        'gross_per_node' => 20.00,            // $20.00
-        'helping_per_node' => 4.44444444444,  // Total $120.00 / 27
-        'net_pool_per_node' => 15.55555555556, // Total $420.00 / 27
-        'user_wallet_per_node' => 4.07407407407, // Total $110.00 / 27
-        'burfee_cart_per_node' => 4.66666666667, // Total $126.00 / 27
-        'charity_per_node' => 3.11111111111,    // Total $84.00 / 27
-        'rebirth_cost_per_node' => 3.70370370370, // Total $100.00 / 27
+        'gross_per_node' => 21.33333333333,   // Total $576.00 / 27
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 21.33333333333, // Total $576.00 / 27
+        'user_wallet_per_node' => 6.96296296296, // Total $188.00 / 27 ($188.00 Net Member Cash)
+        'burfee_cart_per_node' => 6.40,        // Total $172.80 / 27 (60% Company)
+        'charity_per_node' => 4.26666666667,    // Total $115.20 / 27 (40% Company)
+        'rebirth_cost_per_node' => 3.70370370370, // Total $100.00 / 27 (10 Rebirth IDs)
     ],
     4 => [
         'capacity' => 81,
-        'gross_per_node' => 30.00,            // $30.00 ($2,430.00 total)
-        'helping_per_node' => 0.74074074074,  // Total $60.00 / 81 deducted from Customer Share
-        'net_pool_per_node' => 30.00,          // Total $2,430.00 / 81
-        'user_wallet_per_node' => 11.79012345679, // Total $955.00 / 81 ($1,215 50% share - $60 helping fund - $200 20 rebirths)
-        'burfee_cart_per_node' => 9.00,        // Total $729.00 / 81 (60% of $1,215 Company share)
-        'charity_per_node' => 6.00,            // Total $486.00 / 81 (40% of $1,215 Company share)
-        'rebirth_cost_per_node' => 2.46913580247, // Total $200.00 / 81
+        'gross_per_node' => 48.00,            // Total $3,888.00 / 81
+        'helping_per_node' => 0.00,
+        'net_pool_per_node' => 48.00,          // Total $3,888.00 / 81
+        'user_wallet_per_node' => 17.82716049383, // Total $1,444.00 / 81 ($1,444.00 Net Member Cash)
+        'burfee_cart_per_node' => 14.40,       // Total $1,166.40 / 81 (60% Company)
+        'charity_per_node' => 9.60,            // Total $777.60 / 81 (40% Company)
+        'rebirth_cost_per_node' => 6.17283950617, // Total $500.00 / 81 (50 Rebirth IDs)
     ],
     5 => [
         'capacity' => 243,
-        'gross_per_node' => 40.00,            // $40.00
+        'gross_per_node' => 64.00,            // Total $15,552.00 / 243
         'helping_per_node' => 0.00,
-        'net_pool_per_node' => 40.00,
-        'user_wallet_per_node' => 17.11934156379, // Total $4160.00 / 243
-        'burfee_cart_per_node' => 12.00,       // Total $2916.00 / 243
-        'charity_per_node' => 8.00,            // Total $1944.00 / 243
-        'rebirth_cost_per_node' => 2.88065843621, // Total $700.00 / 243
+        'net_pool_per_node' => 64.00,          // Total $15,552.00 / 243
+        'user_wallet_per_node' => 23.76954732510, // Total $5,776.00 / 243 ($5,776.00 Net Member Cash)
+        'burfee_cart_per_node' => 19.20,       // Total $4,665.60 / 243 (60% Company)
+        'charity_per_node' => 12.80,           // Total $3,110.40 / 243 (40% Company)
+        'rebirth_cost_per_node' => 8.23045267490, // Total $2,000.00 / 243 (200 Rebirth IDs)
     ],
     6 => [
         'capacity' => 729,
-        'gross_per_node' => 50.00,            // $50.00
+        'gross_per_node' => 80.00,            // Total $58,320.00 / 729
         'helping_per_node' => 0.00,
-        'net_pool_per_node' => 50.00,
-        'user_wallet_per_node' => 23.62825788752, // Total $17225.00 / 729
-        'burfee_cart_per_node' => 15.00,       // Total $10935.00 / 729
-        'charity_per_node' => 10.00,           // Total $7290.00 / 729
-        'rebirth_cost_per_node' => 1.37174211248, // Total $1000.00 / 729
+        'net_pool_per_node' => 80.00,          // Total $58,320.00 / 729
+        'user_wallet_per_node' => 33.14128943759, // Total $24,160.00 / 729 ($24,160.00 Net Member Cash)
+        'burfee_cart_per_node' => 24.00,       // Total $17,496.00 / 729 (60% Company)
+        'charity_per_node' => 16.00,           // Total $11,664.00 / 729 (40% Company)
+        'rebirth_cost_per_node' => 6.85871056241, // Total $5,000.00 / 729 (500 Rebirth IDs)
     ],
     7 => [
-        'capacity' => 2187,                    // 729 * 3
+        'capacity' => 2187,                    // 729 * 3 (Backend / Cycle Completion Level)
         'gross_per_node' => 60.00,            // $60.00 ($131,220 total gross)
         'helping_per_node' => 0.00,
         'net_pool_per_node' => 60.00,
-        'user_wallet_per_node' => 0.00,        // Customer 50% ($30.00 per node) used entirely for rebirths ($0.00 net withdrawable cash)
-        'burfee_cart_per_node' => 18.00,       // Burfee Cart 30% of gross ($18.00 per node = $39,366 total)
-        'charity_per_node' => 12.00,           // Charity 20% of gross ($12.00 per node = $26,244 total)
-        'rebirth_cost_per_node' => 30.00,      // 50% Customer Wallet portion ($30.00 per node = $65,610 total)
+        'user_wallet_per_node' => 0.00,        // Level 7 hidden from customer portal, dedicated to Charity ID spillover
+        'burfee_cart_per_node' => 18.00,       // Rayon Cart 30% of gross ($18.00 per node)
+        'charity_per_node' => 12.00,           // Charity 20% of gross ($12.00 per node)
+        'rebirth_cost_per_node' => 30.00,      // Dedicated to 3,000 Charity IDs cycle generation
     ]
 ];
 
@@ -370,11 +374,11 @@ function hasMemberCompletedLevel3($pdo, $memberId) {
 
 /**
  * Check level completion and grant automated Rebirths:
- * Level 3 Completion => 10 Rebirths
- * Level 4 Completion => 20 Rebirths
- * Level 5 Completion => 70 Rebirths
- * Level 6 Completion => 100 Rebirths
- * Level 7 Completion => 6,561 Rebirths (50% of gross amount used for rebirths)
+ * Level 3 Completion => 10 Rebirth IDs (Free Insurance / Extra Income)
+ * Level 4 Completion => 50 Rebirth IDs (More Support)
+ * Level 5 Completion => 200 Rebirth IDs (Bigger Dreams)
+ * Level 6 Completion => 500 Rebirth IDs (Massive Growth)
+ * Level 7 Completion => 3,000 Extra Charity IDs (Platform cycle completion)
  */
 function checkAndGrantLevelRebirths($pdo, $memberId, $level) {
     if (!isset(REBIRTH_REWARDS[$level])) {
