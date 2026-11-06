@@ -104,31 +104,31 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="glass-card p-4 rounded-2xl border border-gold/20">
             <span class="text-[10px] uppercase font-semibold text-champagne/70 block">Level 3 Completion</span>
             <div class="text-xl font-bold text-emerald-400 mt-1">+10 Rebirths</div>
-            <span class="text-[10px] text-champagne/40">27 Nodes Completed</span>
+            <span class="text-[10px] text-champagne/40">27 Nodes Completed (Free Insurance)</span>
         </div>
 
         <div class="glass-card p-4 rounded-2xl border border-gold/20">
             <span class="text-[10px] uppercase font-semibold text-champagne/70 block">Level 4 Completion</span>
-            <div class="text-xl font-bold text-emerald-400 mt-1">+20 Rebirths</div>
-            <span class="text-[10px] text-champagne/40">81 Nodes Completed</span>
+            <div class="text-xl font-bold text-emerald-400 mt-1">+50 Rebirths</div>
+            <span class="text-[10px] text-champagne/40">81 Nodes Completed (More Support)</span>
         </div>
 
         <div class="glass-card p-4 rounded-2xl border border-gold/20">
             <span class="text-[10px] uppercase font-semibold text-champagne/70 block">Level 5 Completion</span>
-            <div class="text-xl font-bold text-emerald-400 mt-1">+70 Rebirths</div>
-            <span class="text-[10px] text-champagne/40">243 Nodes Completed</span>
+            <div class="text-xl font-bold text-emerald-400 mt-1">+200 Rebirths</div>
+            <span class="text-[10px] text-champagne/40">243 Nodes Completed (Bigger Dreams)</span>
         </div>
 
         <div class="glass-card p-4 rounded-2xl border border-gold/20">
             <span class="text-[10px] uppercase font-semibold text-champagne/70 block">Level 6 Completion</span>
-            <div class="text-xl font-bold text-emerald-400 mt-1">+100 Rebirths</div>
-            <span class="text-[10px] text-champagne/40">729 Nodes Completed</span>
+            <div class="text-xl font-bold text-emerald-400 mt-1">+500 Rebirths</div>
+            <span class="text-[10px] text-champagne/40">729 Nodes Completed (Massive Growth)</span>
         </div>
 
-        <div class="glass-card p-4 rounded-2xl border border-gold/20">
-            <span class="text-[10px] uppercase font-semibold text-champagne/70 block">Level 7 Completion</span>
-            <div class="text-xl font-bold text-emerald-400 mt-1">+6,561 Rebirths</div>
-            <span class="text-[10px] text-champagne/40">2,187 Nodes Completed (50% Rebirths)</span>
+        <div class="glass-card p-4 rounded-2xl border border-gold/20 bg-gold/5">
+            <span class="text-[10px] uppercase font-semibold text-gold block">Cycle Completion</span>
+            <div class="text-xl font-bold text-neon-cyan mt-1">+3,000 Charity IDs</div>
+            <span class="text-[10px] text-champagne/60">Community Matrix Support Injection</span>
         </div>
     </div>
 
