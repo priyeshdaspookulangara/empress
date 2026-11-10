@@ -63,7 +63,10 @@ function authenticateApiUser($pdo, $requiredType = 'member') {
 
     $token = trim($matches[1]);
 
-    $stmt = $pdo->prepare("SELECT * FROM api_tokens WHERE token = ? AND expires_at > NOW()");
+    $stmt = $pdo->prepare("SELECT * FROM api_tokens WHERE token = ? AND expires_at > datetime('now')");
+    if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') {
+        $stmt = $pdo->prepare("SELECT * FROM api_tokens WHERE token = ? AND expires_at > NOW()");
+    }
     $stmt->execute([$token]);
     $tokenRow = $stmt->fetch();
 
