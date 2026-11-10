@@ -25,22 +25,56 @@ if (!$member) {
 // Fetch Wallet Details
 $stmtW = $pdo->prepare("SELECT * FROM wallets WHERE member_id = ?");
 $stmtW->execute([$memberId]);
-$wallet = $stmtW->fetch() ?: ['balance' => 0.00, 'user_wallet_60' => 0.00, 'company_wallet_40' => 0.00];
+$wallet = $stmtW->fetch() ?: ['balance' => 0.00, 'user_wallet_50' => 0.00, 'burfee_cart_wallet' => 0.00, 'charity_wallet' => 0.00, 'user_wallet_60' => 0.00, 'company_wallet_40' => 0.00];
 
 // Count Direct Referrals
 $stmtRef = $pdo->prepare("SELECT COUNT(*) FROM members WHERE sponsor_id = ?");
 $stmtRef->execute([$memberId]);
-$directReferralsCount = $stmtRef->fetchColumn();
+$directReferralsCount = (int)$stmtRef->fetchColumn();
 
-// Count Downline (up to 7 levels)
+// Sum Direct Referral Commission ($ USD)
+$stmtRefInc = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE member_id = ? AND type = 'Direct_Referral' AND status = 'Credit'");
+$stmtRefInc->execute([$memberId]);
+$directReferralCommission = (float)$stmtRefInc->fetchColumn();
+
+// Count Downline (up to 7 levels, customer-facing 6 levels)
 $downline = getMemberDownline6Levels($pdo, $memberId);
 $downlineCount = count($downline);
+
+// Downline Counts by Level (Levels 1 to 6)
+$downlineCountsByLevel = array_fill(1, 6, 0);
+foreach ($downline as $d) {
+    $lvl = (int)($d['matrix_level'] ?? 0);
+    if ($lvl >= 1 && $lvl <= 6) {
+        $downlineCountsByLevel[$lvl]++;
+    }
+}
+
+// Sum Matrix Level Commissions ($ USD)
+$stmtMatInc = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND status = 'Credit'");
+$stmtMatInc->execute([$memberId]);
+$totalLevelCommission = (float)$stmtMatInc->fetchColumn();
+
+// Per-level breakdown (Levels 1 to 6)
+$stmtLvlBreakdown = $pdo->prepare("SELECT type, COALESCE(SUM(amount), 0) as total FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income_L%' AND status = 'Credit' GROUP BY type");
+$stmtLvlBreakdown->execute([$memberId]);
+$levelCommissionsMap = $stmtLvlBreakdown->fetchAll(PDO::FETCH_KEY_PAIR);
+
+$levelCommissionsByLevel = [];
+for ($i = 1; $i <= 6; $i++) {
+    $levelCommissionsByLevel[$i] = (float)($levelCommissionsMap["Matrix_Income_L$i"] ?? 0.00);
+}
+
+// Total Approved Withdrawals ($ USD)
+$stmtWd = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE member_id = ? AND status = 'Approved'");
+$stmtWd->execute([$memberId]);
+$totalWithdrawn = (float)$stmtWd->fetchColumn();
 
 // Total Rebirths & Aggregated Rebirth Income
 $totalRebirths = getMemberTotalRebirths($pdo, $memberId);
 $rebirthData = getAggregateRebirthEarnings($pdo, $memberId);
 $combinedTotalIncome = $wallet['balance'] + $rebirthData['total_balance'];
-$combinedCustomerWallet = $wallet['user_wallet_60'] + $rebirthData['user_wallet_50'];
+$combinedCustomerWallet = ($wallet['user_wallet_50'] ?? $wallet['user_wallet_60']) + $rebirthData['user_wallet_50'];
 
 // Recent Transactions
 $stmtTx = $pdo->prepare("SELECT * FROM transactions WHERE member_id = ? ORDER BY id DESC LIMIT 5");
@@ -84,48 +118,225 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Account Status Banner -->
-    <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 flex items-center gap-3">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
-        <span class="text-xs text-emerald-300 font-semibold">Account Active! Payout withdrawals are enabled for your BEP-20 wallet.</span>
+    <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-between gap-3 flex-wrap">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+            <span class="text-xs text-emerald-300 font-semibold">Account Active! Payout withdrawals are enabled for your BEP-20 wallet.</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+            <span class="text-champagne/70">KYC Status:</span>
+            <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase border <?php
+                echo match($member['kyc_status']) {
+                    'Approved' => 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
+                    'Submitted' => 'bg-blue-500/20 text-blue-400 border-blue-500/40',
+                    'Rejected' => 'bg-red-500/20 text-red-400 border-red-500/40',
+                    default => 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                };
+            ?>"><?php echo htmlspecialchars($member['kyc_status']); ?></span>
+        </div>
     </div>
 
-    <!-- Overview Financial Cards Grid using Template .grid .stats .card .stat -->
-    <div class="grid stats">
-        <!-- Total Earnings -->
-        <div class="card stat">
-            <span>Primary Total Income</span>
-            <b>$<?php echo number_format($wallet['balance'], 2); ?></b>
-            <?php if ($rebirthData['total_balance'] > 0): ?>
-                <span class="chg up">Group Total: $<?php echo number_format($combinedTotalIncome, 2); ?> (incl. Rebirths)</span>
-            <?php else: ?>
-                <span class="chg up">+100% Commission Solvency</span>
-            <?php endif; ?>
+    <!-- Overview Financial KPI Cards Grid -->
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie"></i> Financial & Earnings Overview
+            </h2>
+            <span class="text-[11px] text-champagne/60 font-mono">USD ($) Currency</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Total Earnings -->
+            <div class="glass-card p-6 rounded-3xl border border-gold/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center text-gold mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Total Income</span>
+                        <div class="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/30 text-gold">
+                            <i class="fa-solid fa-sack-dollar text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-2xl font-extrabold gold-gradient-text block">$<?php echo number_format($wallet['balance'], 2); ?></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-emerald-400 font-semibold">
+                    <?php if ($rebirthData['total_balance'] > 0): ?>
+                        Group Total: $<?php echo number_format($combinedTotalIncome, 2); ?> (incl. Rebirths)
+                    <?php else: ?>
+                        +100% Commission Solvency
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Customer Wallet (50%) -->
+            <div class="glass-card p-6 rounded-3xl border border-emerald-500/40 bg-emerald-500/5 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center text-emerald-400 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Customer Wallet (50%)</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 text-emerald-400">
+                            <i class="fa-solid fa-wallet text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-2xl font-extrabold text-emerald-400 block">$<?php echo number_format($wallet['user_wallet_50'] ?? $wallet['user_wallet_60'], 2); ?></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-emerald-500/20 text-[11px] text-emerald-300">
+                    <?php if ($rebirthData['user_wallet_50'] > 0): ?>
+                        Group Withdrawable: $<?php echo number_format($combinedCustomerWallet, 2); ?>
+                    <?php else: ?>
+                        Eligible for Payout Withdrawal
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Rayon Cart & Charity Allocation -->
+            <div class="glass-card p-6 rounded-3xl border border-gold/20 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center text-gold mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Rayon Cart & Charity</span>
+                        <div class="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/30 text-gold">
+                            <i class="fa-solid fa-hand-holding-heart text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-2xl font-extrabold text-gold block">$<?php echo number_format(($wallet['burfee_cart_wallet'] ?? 0) + ($wallet['charity_wallet'] ?? 0), 2); ?></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-champagne/80 flex justify-between">
+                    <span>Cart: <strong class="text-gold">$<?php echo number_format($wallet['burfee_cart_wallet'] ?? 0, 2); ?></strong></span>
+                    <span>Charity: <strong class="text-emerald-400">$<?php echo number_format($wallet['charity_wallet'] ?? 0, 2); ?></strong></span>
+                </div>
+            </div>
+
+            <!-- Total Payouts Withdrawn -->
+            <a href="/customer/wallet.php" class="glass-card p-6 rounded-3xl border border-gold/30 hover:border-gold/60 transition group flex flex-col justify-between block">
+                <div>
+                    <div class="flex justify-between items-center text-gold mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70 group-hover:text-gold transition">Total Withdrawn</span>
+                        <div class="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/30 text-gold group-hover:scale-110 transition">
+                            <i class="fa-solid fa-money-bill-transfer text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-2xl font-extrabold text-champagne block group-hover:text-gold transition">$<?php echo number_format($totalWithdrawn, 2); ?></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-champagne/60 flex items-center justify-between">
+                    <span>Approved Payouts</span>
+                    <i class="fa-solid fa-arrow-right text-gold text-xs"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Referral & Level Commission KPI Details Section -->
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-diagram-project"></i> Referral & Matrix Commission KPIs
+            </h2>
+            <span class="text-[11px] text-champagne/60 font-mono">Performance Metrics</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Direct Referrals Count -->
+            <div class="glass-card p-6 rounded-3xl border border-gold/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center text-gold mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Direct Referrals</span>
+                        <div class="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/30 text-gold">
+                            <i class="fa-solid fa-user-plus text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-3xl font-extrabold gold-gradient-text block"><?php echo $directReferralsCount; ?> <small class="text-xs font-normal text-champagne">Members</small></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-champagne/70 flex items-center justify-between">
+                    <span>Sponsored by you</span>
+                    <span class="font-mono text-emerald-400 font-bold">10% per join</span>
+                </div>
+            </div>
+
+            <!-- Direct Referral Commission ($ USD) -->
+            <div class="glass-card p-6 rounded-3xl border border-gold/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center text-gold mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Direct Referral Income</span>
+                        <div class="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/30 text-gold">
+                            <i class="fa-solid fa-coins text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-3xl font-extrabold text-emerald-400 block">$<?php echo number_format($directReferralCommission, 2); ?></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-champagne/70 flex items-center justify-between">
+                    <span>Direct 10% earnings</span>
+                    <span class="font-mono text-gold font-bold">$1.00 / join</span>
+                </div>
+            </div>
+
+            <!-- Level Commission / Matrix Income -->
+            <div class="glass-card p-6 rounded-3xl border border-gold/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center text-gold mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70">Level Commission</span>
+                        <div class="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/30 text-gold">
+                            <i class="fa-solid fa-layer-group text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-3xl font-extrabold gold-gradient-text block">$<?php echo number_format($totalLevelCommission, 2); ?></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-champagne/70 flex items-center justify-between">
+                    <span>Matrix Spillover</span>
+                    <span class="font-mono text-emerald-400 font-bold">Levels 1 – 6</span>
+                </div>
+            </div>
+
+            <!-- Total Matrix Downline & Rebirths -->
+            <a href="/customer/rebirths.php" class="glass-card p-6 rounded-3xl border border-gold/30 hover:border-gold/60 transition group flex flex-col justify-between block">
+                <div>
+                    <div class="flex justify-between items-center text-gold mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-champagne/70 group-hover:text-gold transition">Matrix Network</span>
+                        <div class="w-9 h-9 rounded-xl bg-gold/10 flex items-center justify-center border border-gold/30 text-gold group-hover:scale-110 transition">
+                            <i class="fa-solid fa-sitemap text-base"></i>
+                        </div>
+                    </div>
+                    <b class="text-3xl font-extrabold text-champagne block group-hover:text-gold transition"><?php echo $downlineCount; ?> <small class="text-xs font-normal text-gold">Members</small></b>
+                </div>
+                <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-champagne/70 flex items-center justify-between">
+                    <span>Rebirth Nodes: <strong class="text-gold font-mono"><?php echo $totalRebirths; ?></strong></span>
+                    <i class="fa-solid fa-arrow-right text-gold text-xs"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Level Commission & Network Performance Breakdown (Levels 1 to 6) -->
+    <div class="glass-card p-6 rounded-3xl border border-gold/20">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+            <div>
+                <h3 class="text-lg font-bold text-gold flex items-center gap-2">
+                    <i class="fa-solid fa-bars-staggered"></i> Level Commission & Network Breakdown
+                </h3>
+                <p class="text-xs text-champagne/60 mt-0.5">Detailed breakdown of members and commission earnings across matrix Levels 1 through 6</p>
+            </div>
+            <a href="/customer/teams.php" class="glass-card border border-gold/30 hover:bg-gold/10 text-gold text-xs px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-sitemap"></i> View 3-Matrix Tree
+            </a>
         </div>
 
-        <!-- User Wallet (50%) -->
-        <div class="card stat">
-            <span>Customer Wallet (50%)</span>
-            <b class="text-emerald-400">$<?php echo number_format($wallet['user_wallet_60'], 2); ?></b>
-            <?php if ($rebirthData['user_wallet_50'] > 0): ?>
-                <span class="chg up">Group Withdrawable: $<?php echo number_format($combinedCustomerWallet, 2); ?></span>
-            <?php else: ?>
-                <span class="chg up">Eligible for Payout Withdrawal</span>
-            <?php endif; ?>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <?php for ($lvl = 1; $lvl <= 6; $lvl++):
+                $nodeCount = $downlineCountsByLevel[$lvl];
+                $earnedLvl = $levelCommissionsByLevel[$lvl];
+                $maxCap = pow(3, $lvl);
+            ?>
+                <div class="bg-navy/70 p-4 rounded-2xl border border-gold/20 hover:border-gold/40 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-gold font-mono">Level <?php echo $lvl; ?></span>
+                            <span class="text-[10px] text-champagne/50 font-mono">Max <?php echo number_format($maxCap); ?></span>
+                        </div>
+                        <div class="text-xl font-extrabold text-champagne"><?php echo $nodeCount; ?> <small class="text-[10px] text-champagne/60 font-normal">nodes</small></div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-gold/10">
+                        <span class="text-[10px] text-champagne/60 block uppercase">Earned:</span>
+                        <span class="text-sm font-bold <?php echo $earnedLvl > 0 ? 'text-emerald-400' : 'text-champagne/40'; ?> font-mono">
+                            +$<?php echo number_format($earnedLvl, 2); ?>
+                        </span>
+                    </div>
+                </div>
+            <?php endfor; ?>
         </div>
-
-        <!-- Rayon Cart & Charity Allocation -->
-        <div class="card stat">
-            <span>Rayon Cart / Charity</span>
-            <b class="text-gold">$<?php echo number_format($wallet['burfee_cart_wallet'] ?? 0, 2); ?></b>
-            <span class="chg up">Charity Fund: $<?php echo number_format($wallet['charity_wallet'] ?? 0, 2); ?></span>
-        </div>
-
-        <!-- Team Downline Count & Rebirth Badges -->
-        <a href="/customer/rebirths.php" class="card stat block hover:border-neon-cyan transition group">
-            <span class="group-hover:text-neon-cyan transition">Matrix Network</span>
-            <b><?php echo $downlineCount; ?> <small class="text-xs font-normal text-gold">Members</small></b>
-            <span class="chg up font-mono">Rebirth Nodes Earned: <?php echo $totalRebirths; ?></span>
-        </a>
     </div>
 
     <!-- Quick Quick Links Section -->
