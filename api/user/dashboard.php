@@ -28,10 +28,11 @@ $stmtRefInc = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM transactions W
 $stmtRefInc->execute([$memberId]);
 $directReferralCommission = (float)$stmtRefInc->fetchColumn();
 
-// Matrix Level Commission & Breakdown (Levels 1 to 6)
+// Matrix Level Commission & Breakdown (Levels 1 to 6) - Gross & Net 50%
 $stmtMatInc = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND status = 'Credit'");
 $stmtMatInc->execute([$memberId]);
-$totalLevelCommission = (float)$stmtMatInc->fetchColumn();
+$totalLevelCommissionGross = (float)$stmtMatInc->fetchColumn();
+$totalLevelCommissionNet = round($totalLevelCommissionGross * 0.50, 2);
 
 $stmtLvlBreakdown = $pdo->prepare("SELECT type, COALESCE(SUM(amount), 0) as total FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income_L%' AND status = 'Credit' GROUP BY type");
 $stmtLvlBreakdown->execute([$memberId]);
@@ -46,10 +47,13 @@ foreach ($downline as $d) {
     }
 }
 for ($i = 1; $i <= 6; $i++) {
+    $grossCommission = (float)($levelCommissionsMap["Matrix_Income_L$i"] ?? 0.00);
     $levelCommissionsByLevel[$i] = [
         'level' => $i,
         'nodes_count' => $downlineCountsByLevel[$i],
-        'commission' => (float)($levelCommissionsMap["Matrix_Income_L$i"] ?? 0.00)
+        'commission' => $grossCommission,
+        'gross_commission' => $grossCommission,
+        'net_user_commission' => round($grossCommission * 0.50, 2)
     ];
 }
 
@@ -77,7 +81,9 @@ sendJsonResponse([
         'kpis' => [
             'direct_referrals_count' => $directReferralsCount,
             'direct_referral_commission' => $directReferralCommission,
-            'total_level_commission' => $totalLevelCommission,
+            'total_level_commission' => $totalLevelCommissionGross,
+            'total_level_commission_gross' => $totalLevelCommissionGross,
+            'total_level_commission_net' => $totalLevelCommissionNet,
             'level_breakdown' => $levelCommissionsByLevel
         ],
         'network' => [
