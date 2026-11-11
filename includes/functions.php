@@ -1437,6 +1437,102 @@ function resetDatabaseToCleanState($pdo) {
     }
 }
 /**
+ * Retroactively recalculate all direct referral and matrix level commissions
+ * for all existing members in the system while preserving their hierarchy, accounts,
+ * deposits, and approved withdrawals.
+ *
+ * @param PDO $pdo
+ * @return array
+ */
+function recalculateAllMemberCommissionsAndWallets($pdo) {
+    $pdo->beginTransaction();
+    try {
+        // 1. Delete commission transactions
+        $pdo->exec("
+            DELETE FROM transactions
+            WHERE type IN ('Direct_Referral', 'Admin_Adjustment')
+               OR type LIKE 'Matrix_Income%'
+        ");
+
+        // 2. Reset all member and root wallets to 0
+        $pdo->exec("
+            UPDATE wallets
+            SET balance = 0.00,
+                user_wallet_50 = 0.00,
+                burfee_cart_wallet = 0.00,
+                charity_wallet = 0.00,
+                user_wallet_60 = 0.00,
+                company_wallet_40 = 0.00
+        ");
+
+        // 3. Ensure every member has a wallet record
+        $stmtAll = $pdo->query("SELECT member_id FROM members ORDER BY id ASC");
+        $members = $stmtAll->fetchAll(PDO::FETCH_COLUMN);
+
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $insertIgnoreSql = ($driver === 'sqlite')
+            ? "INSERT OR IGNORE INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)"
+            : "INSERT IGNORE INTO wallets (member_id, balance, user_wallet_50, burfee_cart_wallet, charity_wallet, user_wallet_60, company_wallet_40) VALUES (?, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00)";
+        $stmtInsW = $pdo->prepare($insertIgnoreSql);
+        foreach ($members as $mId) {
+            $stmtInsW->execute([$mId]);
+        }
+
+        // 4. Re-credit approved deposits to member wallets
+        $stmtDep = $pdo->query("SELECT user_id, amount FROM deposits WHERE status = 'Approved'");
+        $deposits = $stmtDep->fetchAll(PDO::FETCH_ASSOC);
+        $stmtDepW = $pdo->prepare("
+            UPDATE wallets
+            SET balance = balance + ?,
+                user_wallet_50 = user_wallet_50 + ?,
+                user_wallet_60 = user_wallet_60 + ?
+            WHERE member_id = ?
+        ");
+        foreach ($deposits as $dep) {
+            $amt = (float)$dep['amount'];
+            $stmtDepW->execute([$amt, $amt, $amt, $dep['user_id']]);
+        }
+
+        // 5. Re-distribute commissions for each non-root member in original order of joining
+        $recalculatedCount = 0;
+        foreach ($members as $mId) {
+            if ($mId === 'RGI100000') {
+                continue;
+            }
+            distributeMatrixCommissions($pdo, $mId);
+            $recalculatedCount++;
+        }
+
+        // 6. Deduct approved withdrawals from user wallets
+        $stmtWd = $pdo->query("SELECT member_id, amount FROM withdrawals WHERE status = 'Approved'");
+        $withdrawals = $stmtWd->fetchAll(PDO::FETCH_ASSOC);
+        $stmtWdW = $pdo->prepare("
+            UPDATE wallets
+            SET user_wallet_50 = user_wallet_50 - ?,
+                user_wallet_60 = user_wallet_60 - ?
+            WHERE member_id = ?
+        ");
+        foreach ($withdrawals as $wd) {
+            $amt = (float)$wd['amount'];
+            $stmtWdW->execute([$amt, $amt, $wd['member_id']]);
+        }
+
+        $pdo->commit();
+        return [
+            'success' => true,
+            'recalculated_count' => $recalculatedCount,
+            'message' => "Successfully recalculated direct referral & matrix commissions for {$recalculatedCount} existing members!"
+        ];
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => 'Commission recalculation failed: ' . $e->getMessage()
+        ];
+    }
+}
+
+/**
  * Duplicate a user as a brand new independent member.
  * Unlike rebirth nodes, this creates a completely independent account with its own Member ID,
  * new BFS matrix spillover placement under RGI100000 (or specified sponsor), initialized wallet,

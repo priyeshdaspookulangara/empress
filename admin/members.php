@@ -60,6 +60,9 @@ require_once __DIR__ . '/../includes/header.php';
                 </button>
             </form>
 
+            <a href="/admin/recalculate_commissions.php" onclick="return confirm('Recalculate all direct referral ($1.00) & matrix commissions for all existing members? This will correct all wallet balances while preserving accounts.');" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/40 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-amber-500/10">
+                <i class="fa-solid fa-calculator text-amber-400"></i> Recalculate All Commissions
+            </a>
             <a href="/admin/replace_prefix.php" class="glass-card border border-gold/40 hover:bg-gold/10 text-gold px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
                 <i class="fa-solid fa-pen-to-square"></i> Replace ID Prefix
             </a>

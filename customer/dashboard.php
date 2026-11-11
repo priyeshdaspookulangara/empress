@@ -50,10 +50,11 @@ foreach ($downline as $d) {
     }
 }
 
-// Sum Matrix Level Commissions ($ USD)
+// Sum Matrix Level Commissions ($ USD) - Gross & Net (50% Withdrawable User Cash)
 $stmtMatInc = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income%' AND status = 'Credit'");
 $stmtMatInc->execute([$memberId]);
-$totalLevelCommission = (float)$stmtMatInc->fetchColumn();
+$totalLevelCommissionGross = (float)$stmtMatInc->fetchColumn();
+$totalLevelCommissionNet = round($totalLevelCommissionGross * 0.50, 2);
 
 // Per-level breakdown (Levels 1 to 6)
 $stmtLvlBreakdown = $pdo->prepare("SELECT type, COALESCE(SUM(amount), 0) as total FROM transactions WHERE member_id = ? AND type LIKE 'Matrix_Income_L%' AND status = 'Credit' GROUP BY type");
@@ -62,7 +63,11 @@ $levelCommissionsMap = $stmtLvlBreakdown->fetchAll(PDO::FETCH_KEY_PAIR);
 
 $levelCommissionsByLevel = [];
 for ($i = 1; $i <= 6; $i++) {
-    $levelCommissionsByLevel[$i] = (float)($levelCommissionsMap["Matrix_Income_L$i"] ?? 0.00);
+    $grossLvl = (float)($levelCommissionsMap["Matrix_Income_L$i"] ?? 0.00);
+    $levelCommissionsByLevel[$i] = [
+        'gross' => $grossLvl,
+        'net' => round($grossLvl * 0.50, 2)
+    ];
 }
 
 // Total Approved Withdrawals ($ USD)
@@ -264,7 +269,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </div>
 
-            <!-- Level Commission / Matrix Income -->
+            <!-- Level Commission / Matrix Income (Gross & Net 50% Display) -->
             <div class="glass-card p-6 rounded-3xl border border-gold/30 flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center text-gold mb-2">
@@ -273,11 +278,17 @@ require_once __DIR__ . '/../includes/header.php';
                             <i class="fa-solid fa-layer-group text-base"></i>
                         </div>
                     </div>
-                    <b class="text-3xl font-extrabold gold-gradient-text block">$<?php echo number_format($totalLevelCommission, 2); ?></b>
+                    <div class="flex items-baseline gap-2">
+                        <b class="text-3xl font-extrabold gold-gradient-text">$<?php echo number_format($totalLevelCommissionGross, 2); ?></b>
+                        <span class="text-[11px] font-mono font-bold uppercase text-champagne/60 bg-gold/10 px-2 py-0.5 rounded border border-gold/20">Gross</span>
+                    </div>
+                    <div class="text-xs font-semibold text-emerald-400 mt-1 font-mono flex items-center gap-1.5">
+                        <i class="fa-solid fa-wallet text-[10px]"></i> Net Cash (50%): <strong>$<?php echo number_format($totalLevelCommissionNet, 2); ?></strong>
+                    </div>
                 </div>
                 <div class="mt-3 pt-3 border-t border-gold/10 text-[11px] text-champagne/70 flex items-center justify-between">
-                    <span>Matrix Spillover</span>
-                    <span class="font-mono text-emerald-400 font-bold">Levels 1 – 6</span>
+                    <span>Matrix Spillover (L1–L6)</span>
+                    <span class="font-mono text-emerald-400 font-bold">50% Withdrawable</span>
                 </div>
             </div>
 
@@ -317,7 +328,8 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <?php for ($lvl = 1; $lvl <= 6; $lvl++):
                 $nodeCount = $downlineCountsByLevel[$lvl];
-                $earnedLvl = $levelCommissionsByLevel[$lvl];
+                $grossEarned = $levelCommissionsByLevel[$lvl]['gross'];
+                $netEarned = $levelCommissionsByLevel[$lvl]['net'];
                 $maxCap = pow(3, $lvl);
             ?>
                 <div class="bg-navy/70 p-4 rounded-2xl border border-gold/20 hover:border-gold/40 transition flex flex-col justify-between">
@@ -329,10 +341,16 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="text-xl font-extrabold text-champagne"><?php echo $nodeCount; ?> <small class="text-[10px] text-champagne/60 font-normal">nodes</small></div>
                     </div>
                     <div class="mt-3 pt-2 border-t border-gold/10">
-                        <span class="text-[10px] text-champagne/60 block uppercase">Earned:</span>
-                        <span class="text-sm font-bold <?php echo $earnedLvl > 0 ? 'text-emerald-400' : 'text-champagne/40'; ?> font-mono">
-                            +$<?php echo number_format($earnedLvl, 2); ?>
-                        </span>
+                        <div class="flex items-center justify-between text-[10px] text-champagne/60 mb-0.5">
+                            <span class="uppercase">Gross:</span>
+                            <span class="font-mono font-bold <?php echo $grossEarned > 0 ? 'text-gold' : 'text-champagne/40'; ?>">
+                                +$<?php echo number_format($grossEarned, 2); ?>
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] font-mono font-bold <?php echo $netEarned > 0 ? 'text-emerald-400' : 'text-champagne/40'; ?>">
+                            <span class="text-[9px] uppercase tracking-wider text-champagne/70 font-sans">Net Cash:</span>
+                            <span>+$<?php echo number_format($netEarned, 2); ?></span>
+                        </div>
                     </div>
                 </div>
             <?php endfor; ?>
